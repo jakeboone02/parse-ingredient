@@ -98,7 +98,7 @@ console.log(
 /**
  * [
  *   {
- *     quantity: 0.666,
+ *     quantity: 0.667,
  *     quantity2: null,
  *     unitOfMeasure: 'cup',
  *     description: 'flour',
