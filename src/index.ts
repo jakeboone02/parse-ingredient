@@ -143,7 +143,7 @@ const parseIngredient = (ingText: string): Ingredient[] => {
     // Check for a known unit of measure
     const firstSpace = oIng.description.indexOf(' ');
     const firstWord = oIng.description.substring(0, firstSpace);
-    if (UOM_LIST.includes(firstWord)) {
+    if (UOM_LIST.indexOf(firstWord) >= 0) {
       oIng.unitOfMeasure = firstWord;
       oIng.description = oIng.description.substring(firstSpace + 1);
     }
