@@ -86,6 +86,7 @@ it('works', () => {
   expect(
     parseIngredient(`2/3 cup sugar
 
+    
 1 tsp baking powder`)
   ).toEqual([
     {

@@ -1,4 +1,5 @@
 import numericQuantity from 'numeric-quantity';
+import compactArray from './compactArray';
 
 export interface Ingredient {
   /**
@@ -41,10 +42,12 @@ const UOM_LIST = [
 ];
 
 const parseIngredient = (ingText: string): Ingredient[] => {
-  const arrRaw = ingText
-    .replace(/\n{2,}/g, '\n')
-    .split('\n')
-    .map(ing => ing.trim());
+  const arrRaw = compactArray(
+    ingText
+      .replace(/\n{2,}/g, '\n')
+      .split('\n')
+      .map(ing => ing.trim())
+  );
   const arrIngs = [];
   const arrRawLen = arrRaw.length;
 
