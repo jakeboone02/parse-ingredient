@@ -61,10 +61,10 @@ const parseIngredient = (ingText: string): Ingredient[] => {
     if (isNaN(nqResult)) {
       oIng.description = arrRaw[i];
 
-      // If the line ends in ":" or starts with "For ", then it is assumed to be a group header.
+      // If the line ends with ":" or starts with "For ", then it is assumed to be a group header.
       if (
-        oIng.description.substring(oIng.description.length - 1) === ':' ||
-        oIng.description.substring(0, 4).toUpperCase() === 'FOR '
+        oIng.description.endsWith(':') ||
+        oIng.description.toUpperCase().startsWith('FOR ')
       ) {
         oIng.isGroupHeader = true;
       }
