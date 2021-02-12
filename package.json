@@ -3,9 +3,23 @@
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
+  "keywords": [
+    "parse",
+    "recipe",
+    "ingredient",
+    "quantity",
+    "number"
+  ],
+  "bugs": {
+    "url": "https://github.com/jakeboone02/parse-ingredient/issues"
+  },
+  "homepage": "https://github.com/jakeboone02/parse-ingredient",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jakeboone02/parse-ingredient"
+  },
   "files": [
-    "dist",
-    "src"
+    "dist"
   ],
   "engines": {
     "node": ">=10"
@@ -23,11 +37,13 @@
     "semi": true,
     "singleQuote": true,
     "trailingComma": "es5",
-    "arrowParens": "avoid"
+    "arrowParens": "avoid",
+    "tabWidth": 2
   },
   "name": "parse-ingredient",
   "author": "Jake Boone",
   "module": "dist/parse-ingredient.esm.js",
+  "unpkg": "dist/parse-ingredient.umd.production.min.js",
   "devDependencies": {
     "np": "^7.3.0",
     "tsdx": "^0.14.1",
