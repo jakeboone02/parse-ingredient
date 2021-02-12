@@ -15,7 +15,8 @@
     "build": "tsdx build --format cjs,esm,system,umd",
     "test": "tsdx test",
     "lint": "tsdx lint",
-    "prepare": "npm run build"
+    "prepare": "npm run build",
+    "publish:npm": "np"
   },
   "prettier": {
     "printWidth": 80,
@@ -28,6 +29,7 @@
   "author": "Jake Boone",
   "module": "dist/parse-ingredient.esm.js",
   "devDependencies": {
+    "np": "^7.3.0",
     "tsdx": "^0.14.1",
     "tslib": "^2.1.0",
     "typescript": "^4.1.5"
