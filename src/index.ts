@@ -40,7 +40,11 @@ const UOM_LIST = [
   'liter','liters','l'
 ];
 
-// Originally from lodash: https://github.com/lodash/lodash/blob/4.17.15/lodash.js#L6874
+/**
+ * Removes falsy values from an array
+ *
+ * Originally from lodash: https://github.com/lodash/lodash/blob/4.17.15/lodash.js#L6874
+ */
 const compactArray = <T>(array: T[]) => {
   let index = -1;
   const length = array.length;
@@ -56,6 +60,10 @@ const compactArray = <T>(array: T[]) => {
   return result;
 };
 
+/**
+ * Parses a string into an array of recipe ingredient objects
+ * @param ingText The ingredient text
+ */
 const parseIngredient = (ingText: string): Ingredient[] => {
   const arrRaw = compactArray(
     ingText
@@ -63,10 +71,8 @@ const parseIngredient = (ingText: string): Ingredient[] => {
       .split('\n')
       .map(ing => ing.trim())
   );
-  const arrIngs = [];
-  const arrRawLen = arrRaw.length;
 
-  for (var i = 0; i < arrRawLen; i++) {
+  const arrIngs = arrRaw.map(line => {
     const oIng: Ingredient = {
       quantity: null,
       quantity2: null,
@@ -76,11 +82,11 @@ const parseIngredient = (ingText: string): Ingredient[] => {
     };
 
     // Check if the first character is numeric.
-    let nqResult = numericQuantity(arrRaw[i].substring(0, 1));
+    const nqResultFirstChar = numericQuantity(line.substring(0, 1));
 
     // If the first character is not numeric, the entire line is the description.
-    if (isNaN(nqResult)) {
-      oIng.description = arrRaw[i];
+    if (isNaN(nqResultFirstChar)) {
+      oIng.description = line;
 
       // If the line ends with ":" or starts with "For ", then it is assumed to be a group header.
       if (
@@ -94,14 +100,14 @@ const parseIngredient = (ingText: string): Ingredient[] => {
       // constitute a single value.  This will be `quantity`.
     } else {
       let lenNum = 6;
-      nqResult = NaN;
+      let nqResult = NaN;
 
       while (lenNum > 0 && isNaN(nqResult)) {
-        nqResult = numericQuantity(arrRaw[i].substring(0, lenNum).trim());
+        nqResult = numericQuantity(line.substring(0, lenNum).trim());
 
         if (nqResult > -1) {
           oIng.quantity = nqResult;
-          oIng.description = arrRaw[i].substring(lenNum).trim();
+          oIng.description = line.substring(lenNum).trim();
         }
 
         lenNum--;
@@ -113,16 +119,16 @@ const parseIngredient = (ingText: string): Ingredient[] => {
     // characters just like we did for `quantity`.
     const firstChar = oIng.description.substring(0, 1);
     if (firstChar === '-' || firstChar === '\u2013' || firstChar === '\u2014') {
-      nqResult = numericQuantity(
+      const nqResultFirstChar = numericQuantity(
         oIng.description
           .substring(1)
           .trim()
           .substring(0, 1)
       );
 
-      if (!isNaN(nqResult)) {
+      if (!isNaN(nqResultFirstChar)) {
         let lenNum = 6;
-        nqResult = NaN;
+        let nqResult = NaN;
 
         while (lenNum > 0 && isNaN(nqResult)) {
           nqResult = numericQuantity(oIng.description.substring(1, lenNum));
@@ -145,8 +151,8 @@ const parseIngredient = (ingText: string): Ingredient[] => {
       oIng.description = oIng.description.substring(firstSpace + 1);
     }
 
-    arrIngs.push(oIng);
-  }
+    return oIng;
+  });
 
   return arrIngs;
 };
