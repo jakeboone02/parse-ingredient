@@ -83,4 +83,24 @@ it('works', () => {
       isGroupHeader: false,
     },
   ]);
+  expect(
+    parseIngredient(`2/3 cup sugar
+
+1 tsp baking powder`)
+  ).toEqual([
+    {
+      quantity: 0.667,
+      quantity2: null,
+      unitOfMeasure: 'cup',
+      description: 'sugar',
+      isGroupHeader: false,
+    },
+    {
+      quantity: 1,
+      quantity2: null,
+      unitOfMeasure: 'tsp',
+      description: 'baking powder',
+      isGroupHeader: false,
+    },
+  ]);
 });
