@@ -13,15 +13,15 @@ interface Ingredient {
   /**
    * The primary quantity (the lower quantity in a range, if applicable)
    */
-  quantity: number;
+  quantity: number | null;
   /**
-   * The secondary quantity (the upper quantity in a range or `0` if not applicable)
+   * The secondary quantity (the upper quantity in a range, or `null` if not applicable)
    */
-  quantity2: number;
+  quantity2: number | null;
   /**
    * The unit of measure
    */
-  unitOfMeasure: string;
+  unitOfMeasure: string | null;
   /**
    * The description
    */

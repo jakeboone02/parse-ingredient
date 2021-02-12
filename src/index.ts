@@ -6,7 +6,7 @@ export interface Ingredient {
    */
   quantity: number | null;
   /**
-   * The secondary quantity (the upper quantity in a range or `0` if not applicable)
+   * The secondary quantity (the upper quantity in a range, or `null` if not applicable)
    */
   quantity2: number | null;
   /**
