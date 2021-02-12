@@ -19,6 +19,24 @@ it('works', () => {
       isGroupHeader: false,
     },
   ]);
+  expect(parseIngredient('1-2 cups stuff')).toEqual([
+    {
+      quantity: 1,
+      quantity2: 2,
+      unitOfMeasure: 'cups',
+      description: 'stuff',
+      isGroupHeader: false,
+    },
+  ]);
+  expect(parseIngredient('1-NaN cups stuff')).toEqual([
+    {
+      quantity: 1,
+      quantity2: null,
+      unitOfMeasure: null,
+      description: '-NaN cups stuff',
+      isGroupHeader: false,
+    },
+  ]);
   expect(parseIngredient('For cake')).toEqual([
     {
       quantity: null,
@@ -35,6 +53,15 @@ it('works', () => {
       unitOfMeasure: null,
       description: 'Icing:',
       isGroupHeader: true,
+    },
+  ]);
+  expect(parseIngredient('a bunch of bananas')).toEqual([
+    {
+      quantity: null,
+      quantity2: null,
+      unitOfMeasure: null,
+      description: 'a bunch of bananas',
+      isGroupHeader: false,
     },
   ]);
   expect(
