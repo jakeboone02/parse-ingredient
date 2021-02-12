@@ -89,10 +89,7 @@ const parseIngredient = (ingText: string): Ingredient[] => {
       oIng.description = line;
 
       // If the line ends with ":" or starts with "For ", then it is assumed to be a group header.
-      if (
-        oIng.description.endsWith(':') ||
-        oIng.description.toUpperCase().startsWith('FOR ')
-      ) {
+      if (/:$/.test(oIng.description) || /^For /i.test(oIng.description)) {
         oIng.isGroupHeader = true;
       }
 
