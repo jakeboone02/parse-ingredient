@@ -30,7 +30,8 @@
     "test": "tsdx test",
     "lint": "tsdx lint",
     "prepare": "npm run build",
-    "publish:npm": "np"
+    "publish:npm": "np",
+    "publish:demo": "node gh-pages.publish.js"
   },
   "prettier": {
     "printWidth": 80,
@@ -45,6 +46,7 @@
   "module": "dist/parse-ingredient.esm.js",
   "unpkg": "dist/parse-ingredient.umd.production.min.js",
   "devDependencies": {
+    "gh-pages": "^3.1.0",
     "np": "^7.3.0",
     "tsdx": "^0.14.1",
     "tslib": "^2.1.0",

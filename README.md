@@ -37,6 +37,10 @@ For the `isGroupHeader` attribute to be `true`, the ingredient string must not s
 
 This library pairs nicely with [format-quantity](https://www.npmjs.com/package/format-quantity) which can display numeric values as imperial measurements (e.g. `'1 1/2'` instead of `1.5`).
 
+## Demo
+
+[See demo here](https://jakeboone02.github.io/parse-ingredient/).
+
 ## Installation
 
 ### npm
