@@ -29,7 +29,6 @@
     "build": "tsdx build --format cjs,esm,system,umd",
     "test": "tsdx test",
     "lint": "tsdx lint",
-    "prepare": "npm run build",
     "publish:npm": "np"
   },
   "prettier": {
