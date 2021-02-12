@@ -32,3 +32,7 @@ jobs:
 
       - name: Build
         run: yarn build
+
+      - name: Upload coverage to Codecov
+        if: matrix.os == 'ubuntu-latest' && matrix.node == '14.x'
+        uses: codecov/codecov-action@v1
