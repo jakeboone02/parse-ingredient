@@ -1,6 +1,7 @@
 {
   "version": "0.2.2",
   "license": "MIT",
+  "description": "Recipe ingredient parser with support for mixed numbers and vulgar fractions",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "keywords": [
