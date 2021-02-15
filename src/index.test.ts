@@ -1,6 +1,7 @@
 import parseIngredient from '.';
 
 it('works', () => {
+  // Basic case
   expect(parseIngredient('1 cup stuff')).toEqual([
     {
       quantity: 1,
@@ -10,6 +11,7 @@ it('works', () => {
       isGroupHeader: false,
     },
   ]);
+  // Fraction
   expect(parseIngredient('1/2 cup stuff')).toEqual([
     {
       quantity: 0.5,
@@ -19,6 +21,7 @@ it('works', () => {
       isGroupHeader: false,
     },
   ]);
+  // Ranges
   expect(parseIngredient('1-2 cups stuff')).toEqual([
     {
       quantity: 1,
@@ -82,6 +85,7 @@ it('works', () => {
       isGroupHeader: false,
     },
   ]);
+  // Invalid number for quantity 2
   expect(parseIngredient('1-NaN cups stuff')).toEqual([
     {
       quantity: 1,
@@ -91,6 +95,7 @@ it('works', () => {
       isGroupHeader: false,
     },
   ]);
+  // Normalize UOM
   expect(parseIngredient('1 c stuff', { normalizeUOM: true })).toEqual([
     {
       quantity: 1,
@@ -100,6 +105,17 @@ it('works', () => {
       isGroupHeader: false,
     },
   ]);
+  // Missing description - parse UOM as description even if it matches
+  expect(parseIngredient('1 cup')).toEqual([
+    {
+      quantity: 1,
+      quantity2: null,
+      unitOfMeasure: null,
+      description: 'cup',
+      isGroupHeader: false,
+    },
+  ]);
+  // Group header ('For ')
   expect(parseIngredient('For cake')).toEqual([
     {
       quantity: null,
@@ -109,6 +125,7 @@ it('works', () => {
       isGroupHeader: true,
     },
   ]);
+  // Group header ('xxx:')
   expect(parseIngredient('Icing:')).toEqual([
     {
       quantity: null,
@@ -118,6 +135,7 @@ it('works', () => {
       isGroupHeader: true,
     },
   ]);
+  // No numeric part
   expect(parseIngredient('a bunch of bananas')).toEqual([
     {
       quantity: null,
@@ -127,6 +145,7 @@ it('works', () => {
       isGroupHeader: false,
     },
   ]);
+  // Multi-line
   expect(
     parseIngredient(`2/3 cup sugar
 1 tsp baking powder`)
@@ -146,6 +165,7 @@ it('works', () => {
       isGroupHeader: false,
     },
   ]);
+  // Empty lines
   expect(
     parseIngredient(`2/3 cup sugar
 

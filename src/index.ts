@@ -158,26 +158,32 @@ const parseIngredient = (
     }
 
     // Check for a known unit of measure
-    const firstSpace = oIng.description.indexOf(' ');
-    const firstWord = oIng.description.substring(0, firstSpace);
-    let uom = '';
-    let uomBase = '';
-    let i = 0;
-    while (i < UOM_LIST.length && !uom) {
-      const ndx = UOM_LIST[i].indexOf(firstWord);
-      if (ndx >= 0) {
-        uom = UOM_LIST[i][ndx];
-        uomBase = UOM_LIST[i][0];
+    const firstWordRE = /^([a-zA-Z.]+)\b(.+)/;
+    const firstWordREMatches = firstWordRE.exec(oIng.description);
+    if (firstWordREMatches) {
+      const firstWord = firstWordREMatches[1];
+      const remainingDesc = firstWordREMatches[2];
+      let uom = '';
+      let uomBase = '';
+      let i = 0;
+
+      while (i < UOM_LIST.length && !uom) {
+        const ndx = UOM_LIST[i].indexOf(firstWord);
+        if (ndx >= 0) {
+          uom = UOM_LIST[i][ndx];
+          uomBase = UOM_LIST[i][0];
+        }
+        i++;
       }
-      i++;
-    }
-    if (uom) {
-      if (options?.normalizeUOM) {
-        oIng.unitOfMeasure = uomBase;
-      } else {
-        oIng.unitOfMeasure = uom;
+
+      if (uom) {
+        if (options?.normalizeUOM) {
+          oIng.unitOfMeasure = uomBase;
+        } else {
+          oIng.unitOfMeasure = uom;
+        }
+        oIng.description = remainingDesc.trim();
       }
-      oIng.description = oIng.description.substring(firstSpace + 1);
     }
 
     return oIng;
