@@ -112,13 +112,16 @@ const parseIngredient = (ingText: string): Ingredient[] => {
     }
 
     // Now check the description for a `quantity2` at the beginning.
-    // First we look for a dash to indicate a range, then process the next seven
-    // characters just like we did for `quantity`.
-    const firstChar = oIng.description.substring(0, 1);
-    if (firstChar === '-' || firstChar === '\u2013' || firstChar === '\u2014') {
+    // First we look for a dash, emdash, endash, or the word "to" to indicate
+    // a range, then process the next seven characters just like we did for
+    // `quantity`.
+    const q2re = /^(-|–|—|to )/i;
+    const q2reMatch = q2re.exec(oIng.description);
+    if (q2reMatch) {
+      const q2reMatchLen = q2reMatch[1].length;
       const nqResultFirstChar = numericQuantity(
         oIng.description
-          .substring(1)
+          .substring(q2reMatchLen)
           .trim()
           .substring(0, 1)
       );
@@ -128,7 +131,9 @@ const parseIngredient = (ingText: string): Ingredient[] => {
         let nqResult = NaN;
 
         while (lenNum > 0 && isNaN(nqResult)) {
-          nqResult = numericQuantity(oIng.description.substring(1, lenNum));
+          nqResult = numericQuantity(
+            oIng.description.substring(q2reMatchLen, lenNum)
+          );
 
           if (!isNaN(nqResult)) {
             oIng.quantity2 = nqResult;

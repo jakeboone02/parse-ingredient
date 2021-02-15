@@ -28,6 +28,60 @@ it('works', () => {
       isGroupHeader: false,
     },
   ]);
+  expect(parseIngredient('1\u20132 cups stuff')).toEqual([
+    {
+      quantity: 1,
+      quantity2: 2,
+      unitOfMeasure: 'cups',
+      description: 'stuff',
+      isGroupHeader: false,
+    },
+  ]);
+  expect(parseIngredient('1\u20142 cups stuff')).toEqual([
+    {
+      quantity: 1,
+      quantity2: 2,
+      unitOfMeasure: 'cups',
+      description: 'stuff',
+      isGroupHeader: false,
+    },
+  ]);
+  expect(parseIngredient('1 \u2013 2 cups stuff')).toEqual([
+    {
+      quantity: 1,
+      quantity2: 2,
+      unitOfMeasure: 'cups',
+      description: 'stuff',
+      isGroupHeader: false,
+    },
+  ]);
+  expect(parseIngredient('1 \u2014 2 cups stuff')).toEqual([
+    {
+      quantity: 1,
+      quantity2: 2,
+      unitOfMeasure: 'cups',
+      description: 'stuff',
+      isGroupHeader: false,
+    },
+  ]);
+  expect(parseIngredient('1 to 2 cups stuff')).toEqual([
+    {
+      quantity: 1,
+      quantity2: 2,
+      unitOfMeasure: 'cups',
+      description: 'stuff',
+      isGroupHeader: false,
+    },
+  ]);
+  expect(parseIngredient('1 TO 2 cups stuff')).toEqual([
+    {
+      quantity: 1,
+      quantity2: 2,
+      unitOfMeasure: 'cups',
+      description: 'stuff',
+      isGroupHeader: false,
+    },
+  ]);
   expect(parseIngredient('1-NaN cups stuff')).toEqual([
     {
       quantity: 1,
