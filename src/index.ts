@@ -37,7 +37,13 @@ const UOM_LIST = [
   'inch','inches','in','in.',
   'foot','feet','ft','ft.',
   'quart','quarts','qt','qt.',
-  'liter','liters','l'
+  'liter','liters','l',
+  'pinch','pinches',
+  'piece','pieces','pcs','pcs.',
+  'milligram','mg','mg.',
+  'milliliter','ml','mL','ml.','mL.',
+  'quart','quarts','qt','qt.','qts','qts.',
+  'gallon','gallons','gal','gal.',
 ];
 
 /**
