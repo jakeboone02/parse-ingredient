@@ -139,6 +139,10 @@ For The Cake
     >
     <br />
     <button type="button" id="parse">Parse</button>
+    <label>
+      <input type="checkbox" id="normalize-uom" />
+      Normalize units of measure
+    </label>
     <h4>Results</h4>
     <pre id="results" class="language-json">
 (Click "Parse" to see results.)</pre
@@ -147,14 +151,17 @@ For The Cake
       Copyright © 2021 <a href="https://github.com/jakeboone02">Jake Boone</a>
     </footer>
     <script src="https://unpkg.com/numeric-quantity@1.0.1/dist/numeric-quantity.umd.production.min.js"></script>
-    <script src="https://unpkg.com/parse-ingredient@0.2.4/dist/parse-ingredient.umd.production.min.js"></script>
+    <script src="https://unpkg.com/parse-ingredient@0.3.0/dist/parse-ingredient.umd.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
     <script>
       document
         .getElementById('parse')
         .addEventListener('click', function(event) {
+          var normalizeUOM = document.getElementById('normalize-uom').checked;
           document.getElementById('results').innerHTML = JSON.stringify(
-            parseIngredient(document.getElementById('ingredient-list').value),
+            parseIngredient(document.getElementById('ingredient-list').value, {
+              normalizeUOM: normalizeUOM,
+            }),
             null,
             2
           );
