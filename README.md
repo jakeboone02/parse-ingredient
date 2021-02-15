@@ -130,3 +130,26 @@ console.log(parseIngredient('For cake:'));
  * ]
  */
 ```
+
+## Options
+
+### normalizeUOM
+
+Pass `true` to convert units of measure to their long, singular form, e.g. "ml" becomes "milliliter" and "cups" becomes "cup". This can help normalize the units of measure for processing.
+
+Example:
+
+```js
+console.log(parseIngredient('1 c sugar', { normalizeUOM: true }));
+/**
+ * [
+ *   {
+ *     quantity: 1,
+ *     quantity2: null,
+ *     unitOfMeasure: 'cup',
+ *     description: 'sugar',
+ *     isGroupHeader: false,
+ *   }
+ * ]
+ */
+```

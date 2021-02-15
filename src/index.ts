@@ -23,27 +23,30 @@ export interface Ingredient {
   isGroupHeader: boolean;
 }
 
-// prettier-ignore
+export interface ParseIngredientOptions {
+  normalizeUOM?: boolean;
+}
+
 const UOM_LIST = [
-  'cup','cups','c','c.','C',
-  'teaspoon','teaspoons','tsp','tsp.','t',
-  'tablespoon','tablespoons','tbsp','tbsp.','T',
-  'ounce','ounces','oz','oz.',
-  'pint','pints','pt','pt.',
-  'pound','pounds','lb','lb.','lbs','lbs.',
-  'gram','grams','g','g.',
-  'kilogram','kilograms','kg','kg.',
-  'stick','sticks',
-  'inch','inches','in','in.',
-  'foot','feet','ft','ft.',
-  'quart','quarts','qt','qt.',
-  'liter','liters','l',
-  'pinch','pinches',
-  'piece','pieces','pcs','pcs.',
-  'milligram','mg','mg.',
-  'milliliter','ml','mL','ml.','mL.',
-  'quart','quarts','qt','qt.','qts','qts.',
-  'gallon','gallons','gal','gal.',
+  ['cup', 'cups', 'c', 'c.', 'C'],
+  ['teaspoon', 'teaspoons', 'tsp', 'tsp.', 't'],
+  ['tablespoon', 'tablespoons', 'tbsp', 'tbsp.', 'T'],
+  ['ounce', 'ounces', 'oz', 'oz.'],
+  ['pint', 'pints', 'pt', 'pt.'],
+  ['pound', 'pounds', 'lb', 'lb.', 'lbs', 'lbs.'],
+  ['gram', 'grams', 'g', 'g.'],
+  ['kilogram', 'kilograms', 'kg', 'kg.'],
+  ['stick', 'sticks'],
+  ['inch', 'inches', 'in', 'in.'],
+  ['foot', 'feet', 'ft', 'ft.'],
+  ['quart', 'quarts', 'qt', 'qt.'],
+  ['liter', 'liters', 'l'],
+  ['pinch', 'pinches'],
+  ['piece', 'pieces', 'pcs', 'pcs.'],
+  ['milligram', 'mg', 'mg.'],
+  ['milliliter', 'ml', 'mL', 'ml.', 'mL.'],
+  ['quart', 'quarts', 'qt', 'qt.', 'qts', 'qts.'],
+  ['gallon', 'gallons', 'gal', 'gal.'],
 ];
 
 /**
@@ -70,7 +73,10 @@ const compactArray = <T>(array: T[]) => {
  * Parses a string into an array of recipe ingredient objects
  * @param ingText The ingredient text
  */
-const parseIngredient = (ingText: string): Ingredient[] => {
+const parseIngredient = (
+  ingText: string,
+  options?: ParseIngredientOptions
+): Ingredient[] => {
   const arrRaw = compactArray(
     ingText
       .replace(/\n{2,}/g, '\n')
@@ -154,8 +160,23 @@ const parseIngredient = (ingText: string): Ingredient[] => {
     // Check for a known unit of measure
     const firstSpace = oIng.description.indexOf(' ');
     const firstWord = oIng.description.substring(0, firstSpace);
-    if (UOM_LIST.indexOf(firstWord) >= 0) {
-      oIng.unitOfMeasure = firstWord;
+    let uom = '';
+    let uomBase = '';
+    let i = 0;
+    while (i < UOM_LIST.length && !uom) {
+      const ndx = UOM_LIST[i].indexOf(firstWord);
+      if (ndx >= 0) {
+        uom = UOM_LIST[i][ndx];
+        uomBase = UOM_LIST[i][0];
+      }
+      i++;
+    }
+    if (uom) {
+      if (options?.normalizeUOM) {
+        oIng.unitOfMeasure = uomBase;
+      } else {
+        oIng.unitOfMeasure = uom;
+      }
       oIng.description = oIng.description.substring(firstSpace + 1);
     }
 
