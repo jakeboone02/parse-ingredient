@@ -1,5 +1,13 @@
 ## Change Log
 
+### v0.3.0 (2021-02-15)
+- [86d0f59](https://github.com/jakeboone02/parse-ingredient/commit/86d0f5901bff439df2b85872dd56e74106db44a9) v0.3.0 (@jakeboone02)
+- [573a1e6](https://github.com/jakeboone02/parse-ingredient/commit/573a1e608ccf305c44f7e3aa0ab5182007210bd5) Refactor to use regex for UOM (@jakeboone02)
+- [3aac3d7](https://github.com/jakeboone02/parse-ingredient/commit/3aac3d7db08db16e4dbe3fff7e85997dfc124a20) Add normalizeUOM option (@jakeboone02)
+- [6544a32](https://github.com/jakeboone02/parse-ingredient/commit/6544a323417502886da56cda372f92eac718ed14) Add some units of measure (@jakeboone02)
+- [763ed99](https://github.com/jakeboone02/parse-ingredient/commit/763ed9945e8687852d0413ae4907730a63a96648) Use latest versions in demo (@jakeboone02)
+- [9b9bea4](https://github.com/jakeboone02/parse-ingredient/commit/9b9bea4f88ef23b5ef9ff2279cce540ebad667fc) Update CHANGELOG.md for v0.2.4 (@jakeboone02)
+
 ### v0.2.4 (2021-02-15)
 - [1391a0f](https://github.com/jakeboone02/parse-ingredient/commit/1391a0f9c2559550c3bed5474abd0cb9cd75e794) v0.2.4 (@jakeboone02)
 - [9929441](https://github.com/jakeboone02/parse-ingredient/commit/9929441c8701072124df2d620229aa16cfb65182) Add support for the word "to" to indicate a range (@jakeboone02)
