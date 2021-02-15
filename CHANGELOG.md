@@ -1,5 +1,10 @@
 ## Change Log
 
+### v0.2.4 (2021-02-15)
+- [1391a0f](https://github.com/jakeboone02/parse-ingredient/commit/1391a0f9c2559550c3bed5474abd0cb9cd75e794) v0.2.4 (@jakeboone02)
+- [9929441](https://github.com/jakeboone02/parse-ingredient/commit/9929441c8701072124df2d620229aa16cfb65182) Add support for the word "to" to indicate a range (@jakeboone02)
+- [2dc25ec](https://github.com/jakeboone02/parse-ingredient/commit/2dc25ecaf05a4486d9a9ef496751f7e3720181d8) Add CHANGELOG.md (@jakeboone02)
+
 ### v0.2.3 (2021-02-15)
 - [a14247c](https://github.com/jakeboone02/parse-ingredient/commit/a14247c1cf903eaff8b5c2d2f9f8a47fa4af6934) v0.2.3 (@jakeboone02)
 - [9fb9aed](https://github.com/jakeboone02/parse-ingredient/commit/9fb9aed9eecf3ecdf4be2bcec764a8b5144b9736) Add description to package.json (@jakeboone02)
