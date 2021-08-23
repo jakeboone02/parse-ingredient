@@ -55,6 +55,6 @@
     "typescript": "^4.1.5"
   },
   "dependencies": {
-    "numeric-quantity": "^1.0.0"
+    "numeric-quantity": "^1.0.2"
   }
 }
