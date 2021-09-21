@@ -1,5 +1,5 @@
 module.exports = {
-  rollup(config, options) {
+  rollup(config, _options) {
     config.output.name = 'parseIngredient';
     config.output.exports = 'default';
     config.output.globals = { 'numeric-quantity': 'numericQuantity' };
