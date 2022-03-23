@@ -39,7 +39,6 @@ const UOM_LIST = [
   ['stick', 'sticks'],
   ['inch', 'inches', 'in', 'in.'],
   ['foot', 'feet', 'ft', 'ft.'],
-  ['quart', 'quarts', 'qt', 'qt.'],
   ['liter', 'liters', 'l'],
   ['pinch', 'pinches'],
   ['piece', 'pieces', 'pcs', 'pcs.'],
@@ -47,6 +46,36 @@ const UOM_LIST = [
   ['milliliter', 'ml', 'mL', 'ml.', 'mL.'],
   ['quart', 'quarts', 'qt', 'qt.', 'qts', 'qts.'],
   ['gallon', 'gallons', 'gal', 'gal.'],
+  ['bag', 'bags'],
+  ['box', 'boxes'],
+  ['bunch', 'bunches'],
+  ['can', 'cans'],
+  ['carton', 'cartons'],
+  ['clove', 'cloves'],
+  ['container', 'containers'],
+  ['dash', 'dashes'],
+  ['drop', 'drops'],
+  ['ear', 'ears'],
+  [
+    'fluid ounce',
+    'fl oz',
+    'floz',
+    'fl-oz',
+    'fluid-ounce',
+    'fluid ounces',
+    'fluid-ounces',
+    'fluidounces',
+    'fl ounce',
+    'fl ounces',
+    'fl-ounce',
+    'fl-ounces',
+    'fluid oz',
+    'fluid-oz',
+  ],
+  ['head', 'heads'],
+  ['pack', 'packs'],
+  ['package', 'packages', 'pkg', 'pkgs'],
+  ['sprig', 'sprigs'],
 ];
 
 /**
@@ -184,6 +213,10 @@ const parseIngredient = (
         }
         oIng.description = remainingDesc.trim();
       }
+    }
+
+    if (oIng.description.match(/^of\s/i)) {
+      oIng.description = oIng.description.replace(/^of\s/i, '');
     }
 
     return oIng;

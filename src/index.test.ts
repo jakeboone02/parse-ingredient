@@ -11,6 +11,16 @@ it('works', () => {
       isGroupHeader: false,
     },
   ]);
+  // Remove "of"
+  expect(parseIngredient('1 cup of stuff')).toEqual([
+    {
+      quantity: 1,
+      quantity2: null,
+      unitOfMeasure: 'cup',
+      description: 'stuff',
+      isGroupHeader: false,
+    },
+  ]);
   // Fraction
   expect(parseIngredient('1/2 cup stuff')).toEqual([
     {
@@ -115,7 +125,7 @@ it('works', () => {
       isGroupHeader: false,
     },
   ]);
-  // Group header ('For ')
+  // Group header ('For xxx')
   expect(parseIngredient('For cake')).toEqual([
     {
       quantity: null,
