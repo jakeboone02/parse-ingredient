@@ -148,10 +148,10 @@ For The Cake
 (Click "Parse" to see results.)</pre
     >
     <footer>
-      Copyright © 2021 <a href="https://github.com/jakeboone02">Jake Boone</a>
+      Copyright © 2022 <a href="https://github.com/jakeboone02">Jake Boone</a>
     </footer>
-    <script src="https://unpkg.com/numeric-quantity@1.0.2/dist/numeric-quantity.umd.production.min.js"></script>
-    <script src="https://unpkg.com/parse-ingredient@0.4.0/dist/parse-ingredient.umd.production.min.js"></script>
+    <script src="https://unpkg.com/numeric-quantity"></script>
+    <script src="https://unpkg.com/parse-ingredient"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
     <script>
       document
@@ -159,7 +159,7 @@ For The Cake
         .addEventListener('click', function(event) {
           var normalizeUOM = document.getElementById('normalize-uom').checked;
           document.getElementById('results').innerHTML = JSON.stringify(
-            parseIngredient(document.getElementById('ingredient-list').value, {
+            ParseIngredient.parseIngredient(document.getElementById('ingredient-list').value, {
               normalizeUOM: normalizeUOM,
             }),
             null,

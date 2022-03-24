@@ -1,8 +1,15 @@
 {
+  "name": "parse-ingredient",
+  "author": "Jake Boone",
   "version": "0.4.0",
   "license": "MIT",
   "description": "Recipe ingredient parser with support for mixed numbers and vulgar fractions",
-  "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/parse-ingredient.cjs.js",
+  "module": "./dist/parse-ingredient.es.js",
+  "unpkg": "./dist/parse-ingredient.umd.js",
   "typings": "dist/index.d.ts",
   "keywords": [
     "parse",
@@ -19,40 +26,28 @@
     "type": "git",
     "url": "https://github.com/jakeboone02/parse-ingredient"
   },
-  "files": [
-    "dist"
-  ],
   "engines": {
     "node": ">=10"
   },
   "scripts": {
-    "start": "tsdx watch --format cjs,esm,system,umd",
-    "build": "tsdx build --format cjs,esm,system,umd",
-    "test": "tsdx test",
-    "lint": "tsdx lint",
-    "prepare": "npm run build",
+    "start": "vite",
+    "build": "vite build && tsc",
+    "test": "jest --coverage",
     "publish:npm": "np",
     "publish:demo": "node gh-pages.publish.js",
     "generate-changelog": "npx github-changes -o jakeboone02 -r parse-ingredient -a --use-commit-body --date-format=\"(YYYY-MM-DD)\""
   },
-  "prettier": {
-    "printWidth": 80,
-    "semi": true,
-    "singleQuote": true,
-    "trailingComma": "es5",
-    "arrowParens": "avoid",
-    "tabWidth": 2
-  },
-  "name": "parse-ingredient",
-  "author": "Jake Boone",
-  "module": "dist/parse-ingredient.esm.js",
-  "unpkg": "dist/parse-ingredient.umd.production.min.js",
   "devDependencies": {
+    "@babel/core": "^7.17.8",
+    "@babel/preset-env": "^7.16.11",
+    "@babel/preset-typescript": "^7.16.7",
+    "@types/jest": "^27.4.1",
     "gh-pages": "^3.1.0",
+    "jest": "^27.5.1",
     "np": "^7.3.0",
-    "tsdx": "^0.14.1",
-    "tslib": "^2.1.0",
-    "typescript": "^4.1.5"
+    "prettier": "^2.6.0",
+    "typescript": "^4.1.5",
+    "vite": "^2.8.6"
   },
   "dependencies": {
     "numeric-quantity": "^1.0.2"

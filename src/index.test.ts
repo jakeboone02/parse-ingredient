@@ -1,4 +1,4 @@
-import parseIngredient, { Ingredient, ParseIngredientOptions } from '.';
+import { parseIngredient, Ingredient, ParseIngredientOptions } from '.';
 
 const testPI = (
   desc: string,
@@ -128,6 +128,17 @@ testPI('range (invalid quantity2)', '1-NaN cups stuff', [
     unitOfMeasureID: null,
     unitOfMeasure: null,
     description: '-NaN cups stuff',
+    isGroupHeader: false,
+  },
+]);
+
+testPI('space(s) in UOM', '1 fl  oz stuff', [
+  {
+    quantity: 1,
+    quantity2: null,
+    unitOfMeasureID: 'fluidounce',
+    unitOfMeasure: 'fl oz',
+    description: 'stuff',
     isGroupHeader: false,
   },
 ]);

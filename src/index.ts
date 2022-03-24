@@ -45,6 +45,7 @@ export const unitsOfMeasure: Record<string, UnitOfMeasure> = {
   bunch: { id: 'bunch', short: 'bunch', plural: 'bunches', versions: ['bunch', 'bunches'] },
   can: { id: 'can', short: 'can', plural: 'cans', versions: ['can', 'cans'] },
   carton: { id: 'carton', short: 'carton', plural: 'cartons', versions: ['carton', 'cartons'] },
+  centimeter: { id: 'centimeter', short: 'cm', plural: 'centimeters', versions: ['centimeter', 'centimeters', 'cm', 'cm.'] },
   clove: { id: 'clove', short: 'clove', plural: 'cloves', versions: ['clove', 'cloves'] },
   container: { id: 'container', short: 'containter', plural: 'containers', versions: ['container', 'containers'] },
   cup: { id: 'cup', short: 'c', plural: 'cups', versions: ['cup', 'cups', 'c', 'c.', 'C'] },
@@ -59,8 +60,10 @@ export const unitsOfMeasure: Record<string, UnitOfMeasure> = {
   inch: { id: 'inch', short: 'in', plural: 'inches', versions: ['inch', 'inches', 'in', 'in.'] },
   kilogram: { id: 'kilogram', short: 'kg', plural: 'kilograms', versions: ['kilogram', 'kilograms', 'kg', 'kg.'] },
   liter: { id: 'liter', short: 'l', plural: 'liters', versions: ['liter', 'liters', 'l'] },
+  meter: { id: 'meter', short: 'm', plural: 'meters', versions: ['meter', 'meters', 'm', 'm.'] },
   milligram: { id: 'milligram', short: 'mg', plural: 'milligrams', versions: ['milligram', 'milligrams', 'mg', 'mg.'] },
   milliliter: { id: 'milliliter', short: 'ml', plural: 'milliliters', versions: ['milliliter', 'milliliters', 'ml', 'mL', 'ml.', 'mL.'] },
+  millimeter: { id: 'millimeter', short: 'mm', plural: 'millimeters', versions: ['millimeter', 'millimeters', 'mm', 'mm.'] },
   ounce: { id: 'ounce', short: 'oz', plural: 'ounces', versions: ['ounce', 'ounces', 'oz', 'oz.'] },
   pack: { id: 'pack', short: 'pack', plural: 'packs', versions: ['pack', 'packs'] },
   package: { id: 'package', short: 'pkg', plural: 'packages', versions: ['package', 'packages', 'pkg', 'pkgs'] },
@@ -73,6 +76,7 @@ export const unitsOfMeasure: Record<string, UnitOfMeasure> = {
   stick: { id: 'stick', short: 'stick', plural: 'sticks', versions: ['stick', 'sticks'] },
   tablespoon: { id: 'tablespoon', short: 'tbsp', plural: 'tablespoons', versions: ['tablespoon', 'tablespoons', 'tbsp', 'tbsp.', 'T'] },
   teaspoon: { id: 'teaspoon', short: 'tsp', plural: 'teaspoons', versions: ['teaspoon', 'teaspoons', 'tsp', 'tsp.', 't'] },
+  yard: { id: 'yard', short: 'yd', plural: 'yards', versions: ['yard', 'yards', 'yd', 'yd.'] },
 };
 
 const uomArray = Object.values(unitsOfMeasure);
@@ -90,6 +94,7 @@ const compactArray = <T>(array: T[]) => {
 
   while (++index < length) {
     const value = array[index];
+    // istanbul ignore else
     if (value) {
       result[resIndex++] = value;
     }
@@ -100,6 +105,7 @@ const compactArray = <T>(array: T[]) => {
 /**
  * Parses a string into an array of recipe ingredient objects
  * @param ingText The ingredient text
+ * @param options Configuration options
  */
 export const parseIngredient = (
   ingText: string,
@@ -187,10 +193,10 @@ export const parseIngredient = (
     }
 
     // Check for a known unit of measure
-    const firstWordRE = /^(fl(?:uid)?[ -](?:oz|ounces?)|[a-zA-Z.]+)\b(.+)/;
+    const firstWordRE = /^(fl(?:uid)?(?:\s+|-)(?:oz|ounces?)|[a-zA-Z.]+)\b(.+)/;
     const firstWordREMatches = firstWordRE.exec(oIng.description);
     if (firstWordREMatches) {
-      const firstWord = firstWordREMatches[1];
+      const firstWord = firstWordREMatches[1].replace(/\s+/g, ' ');
       const remainingDesc = firstWordREMatches[2];
       let uom = '';
       let uomID = '';
@@ -224,5 +230,3 @@ export const parseIngredient = (
 
   return arrIngs;
 };
-
-export default parseIngredient;

@@ -19,6 +19,10 @@ interface Ingredient {
    */
   quantity2: number | null;
   /**
+   * The unit of measure identifier (see `unitsOfMeasure`)
+   */
+  unitOfMeasureID: string | null;
+  /**
    * The unit of measure
    */
   unitOfMeasure: string | null;
@@ -37,13 +41,15 @@ For the `isGroupHeader` attribute to be `true`, the ingredient string must not s
 
 This library pairs nicely with [format-quantity](https://www.npmjs.com/package/format-quantity) which can display numeric values as imperial measurements (e.g. `'1 1/2'` instead of `1.5`).
 
+If defined (not `null`), the `unitOfMeasureID` property corresponds to a key from the exported `unitsOfMeasure` object which defines short, plural, and other alternate versions of known units of measure.
+
 ## Demo
 
 [See demo here](https://jakeboone02.github.io/parse-ingredient/).
 
 ## Installation
 
-### npm
+### npm/yarn
 
 ```shell
 # npm
@@ -61,95 +67,91 @@ In the browser, available as a global function `parseIngredient`. Remember to fi
 <script src="https://unpkg.com/numeric-quantity"></script>
 <script src="https://unpkg.com/parse-ingredient"></script>
 <script>
-  console.log(parseIngredient('1 1/2 cups sugar'));
-  /**
-   * [
-   *   {
-   *     quantity: 1.5,
-   *     quantity2: null,
-   *     unitOfMeasure: 'cups',
-   *     description: 'sugar',
-   *     isGroupHeader: false,
-   *   }
-   * ]
-   */
+  console.log(ParseIngredient.parseIngredient('1 1/2 cups sugar'));
+  // [
+  //   {
+  //     quantity: 1.5,
+  //     quantity2: null,
+  //     unitOfMeasure: 'cups',
+  //     unitOfMeasureID: 'cup',
+  //     description: 'sugar',
+  //     isGroupHeader: false,
+  //   }
+  // ]
 </script>
 ```
 
 ## Usage
 
 ```js
-import parseIngredient from 'parse-ingredient';
+import { parseIngredient } from 'parse-ingredient';
 
 console.log(parseIngredient('1-2 pears'));
-/**
- * [
- *   {
- *     quantity: 1,
- *     quantity2: 2,
- *     unitOfMeasure: null,
- *     description: 'pears',
- *     isGroupHeader: false,
- *   }
- * ]
- */
+// [
+//   {
+//     quantity: 1,
+//     quantity2: 2,
+//     unitOfMeasure: null,
+//     unitOfMeasureID: null,
+//     description: 'pears',
+//     isGroupHeader: false,
+//   }
+// ]
 console.log(
   parseIngredient(
     `2/3 cup flour
 1 tsp baking powder`
   )
 );
-/**
- * [
- *   {
- *     quantity: 0.667,
- *     quantity2: null,
- *     unitOfMeasure: 'cup',
- *     description: 'flour',
- *     isGroupHeader: false,
- *   },
- *   {
- *     quantity: 1,
- *     quantity2: null,
- *     unitOfMeasure: 'tsp',
- *     description: 'baking powder',
- *     isGroupHeader: false,
- *   },
- * ]
- */
+// [
+//   {
+//     quantity: 0.667,
+//     quantity2: null,
+//     unitOfMeasure: 'cup',
+//     unitOfMeasureID: 'cup',
+//     description: 'flour',
+//     isGroupHeader: false,
+//   },
+//   {
+//     quantity: 1,
+//     quantity2: null,
+//     unitOfMeasure: 'tsp',
+//     unitOfMeasureID: 'teaspoon',
+//     description: 'baking powder',
+//     isGroupHeader: false,
+//   },
+// ]
 console.log(parseIngredient('For cake:'));
-/**
- * [
- *   {
- *     quantity: null,
- *     quantity2: null,
- *     unitOfMeasure: null,
- *     description: 'For cake:',
- *     isGroupHeader: true,
- *   }
- * ]
- */
+// [
+//   {
+//     quantity: null,
+//     quantity2: null,
+//     unitOfMeasure: null,
+//     unitOfMeasureID: null,
+//     description: 'For cake:',
+//     isGroupHeader: true,
+//   }
+// ]
 ```
 
 ## Options
 
-### normalizeUOM
+### `normalizeUOM`
 
-Pass `true` to convert units of measure to their long, singular form, e.g. "ml" becomes "milliliter" and "cups" becomes "cup". This can help normalize the units of measure for processing.
+Pass `true` to convert units of measure to their long, singular form, e.g. "ml" becomes "milliliter" and "cups" becomes "cup". This can help normalize the units of measure for processing. In most cases, this option will make `unitOfMeasure` equivalent to `unitOfMeasureID`.
 
 Example:
 
 ```js
 console.log(parseIngredient('1 c sugar', { normalizeUOM: true }));
-/**
- * [
- *   {
- *     quantity: 1,
- *     quantity2: null,
- *     unitOfMeasure: 'cup',
- *     description: 'sugar',
- *     isGroupHeader: false,
- *   }
- * ]
- */
+// [
+//   {
+//     quantity: 1,
+//     quantity2: null,
+//     unitOfMeasure: 'cup',
+//     unitOfMeasureID: 'cup',
+//     description: 'sugar',
+//     isGroupHeader: false,
+//   }
+// ]
 ```
