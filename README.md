@@ -41,7 +41,7 @@ For the `isGroupHeader` attribute to be `true`, the ingredient string must not s
 
 This library pairs nicely with [format-quantity](https://www.npmjs.com/package/format-quantity) which can display numeric values as imperial measurements (e.g. `'1 1/2'` instead of `1.5`).
 
-If defined (not `null`), the `unitOfMeasureID` property corresponds to a key from the exported `unitsOfMeasure` object which defines short, plural, and other alternate versions of known units of measure.
+If present (i.e. not `null`), the `unitOfMeasureID` property corresponds to a key from the exported `unitsOfMeasure` object which defines short, plural, and other alternate versions of known units of measure. To extend the list of units, use the [`additionalUOMs` option](#additionaluoms) and/or or submit a [pull request](https://github.com/jakeboone02/parse-ingredient/pulls) to add new units to this library's default list.
 
 ## Demo
 
@@ -151,6 +151,56 @@ console.log(parseIngredient('1 c sugar', { normalizeUOM: true }));
 //     unitOfMeasure: 'cup',
 //     unitOfMeasureID: 'cup',
 //     description: 'sugar',
+//     isGroupHeader: false,
+//   }
+// ]
+```
+
+### `additionalUOMs`
+
+Pass an object that matches the format of the exported `unitsOfMeasure` object. Keys that match any in the exported object will be used instead of the default, and any others will be added to the list of known units of measure when parsing ingredients.
+
+Example:
+
+```js
+console.log(
+  parseIngredient('2 buckets of widgets', {
+    additionalUOMs: {
+      bucket: {
+        short: 'bkt',
+        plural: 'buckets',
+        versions: ['bucket', 'buckets', 'bkt'],
+      },
+    },
+  })
+);
+// [
+//   {
+//     quantity: 2,
+//     quantity2: null,
+//     unitOfMeasureID: 'bucket',
+//     unitOfMeasure: 'buckets',
+//     description: 'widgets',
+//     isGroupHeader: false,
+//   },
+// ]
+```
+
+### `allowLeadingOf`
+
+When `true`, ingredient descriptions that start with "of " will not be modified. (By default, a leading "of " will be removed from all descriptions.)
+
+Example:
+
+```js
+console.log(parseIngredient('1 cup of sugar', { allowLeadingOf: true }));
+// [
+//   {
+//     quantity: 1,
+//     quantity2: null,
+//     unitOfMeasure: 'cup',
+//     unitOfMeasureID: 'cup',
+//     description: 'of sugar',
 //     isGroupHeader: false,
 //   }
 // ]

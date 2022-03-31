@@ -159,6 +159,59 @@ testPI(
   { normalizeUOM: true }
 );
 
+testPI(
+  'additional UOMs',
+  '2 buckets of widgets\n4 oz confusion',
+  [
+    {
+      quantity: 2,
+      quantity2: null,
+      unitOfMeasureID: 'bucket',
+      unitOfMeasure: 'buckets',
+      description: 'widgets',
+      isGroupHeader: false,
+    },
+    {
+      quantity: 4,
+      quantity2: null,
+      unitOfMeasureID: 'foot',
+      unitOfMeasure: 'oz',
+      description: 'confusion',
+      isGroupHeader: false,
+    },
+  ],
+  {
+    additionalUOMs: {
+      bucket: {
+        short: 'bkt',
+        plural: 'buckets',
+        versions: ['bucket', 'buckets', 'bkt'],
+      },
+      foot: {
+        short: 'ft',
+        plural: 'feet',
+        versions: ['ounce', 'oz', 'ounces'],
+      },
+    },
+  }
+);
+
+testPI(
+  'allow leading "of "',
+  '1 cup of stuff',
+  [
+    {
+      quantity: 1,
+      quantity2: null,
+      unitOfMeasureID: 'cup',
+      unitOfMeasure: 'cup',
+      description: 'of stuff',
+      isGroupHeader: false,
+    },
+  ],
+  { allowLeadingOf: true }
+);
+
 testPI('parse UOM as description even if it matches', '1 cup', [
   {
     quantity: 1,
