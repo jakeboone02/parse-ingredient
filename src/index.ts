@@ -30,7 +30,7 @@ export interface Ingredient {
 export interface UnitOfMeasure {
   short: string;
   plural: string;
-  versions: string[];
+  alternates: string[];
 }
 
 export type UnitOfMeasureDefinitions = Record<string, UnitOfMeasure>;
@@ -58,43 +58,43 @@ export interface ParseIngredientOptions {
 
 // prettier-ignore
 export const unitsOfMeasure: UnitOfMeasureDefinitions = {
-  bag: { short: 'bag', plural: 'bags', versions: ['bag', 'bags'] },
-  box: { short: 'box', plural: 'boxes', versions: ['box', 'boxes'] },
-  bunch: { short: 'bunch', plural: 'bunches', versions: ['bunch', 'bunches'] },
-  can: { short: 'can', plural: 'cans', versions: ['can', 'cans'] },
-  carton: { short: 'carton', plural: 'cartons', versions: ['carton', 'cartons'] },
-  centimeter: { short: 'cm', plural: 'centimeters', versions: ['centimeter', 'centimeters', 'cm', 'cm.'] },
-  clove: { short: 'clove', plural: 'cloves', versions: ['clove', 'cloves'] },
-  container: { short: 'containter', plural: 'containers', versions: ['container', 'containers'] },
-  cup: { short: 'c', plural: 'cups', versions: ['cup', 'cups', 'c', 'c.', 'C'] },
-  dash: { short: 'dash', plural: 'dashes', versions: ['dash', 'dashes'] },
-  drop: { short: 'drop', plural: 'drops', versions: ['drop', 'drops'] },
-  ear: { short: 'ear', plural: 'ears', versions: ['ear', 'ears'] },
-  'fluid ounce': { short: 'fl oz', plural: 'fluid ounces', versions: ['fluid ounce', 'fluidounce', 'fl oz', 'floz', 'fl-oz', 'fluid-ounce', 'fluid ounces', 'fluid-ounces', 'fluidounces', 'fl ounce', 'fl ounces', 'fl-ounce', 'fl-ounces', 'fluid oz', 'fluid-oz'] },
-  foot: { short: 'ft', plural: 'feet', versions: ['foot', 'feet', 'ft', 'ft.'] },
-  gallon: { short: 'gal', plural: 'gallons', versions: ['gallon', 'gallons', 'gal', 'gal.'] },
-  gram: { short: 'g', plural: 'grams', versions: ['gram', 'grams', 'g', 'g.'] },
-  head: { short: 'head', plural: 'heads', versions: ['head', 'heads'] },
-  inch: { short: 'in', plural: 'inches', versions: ['inch', 'inches', 'in', 'in.'] },
-  kilogram: { short: 'kg', plural: 'kilograms', versions: ['kilogram', 'kilograms', 'kg', 'kg.'] },
-  liter: { short: 'l', plural: 'liters', versions: ['liter', 'liters', 'l'] },
-  meter: { short: 'm', plural: 'meters', versions: ['meter', 'meters', 'm', 'm.'] },
-  milligram: { short: 'mg', plural: 'milligrams', versions: ['milligram', 'milligrams', 'mg', 'mg.'] },
-  milliliter: { short: 'ml', plural: 'milliliters', versions: ['milliliter', 'milliliters', 'ml', 'mL', 'ml.', 'mL.'] },
-  millimeter: { short: 'mm', plural: 'millimeters', versions: ['millimeter', 'millimeters', 'mm', 'mm.'] },
-  ounce: { short: 'oz', plural: 'ounces', versions: ['ounce', 'ounces', 'oz', 'oz.'] },
-  pack: { short: 'pack', plural: 'packs', versions: ['pack', 'packs'] },
-  package: { short: 'pkg', plural: 'packages', versions: ['package', 'packages', 'pkg', 'pkgs'] },
-  piece: { short: 'piece', plural: 'pieces', versions: ['piece', 'pieces', 'pcs', 'pcs.'] },
-  pinch: { short: 'pinch', plural: 'pinches', versions: ['pinch', 'pinches'] },
-  pint: { short: 'pt', plural: 'pints', versions: ['pint', 'pints', 'pt', 'pt.'] },
-  pound: { short: 'lb', plural: 'pounds', versions: ['pound', 'pounds', 'lb', 'lb.', 'lbs', 'lbs.'] },
-  quart: { short: 'qt', plural: 'quarts', versions: ['quart', 'quarts', 'qt', 'qt.', 'qts', 'qts.'] },
-  sprig: { short: 'sprig', plural: 'sprigs', versions: ['sprig', 'sprigs'] },
-  stick: { short: 'stick', plural: 'sticks', versions: ['stick', 'sticks'] },
-  tablespoon: { short: 'tbsp', plural: 'tablespoons', versions: ['tablespoon', 'tablespoons', 'tbsp', 'tbsp.', 'T'] },
-  teaspoon: { short: 'tsp', plural: 'teaspoons', versions: ['teaspoon', 'teaspoons', 'tsp', 'tsp.', 't'] },
-  yard: { short: 'yd', plural: 'yards', versions: ['yard', 'yards', 'yd', 'yd.'] },
+  bag: { short: 'bag', plural: 'bags', alternates: [] },
+  box: { short: 'box', plural: 'boxes', alternates: [] },
+  bunch: { short: 'bunch', plural: 'bunches', alternates: [] },
+  can: { short: 'can', plural: 'cans', alternates: [] },
+  carton: { short: 'carton', plural: 'cartons', alternates: [] },
+  centimeter: { short: 'cm', plural: 'centimeters', alternates: ['cm.'] },
+  clove: { short: 'clove', plural: 'cloves', alternates: [] },
+  container: { short: 'container', plural: 'containers', alternates: [] },
+  cup: { short: 'c', plural: 'cups', alternates: ['c.', 'C'] },
+  dash: { short: 'dash', plural: 'dashes', alternates: [] },
+  drop: { short: 'drop', plural: 'drops', alternates: [] },
+  ear: { short: 'ear', plural: 'ears', alternates: [] },
+  'fluid ounce': { short: 'fl oz', plural: 'fluid ounces', alternates: ['fluidounce', 'floz', 'fl-oz', 'fluid-ounce', 'fluid-ounces', 'fluidounces', 'fl ounce', 'fl ounces', 'fl-ounce', 'fl-ounces', 'fluid oz', 'fluid-oz'] },
+  foot: { short: 'ft', plural: 'feet', alternates: ['ft.'] },
+  gallon: { short: 'gal', plural: 'gallons', alternates: ['gal.'] },
+  gram: { short: 'g', plural: 'grams', alternates: ['g.'] },
+  head: { short: 'head', plural: 'heads', alternates: [] },
+  inch: { short: 'in', plural: 'inches', alternates: ['in.'] },
+  kilogram: { short: 'kg', plural: 'kilograms', alternates: ['kg.'] },
+  liter: { short: 'l', plural: 'liters', alternates: [] },
+  meter: { short: 'm', plural: 'meters', alternates: ['m.'] },
+  milligram: { short: 'mg', plural: 'milligrams', alternates: ['mg.'] },
+  milliliter: { short: 'ml', plural: 'milliliters', alternates: ['mL', 'ml.', 'mL.'] },
+  millimeter: { short: 'mm', plural: 'millimeters', alternates: ['mm.'] },
+  ounce: { short: 'oz', plural: 'ounces', alternates: ['oz.'] },
+  pack: { short: 'pack', plural: 'packs', alternates: [] },
+  package: { short: 'pkg', plural: 'packages', alternates: ['pkg.', 'pkgs'] },
+  piece: { short: 'piece', plural: 'pieces', alternates: ['pcs', 'pcs.'] },
+  pinch: { short: 'pinch', plural: 'pinches', alternates: [] },
+  pint: { short: 'pt', plural: 'pints', alternates: ['pt.'] },
+  pound: { short: 'lb', plural: 'pounds', alternates: ['lb.', 'lbs', 'lbs.'] },
+  quart: { short: 'qt', plural: 'quarts', alternates: ['qt.', 'qts', 'qts.'] },
+  sprig: { short: 'sprig', plural: 'sprigs', alternates: [] },
+  stick: { short: 'stick', plural: 'sticks', alternates: [] },
+  tablespoon: { short: 'tbsp', plural: 'tablespoons', alternates: ['tbsp.', 'T'] },
+  teaspoon: { short: 'tsp', plural: 'teaspoons', alternates: ['tsp.', 't'] },
+  yard: { short: 'yd', plural: 'yards', alternates: ['yd.', 'yds.'] },
 };
 
 /**
@@ -225,7 +225,13 @@ export const parseIngredient = (
       let i = 0;
 
       while (i < uomArray.length && !uom) {
-        if (uomArray[i].versions.includes(firstWord)) {
+        const versions = [
+          ...uomArray[i].alternates,
+          uomArray[i].id,
+          uomArray[i].short,
+          uomArray[i].plural,
+        ];
+        if (versions.includes(firstWord)) {
           uom = firstWord;
           uomID = uomArray[i].id;
         }

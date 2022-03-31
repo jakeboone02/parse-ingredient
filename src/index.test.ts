@@ -136,7 +136,7 @@ testPI('space(s) in UOM', '1 fl  oz stuff', [
   {
     quantity: 1,
     quantity2: null,
-    unitOfMeasureID: 'fluidounce',
+    unitOfMeasureID: 'fluid ounce',
     unitOfMeasure: 'fl oz',
     description: 'stuff',
     isGroupHeader: false,
@@ -185,12 +185,12 @@ testPI(
       bucket: {
         short: 'bkt',
         plural: 'buckets',
-        versions: ['bucket', 'buckets', 'bkt'],
+        alternates: [],
       },
       foot: {
-        short: 'ft',
-        plural: 'feet',
-        versions: ['ounce', 'oz', 'ounces'],
+        short: 'oz',
+        plural: 'ounces',
+        alternates: ['ounce'],
       },
     },
   }

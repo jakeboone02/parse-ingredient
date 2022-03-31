@@ -169,7 +169,7 @@ console.log(
       bucket: {
         short: 'bkt',
         plural: 'buckets',
-        versions: ['bucket', 'buckets', 'bkt'],
+        versions: ['bk'],
       },
     },
   })
