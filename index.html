@@ -130,7 +130,7 @@ For The Cake
 2 cups all-purpose flour (spooned and leveled), plus more for pans
 2 teaspoons baking soda
 1/2 teaspoon baking powder
-2 teaspoons ground cinnamon
+2 teaspoons of ground cinnamon
 1/2 teaspoon ground ginger
 3⁄4 teaspoon salt
 2 cups packed light-brown sugar
@@ -138,29 +138,37 @@ For The Cake
 4 Granny Smith apples, peeled, two coarsely grated and two diced</textarea
     >
     <br />
-    <button type="button" id="parse">Parse</button>
     <label>
       <input type="checkbox" id="normalize-uom" />
       Normalize units of measure
     </label>
+    <br />
+    <label>
+      <input type="checkbox" id="allow-leading-of" />
+      Allow leading "of "
+    </label>
+    <br />
+    <button type="button" id="parse">Parse</button>
     <h4>Results</h4>
     <pre id="results" class="language-json">
 (Click "Parse" to see results.)</pre
     >
     <footer>
-      Copyright © 2021 <a href="https://github.com/jakeboone02">Jake Boone</a>
+      Copyright © 2022 <a href="https://github.com/jakeboone02">Jake Boone</a>
     </footer>
-    <script src="https://unpkg.com/numeric-quantity@1.0.2/dist/numeric-quantity.umd.production.min.js"></script>
-    <script src="https://unpkg.com/parse-ingredient@0.4.0/dist/parse-ingredient.umd.production.min.js"></script>
+    <script src="https://unpkg.com/numeric-quantity"></script>
+    <script src="https://unpkg.com/parse-ingredient"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
     <script>
       document
         .getElementById('parse')
         .addEventListener('click', function(event) {
           var normalizeUOM = document.getElementById('normalize-uom').checked;
+          var allowLeadingOf = document.getElementById('allow-leading-of').checked;
           document.getElementById('results').innerHTML = JSON.stringify(
-            parseIngredient(document.getElementById('ingredient-list').value, {
+            ParseIngredient.parseIngredient(document.getElementById('ingredient-list').value, {
               normalizeUOM: normalizeUOM,
+              allowLeadingOf: allowLeadingOf,
             }),
             null,
             2
