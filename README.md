@@ -39,7 +39,7 @@ interface Ingredient {
 
 For the `isGroupHeader` attribute to be `true`, the ingredient string must not start with a number, and must either start with `'For '` or end with `':'`.
 
-This library pairs nicely with [format-quantity](https://www.npmjs.com/package/format-quantity) which can display numeric values as imperial measurements (e.g. `'1 1/2'` instead of `1.5`).
+For a complimentary library that handles the inverse operation, displaying numeric values as imperial measurements (e.g. `'1 1/2'` instead of `1.5`), see [format-quantity](https://www.npmjs.com/package/format-quantity).
 
 If present (i.e. not `null`), the `unitOfMeasureID` property corresponds to a key from the exported `unitsOfMeasure` object which defines short, plural, and other alternate versions of known units of measure. To extend the list of units, use the [`additionalUOMs` option](#additionaluoms) and/or or submit a [pull request](https://github.com/jakeboone02/parse-ingredient/pulls) to add new units to this library's default list.
 
@@ -61,7 +61,7 @@ yarn add parse-ingredient
 
 ### Browser
 
-In the browser, available as a global function `parseIngredient`. Remember to first include `numeric-quantity`.
+In the browser, all exports including the `parseIngredient` function are available on the global object `ParseIngredient`. (Remember to first include `numeric-quantity`.)
 
 ```html
 <script src="https://unpkg.com/numeric-quantity"></script>
@@ -205,3 +205,13 @@ console.log(parseIngredient('1 cup of sugar', { allowLeadingOf: true }));
 //   }
 // ]
 ```
+
+## Other exports
+
+| Name                       | Type        | Description                                                                           |
+| -------------------------- | ----------- | ------------------------------------------------------------------------------------- |
+| `ParseIngredientOptions`   | `interface` | Shape of the second parameter to the `parseIngredient` function                       |
+| `unitsOfMeasure`           | `object`    | Information about natively-supported units of measure (see `UnitOfMeasure` interface) |
+| `Ingredient`               | `interface` | Interface describing the shape of each element in the returned ingredient array       |
+| `UnitOfMeasure`            | `interface` | Interface including short, plural, and alternate forms of a unit of measure           |
+| `UnitOfMeasureDefinitions` | `type`      | Object with keys representing a `unitOfMeasureID` and values of type `UnitOfMeasure`  |
