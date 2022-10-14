@@ -1,5 +1,20 @@
 import { UnitOfMeasureDefinitions } from './types';
 
+export const fors = ['For'];
+export const forsRegEx = new RegExp(`^(?:${fors.join('|')})\\s`, 'i');
+
+export const rangeSeparatorWords = ['or', 'to'];
+export const rangeSeparatorRegEx = new RegExp(
+  `^(-|–|—|(?:${rangeSeparatorWords.join('|')})\\s)`,
+  'i'
+);
+
+export const firstWordRegEx =
+  /^(fl(?:uid)?(?:\s+|-)(?:oz|ounces?)|\w+[-.]?)(.+)/;
+
+export const ofs = ['of'];
+export const ofRegEx = new RegExp(`^(?:${ofs.join('|')})\\s+`, 'i');
+
 // prettier-ignore
 export const unitsOfMeasure: UnitOfMeasureDefinitions = {
   bag: { short: 'bag', plural: 'bags', alternates: [] },

@@ -1,5 +1,11 @@
 import numericQuantity from 'numeric-quantity';
-import { unitsOfMeasure } from './constants';
+import {
+  firstWordRegEx,
+  forsRegEx,
+  ofRegEx,
+  rangeSeparatorRegEx,
+  unitsOfMeasure,
+} from './constants';
 import { Ingredient, ParseIngredientOptions } from './types';
 import { compactArray } from './utils';
 
@@ -46,7 +52,7 @@ export const parseIngredient = (
       oIng.description = line;
 
       // If the line ends with ":" or starts with "For ", then it is assumed to be a group header.
-      if (/:$/.test(oIng.description) || /^For\s/i.test(oIng.description)) {
+      if (/:$/.test(oIng.description) || forsRegEx.test(oIng.description)) {
         oIng.isGroupHeader = true;
       }
     } else {
@@ -71,8 +77,7 @@ export const parseIngredient = (
     // First we look for a dash, emdash, endash, "to ", or "or " to
     // indicate a range, then process the next seven characters just
     // like we did for `quantity`.
-    const q2re = /^(-|–|—|(?:to|or)\s)/i;
-    const q2reMatch = q2re.exec(oIng.description);
+    const q2reMatch = rangeSeparatorRegEx.exec(oIng.description);
     if (q2reMatch) {
       const q2reMatchLen = q2reMatch[1].length;
       const nqResultFirstChar = numericQuantity(
@@ -99,8 +104,7 @@ export const parseIngredient = (
     }
 
     // Check for a known unit of measure
-    const firstWordRE = /^(fl(?:uid)?(?:\s+|-)(?:oz|ounces?)|\w+[-.]?)(.+)/;
-    const firstWordREMatches = firstWordRE.exec(oIng.description);
+    const firstWordREMatches = firstWordRegEx.exec(oIng.description);
 
     if (firstWordREMatches) {
       const firstWord = firstWordREMatches[1].replace(/\s+/g, ' ');
@@ -134,8 +138,8 @@ export const parseIngredient = (
       }
     }
 
-    if (!options?.allowLeadingOf && oIng.description.match(/^of\s+/i)) {
-      oIng.description = oIng.description.replace(/^of\s+/i, '');
+    if (!options?.allowLeadingOf && oIng.description.match(ofRegEx)) {
+      oIng.description = oIng.description.replace(ofRegEx, '');
     }
 
     return oIng;
