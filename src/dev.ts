@@ -1,4 +1,4 @@
-import { parseIngredient } from '.';
+import { parseIngredient } from './parseIngredient';
 
 declare const hljs: any;
 

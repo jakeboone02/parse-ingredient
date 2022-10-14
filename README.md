@@ -210,8 +210,8 @@ console.log(parseIngredient('1 cup of sugar', { allowLeadingOf: true }));
 
 | Name                       | Type        | Description                                                                           |
 | -------------------------- | ----------- | ------------------------------------------------------------------------------------- |
-| `ParseIngredientOptions`   | `interface` | Shape of the second parameter to the `parseIngredient` function                       |
 | `unitsOfMeasure`           | `object`    | Information about natively-supported units of measure (see `UnitOfMeasure` interface) |
+| `ParseIngredientOptions`   | `interface` | Shape of the second parameter to the `parseIngredient` function                       |
 | `Ingredient`               | `interface` | Interface describing the shape of each element in the returned ingredient array       |
 | `UnitOfMeasure`            | `interface` | Interface including short, plural, and alternate forms of a unit of measure           |
 | `UnitOfMeasureDefinitions` | `type`      | Object with keys representing a `unitOfMeasureID` and values of type `UnitOfMeasure`  |

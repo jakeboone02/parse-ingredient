@@ -1,4 +1,5 @@
-import { parseIngredient, Ingredient, ParseIngredientOptions } from '.';
+import { parseIngredient } from './parseIngredient';
+import type { Ingredient, ParseIngredientOptions } from './types';
 
 const testPI = (
   desc: string,
