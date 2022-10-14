@@ -159,18 +159,17 @@ export const parseIngredient = (
     // Check if the first character is numeric.
     const nqResultFirstChar = numericQuantity(line.substring(0, 1));
 
-    // If the first character is not numeric, the entire line is the description.
     if (isNaN(nqResultFirstChar)) {
+      // The first character is not numeric, so the entire line is the description.
       oIng.description = line;
 
       // If the line ends with ":" or starts with "For ", then it is assumed to be a group header.
-      if (/:$/.test(oIng.description) || /^For /i.test(oIng.description)) {
+      if (/:$/.test(oIng.description) || /^For\s/i.test(oIng.description)) {
         oIng.isGroupHeader = true;
       }
-
-      // If the first character is numeric, then see how many of the first seven
-      // constitute a single value.  This will be `quantity`.
     } else {
+      // The first character is numeric. See how many of the first seven
+      // constitute a single value. This will be `quantity`.
       let lenNum = 6;
       let nqResult = NaN;
 
@@ -187,10 +186,10 @@ export const parseIngredient = (
     }
 
     // Now check the description for a `quantity2` at the beginning.
-    // First we look for a dash, emdash, endash, or the word "to" to indicate
-    // a range, then process the next seven characters just like we did for
-    // `quantity`.
-    const q2re = /^(-|–|—|to )/i;
+    // First we look for a dash, emdash, endash, "to ", or "or " to
+    // indicate a range, then process the next seven characters just
+    // like we did for `quantity`.
+    const q2re = /^(-|–|—|(?:to|or)\s)/i;
     const q2reMatch = q2re.exec(oIng.description);
     if (q2reMatch) {
       const q2reMatchLen = q2reMatch[1].length;

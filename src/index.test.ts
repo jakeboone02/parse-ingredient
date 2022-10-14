@@ -99,6 +99,28 @@ testPI('range (spaced endash)', '1 \u2014 2 cups stuff', [
   },
 ]);
 
+testPI('range (or)', '1 or 2 bananas', [
+  {
+    quantity: 1,
+    quantity2: 2,
+    unitOfMeasureID: null,
+    unitOfMeasure: null,
+    description: 'bananas',
+    isGroupHeader: false,
+  },
+]);
+
+testPI('range (OR)', '1 OR 2 bananas', [
+  {
+    quantity: 1,
+    quantity2: 2,
+    unitOfMeasureID: null,
+    unitOfMeasure: null,
+    description: 'bananas',
+    isGroupHeader: false,
+  },
+]);
+
 testPI('range (to)', '1 to 2 cups stuff', [
   {
     quantity: 1,
@@ -302,5 +324,5 @@ testPI('alternates (Tbsp.)', '3 Tbsp. unsalted butter, divided', [
     unitOfMeasure: 'Tbsp.',
     description: 'unsalted butter, divided',
     isGroupHeader: false,
-  }
+  },
 ]);
