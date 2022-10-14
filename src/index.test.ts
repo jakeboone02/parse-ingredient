@@ -293,3 +293,14 @@ testPI('empty lines', '2/3 cup sugar\n\n    1 tsp baking powder', [
     isGroupHeader: false,
   },
 ]);
+
+testPI('alternates (Tbsp.)', '3 Tbsp. unsalted butter, divided', [
+  {
+    quantity: 3,
+    quantity2: null,
+    unitOfMeasureID: 'tablespoon',
+    unitOfMeasure: 'Tbsp.',
+    description: 'unsalted butter, divided',
+    isGroupHeader: false,
+  }
+]);
