@@ -18,6 +18,7 @@ export default defineConfig({
         exports: 'named',
       },
     },
+    minify: false,
     sourcemap: true,
   },
 });
