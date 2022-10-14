@@ -294,7 +294,7 @@ testPI('empty lines', '2/3 cup sugar\n\n    1 tsp baking powder', [
   },
 ]);
 
-testPI('Alternates (Tbsp.)', '3 Tbsp. unsalted butter, divided', [
+testPI('alternates (Tbsp.)', '3 Tbsp. unsalted butter, divided', [
   {
     quantity: 3,
     quantity2: null,
@@ -303,4 +303,4 @@ testPI('Alternates (Tbsp.)', '3 Tbsp. unsalted butter, divided', [
     description: 'unsalted butter, divided',
     isGroupHeader: false,
   }
-])
+]);
