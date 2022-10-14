@@ -92,7 +92,7 @@ export const unitsOfMeasure: UnitOfMeasureDefinitions = {
   quart: { short: 'qt', plural: 'quarts', alternates: ['qt.', 'qts', 'qts.'] },
   sprig: { short: 'sprig', plural: 'sprigs', alternates: [] },
   stick: { short: 'stick', plural: 'sticks', alternates: [] },
-  tablespoon: { short: 'tbsp', plural: 'tablespoons', alternates: ['tbsp.', 'T'] },
+  tablespoon: { short: 'tbsp', plural: 'tablespoons', alternates: ['tbsp.', 'T', 'Tbsp.'] },
   teaspoon: { short: 'tsp', plural: 'teaspoons', alternates: ['tsp.', 't'] },
   yard: { short: 'yd', plural: 'yards', alternates: ['yd.', 'yds.'] },
 };
@@ -215,8 +215,9 @@ export const parseIngredient = (
     }
 
     // Check for a known unit of measure
-    const firstWordRE = /^(fl(?:uid)?(?:\s+|-)(?:oz|ounces?)|[a-zA-Z.]+)\b(.+)/;
+    const firstWordRE = /^(fl(?:uid)?(?:\s+|-)(?:oz|ounces?)|\w+[-.]?)(.+)/;
     const firstWordREMatches = firstWordRE.exec(oIng.description);
+
     if (firstWordREMatches) {
       const firstWord = firstWordREMatches[1].replace(/\s+/g, ' ');
       const remainingDesc = firstWordREMatches[2];
