@@ -18,14 +18,8 @@ export const parseIngredient = (
   ingText: string,
   options?: ParseIngredientOptions
 ): Ingredient[] => {
-  const mergedUOMs = {
-    ...unitsOfMeasure,
-    ...options?.additionalUOMs,
-  };
-  const uomArray = Object.keys(mergedUOMs).map(uom => ({
-    id: uom,
-    ...mergedUOMs[uom],
-  }));
+  const mergedUOMs = { ...unitsOfMeasure, ...options?.additionalUOMs };
+  const uomArray = Object.keys(mergedUOMs).map(uom => ({ id: uom, ...mergedUOMs[uom] }));
 
   const arrRaw = compactArray(
     ingText
@@ -89,9 +83,7 @@ export const parseIngredient = (
         let nqResult = NaN;
 
         while (lenNum > 0 && isNaN(nqResult)) {
-          nqResult = numericQuantity(
-            oIng.description.substring(q2reMatchLen, lenNum)
-          );
+          nqResult = numericQuantity(oIng.description.substring(q2reMatchLen, lenNum));
 
           if (!isNaN(nqResult)) {
             oIng.quantity2 = nqResult;

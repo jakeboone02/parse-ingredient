@@ -9,13 +9,11 @@ export const rangeSeparatorRegEx = new RegExp(
   'i'
 );
 
-export const firstWordRegEx =
-  /^(fl(?:uid)?(?:\s+|-)(?:oz|ounces?)|\w+[-.]?)(.+)/;
+export const firstWordRegEx = /^(fl(?:uid)?(?:\s+|-)(?:oz|ounces?)|\w+[-.]?)(.+)/;
 
 export const ofs = ['of'];
 export const ofRegEx = new RegExp(`^(?:${ofs.join('|')})\\s+`, 'i');
 
-// prettier-ignore
 export const unitsOfMeasure: UnitOfMeasureDefinitions = {
   bag: { short: 'bag', plural: 'bags', alternates: [] },
   box: { short: 'box', plural: 'boxes', alternates: [] },
@@ -29,7 +27,7 @@ export const unitsOfMeasure: UnitOfMeasureDefinitions = {
   dash: { short: 'dash', plural: 'dashes', alternates: [] },
   drop: { short: 'drop', plural: 'drops', alternates: [] },
   ear: { short: 'ear', plural: 'ears', alternates: [] },
-  'fluid ounce': { short: 'fl oz', plural: 'fluid ounces', alternates: ['fluidounce', 'floz', 'fl-oz', 'fluid-ounce', 'fluid-ounces', 'fluidounces', 'fl ounce', 'fl ounces', 'fl-ounce', 'fl-ounces', 'fluid oz', 'fluid-oz'] },
+  'fluid ounce': { short: 'fl oz', plural: 'fluid ounces', alternates: ['fluidounce', 'floz', 'fl-oz', 'fluid-ounce', 'fluid-ounces', 'fluidounces', 'fl ounce', 'fl ounces', 'fl-ounce', 'fl-ounces', 'fluid oz', 'fluid-oz'] }, // prettier-ignore
   foot: { short: 'ft', plural: 'feet', alternates: ['ft.'] },
   gallon: { short: 'gal', plural: 'gallons', alternates: ['gal.'] },
   gram: { short: 'g', plural: 'grams', alternates: ['g.'] },
