@@ -6,7 +6,7 @@ import {
   rangeSeparatorRegEx,
   unitsOfMeasure,
 } from './constants';
-import { Ingredient, ParseIngredientOptions } from './types';
+import type { Ingredient, ParseIngredientOptions } from './types';
 import { compactArray } from './utils';
 
 /**
@@ -46,7 +46,7 @@ export const parseIngredient = (
       oIng.description = line;
 
       // If the line ends with ":" or starts with "For ", then it is assumed to be a group header.
-      if (/:$/.test(oIng.description) || forsRegEx.test(oIng.description)) {
+      if (oIng.description.endsWith(':') || forsRegEx.test(oIng.description)) {
         oIng.isGroupHeader = true;
       }
     } else {
