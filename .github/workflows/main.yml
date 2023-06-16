@@ -26,11 +26,11 @@ jobs:
         with:
           install-command: yarn --immutable
 
-      - name: Test
-        run: yarn test --ci --maxWorkers=2
-
       - name: Build
         run: yarn build
+
+      - name: Test
+        run: yarn test --ci --maxWorkers=2
 
       - name: Upload coverage to Codecov
         if: matrix.os == 'ubuntu-latest' && matrix.node == '18.x'
