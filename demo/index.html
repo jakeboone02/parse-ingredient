@@ -12,8 +12,7 @@
     <style>
       body {
         color: #333;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
-          'Helvetica Neue', Arial, sans-serif;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         margin: 1rem;
       }
       code {
@@ -105,17 +104,14 @@
       npm package. Try it out below!
     </p>
     <h4>Instructions</h4>
-    <p>
-      Enter an ingredient list in the text box, then click the "Parse" button.
-    </p>
+    <p>Enter an ingredient list in the text box, then click the "Parse" button.</p>
     <p>
       The ingredient list may contain group headers (starting with
       <code>'For '</code> or ending with a colon (<code>':'</code>)).
     </p>
     <p>
-      Numbers may be represented as integers, mixed numbers (e.g.
-      <code>1 1/2</code>), or vulgar fractions (e.g. <code>½</code> instead of
-      <code>1/2</code>).
+      Numbers may be represented as integers, decimals, mixed numbers (e.g.
+      <code>1 1/2</code>), or vulgar fractions (e.g. <code>½</code>).
     </p>
     <h4>Ingredient List</h4>
     <textarea id="ingredient-list" cols="90" rows="20">
@@ -145,37 +141,29 @@ For The Cake
     <br />
     <label>
       <input type="checkbox" id="allow-leading-of" />
-      Allow leading "of "
+      Allow leading "of " in descriptions
     </label>
     <br />
     <button type="button" id="parse">Parse</button>
     <h4>Results</h4>
-    <pre id="results" class="language-json">
-(Click "Parse" to see results.)</pre
-    >
-    <footer>
-      Copyright © 2022 <a href="https://github.com/jakeboone02">Jake Boone</a>
-    </footer>
-    <script src="https://unpkg.com/numeric-quantity"></script>
+    <pre id="results" class="language-json">(Click "Parse" to see results.)</pre>
+    <footer>Copyright © 2022 <a href="https://github.com/jakeboone02">Jake Boone</a></footer>
     <script src="https://unpkg.com/parse-ingredient"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
     <script>
-      document.getElementById('parse').addEventListener('click', ev => {
-        const normalizeUOM = document.getElementById('normalize-uom').checked;
-        const allowLeadingOf =
-          document.getElementById('allow-leading-of').checked;
-        document.getElementById('results').innerHTML = JSON.stringify(
-          ParseIngredient.parseIngredient(
-            document.getElementById('ingredient-list').value,
-            {
-              normalizeUOM: normalizeUOM,
-              allowLeadingOf: allowLeadingOf,
-            }
-          ),
+      const gBId = document.getElementById;
+      gBId('parse').addEventListener('click', () => {
+        const normalizeUOM = gBId('normalize-uom').checked;
+        const allowLeadingOf = gBId('allow-leading-of').checked;
+        gBId('results').innerHTML = JSON.stringify(
+          ParseIngredient.parseIngredient(gBId('ingredient-list').value, {
+            normalizeUOM,
+            allowLeadingOf,
+          }),
           null,
           2
         );
-        hljs.highlightBlock(document.getElementById('results'));
+        hljs.highlightBlock(gBId('results'));
       });
     </script>
   </body>
