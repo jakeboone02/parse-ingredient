@@ -1,4 +1,4 @@
-import { Ingredient, ParseIngredientOptions } from './types';
+import type { Ingredient, ParseIngredientOptions } from './types';
 
 export const parseIngredientTests: Record<
   string,
@@ -17,7 +17,6 @@ export const parseIngredientTests: Record<
       },
     ],
   ],
-
   'trim leading "of " off description': [
     '1 cup of stuff',
     [
@@ -31,7 +30,6 @@ export const parseIngredientTests: Record<
       },
     ],
   ],
-
   fraction: [
     '1/2 cup stuff',
     [
@@ -45,7 +43,6 @@ export const parseIngredientTests: Record<
       },
     ],
   ],
-
   'range (hyphen)': [
     '1-2 cups stuff',
     [
@@ -59,7 +56,6 @@ export const parseIngredientTests: Record<
       },
     ],
   ],
-
   'range (emdash)': [
     '1\u20132 cups stuff',
     [
@@ -73,7 +69,6 @@ export const parseIngredientTests: Record<
       },
     ],
   ],
-
   'range (endash)': [
     '1\u20142 cups stuff',
     [
@@ -87,7 +82,6 @@ export const parseIngredientTests: Record<
       },
     ],
   ],
-
   'range (spaced emdash)': [
     '1 \u2013 2 cups stuff',
     [
@@ -101,7 +95,6 @@ export const parseIngredientTests: Record<
       },
     ],
   ],
-
   'range (spaced endash)': [
     '1 \u2014 2 cups stuff',
     [
@@ -115,7 +108,6 @@ export const parseIngredientTests: Record<
       },
     ],
   ],
-
   'range (or)': [
     '1 or 2 bananas',
     [
@@ -129,7 +121,6 @@ export const parseIngredientTests: Record<
       },
     ],
   ],
-
   'range (OR)': [
     '1 OR 2 bananas',
     [
@@ -143,7 +134,6 @@ export const parseIngredientTests: Record<
       },
     ],
   ],
-
   'range (to)': [
     '1 to 2 cups stuff',
     [
@@ -157,7 +147,6 @@ export const parseIngredientTests: Record<
       },
     ],
   ],
-
   'range (TO)': [
     '1 TO 2 cups stuff',
     [
@@ -171,7 +160,6 @@ export const parseIngredientTests: Record<
       },
     ],
   ],
-
   'range (invalid quantity2)': [
     '1-NaN cups stuff',
     [
@@ -185,7 +173,6 @@ export const parseIngredientTests: Record<
       },
     ],
   ],
-
   'space(s) in UOM': [
     '1 fl  oz stuff',
     [
@@ -199,7 +186,6 @@ export const parseIngredientTests: Record<
       },
     ],
   ],
-
   'normalize UOM': [
     '1 c stuff',
     [
@@ -214,7 +200,6 @@ export const parseIngredientTests: Record<
     ],
     { normalizeUOM: true },
   ],
-
   'additional UOMs': [
     '2 buckets of widgets\n4 oz confusion',
     [
@@ -264,7 +249,6 @@ export const parseIngredientTests: Record<
     ],
     { allowLeadingOf: true },
   ],
-
   'parse UOM as description even if it matches': [
     '1 cup',
     [
@@ -278,7 +262,6 @@ export const parseIngredientTests: Record<
       },
     ],
   ],
-
   'group header ("For x")': [
     'For cake',
     [
@@ -292,7 +275,6 @@ export const parseIngredientTests: Record<
       },
     ],
   ],
-
   'group header ("x:")': [
     'Icing:',
     [
@@ -306,7 +288,6 @@ export const parseIngredientTests: Record<
       },
     ],
   ],
-
   'no numeric part': [
     'a bunch of bananas',
     [
@@ -320,7 +301,6 @@ export const parseIngredientTests: Record<
       },
     ],
   ],
-
   'multi-line': [
     '2/3 cup sugar\n1 tsp baking powder',
     [
@@ -342,7 +322,6 @@ export const parseIngredientTests: Record<
       },
     ],
   ],
-
   'empty lines': [
     '2/3 cup sugar\n\n    1 tsp baking powder',
     [
@@ -364,7 +343,6 @@ export const parseIngredientTests: Record<
       },
     ],
   ],
-
   'alternates (Tbsp.)': [
     '3 Tbsp. unsalted butter, divided',
     [
