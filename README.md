@@ -1,6 +1,6 @@
 # parse-ingredient
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 [![npm][badge-npm]](https://www.npmjs.com/package/parse-ingredient)
@@ -231,6 +231,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   <tbody>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/jakeboone02"><img src="https://avatars.githubusercontent.com/u/366438?v=4?s=100" width="100px;" alt="Jake Boone"/><br /><sub><b>Jake Boone</b></sub></a><br /><a href="https://github.com/jakeboone02/parse-ingredient/commits?author=jakeboone02" title="Code">💻</a> <a href="https://github.com/jakeboone02/parse-ingredient/commits?author=jakeboone02" title="Documentation">📖</a> <a href="#example-jakeboone02" title="Examples">💡</a> <a href="#maintenance-jakeboone02" title="Maintenance">🚧</a> <a href="https://github.com/jakeboone02/parse-ingredient/commits?author=jakeboone02" title="Tests">⚠️</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://studioterabyte.nl/"><img src="https://avatars.githubusercontent.com/u/25407622?v=4?s=100" width="100px;" alt="Stefan van der Weide"/><br /><sub><b>Stefan van der Weide</b></sub></a><br /><a href="https://github.com/jakeboone02/parse-ingredient/commits?author=StefanVDWeide" title="Code">💻</a> <a href="https://github.com/jakeboone02/parse-ingredient/commits?author=StefanVDWeide" title="Tests">⚠️</a></td>
     </tr>
   </tbody>
 </table>
