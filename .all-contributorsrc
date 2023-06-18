@@ -19,6 +19,16 @@
         "maintenance",
         "test"
       ]
+    },
+    {
+      "login": "StefanVDWeide",
+      "name": "Stefan van der Weide",
+      "avatar_url": "https://avatars.githubusercontent.com/u/25407622?v=4",
+      "profile": "https://studioterabyte.nl/",
+      "contributions": [
+        "code",
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7,
