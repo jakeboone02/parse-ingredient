@@ -1,0 +1,26 @@
+body {
+  font-family: 'Consolas', 'Courier New', Courier, monospace;
+  font-size: 14px;
+}
+
+#grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  column-gap: 1rem;
+  row-gap: 0.4rem;
+}
+
+#grid > *:nth-child(n + 5) {
+  border-bottom: 1px solid #dddddd;
+}
+
+#grid > *:nth-child(-n + 5) {
+  border-bottom: 1px solid gray;
+  font-weight: bold;
+  text-align: center;
+}
+
+#grid > *:nth-child(5n + 1):nth-child(n + 5) {
+  font-weight: bold;
+  text-align: right;
+}
