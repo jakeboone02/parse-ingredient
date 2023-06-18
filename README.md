@@ -1,13 +1,11 @@
 # parse-ingredient
-<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
-<!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 [![npm][badge-npm]](https://www.npmjs.com/package/parse-ingredient)
 ![workflow status](https://github.com/jakeboone02/parse-ingredient/actions/workflows/main.yml/badge.svg)
 [![codecov.io](https://codecov.io/github/jakeboone02/parse-ingredient/coverage.svg?branch=main)](https://codecov.io/github/jakeboone02/parse-ingredient?branch=main)
 [![downloads](https://img.shields.io/npm/dm/parse-ingredient.svg)](http://npm-stat.com/charts.html?package=parse-ingredient&from=2015-08-01)
 [![MIT License](https://img.shields.io/npm/l/parse-ingredient.svg)](http://opensource.org/licenses/MIT)
+[![All Contributors][badge-all-contributors]](#contributors-)
 
 Parses a string, which can include mixed numbers or vulgar fractions (thanks to [numeric-quantity](https://www.npmjs.com/package/numeric-quantity)), into an array of recipe ingredient objects with the following signature:
 
@@ -218,8 +216,6 @@ console.log(parseIngredient('1 cup of sugar', { allowLeadingOf: true }));
 | `UnitOfMeasure`            | `interface` | Interface including short, plural, and alternate forms of a unit of measure           |
 | `UnitOfMeasureDefinitions` | `type`      | Object with keys representing a `unitOfMeasureID` and values of type `UnitOfMeasure`  |
 
-[badge-npm]: https://img.shields.io/npm/v/parse-ingredient.svg?cacheSeconds=3600&logo=npm
-
 ## Contributors ✨
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -242,3 +238,11 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
+
+<!-- prettier-ignore-start -->
+<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+[badge-all-contributors]: https://img.shields.io/badge/all_contributors-2-orange.svg
+<!-- ALL-CONTRIBUTORS-BADGE:END -->
+<!-- prettier-ignore-end -->
+
+[badge-npm]: https://img.shields.io/npm/v/parse-ingredient.svg?cacheSeconds=3600&logo=npm
