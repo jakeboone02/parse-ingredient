@@ -44,8 +44,7 @@
     "watch": "jest --watch",
     "pretty-print": "prettier --write src *.{mjs,json,html,ts}",
     "publish:npm": "np",
-    "publish:demo": "node gh-pages.publish.js",
-    "generate-changelog": "npx github-changes -o jakeboone02 -r parse-ingredient -a --use-commit-body --date-format=\"(YYYY-MM-DD)\""
+    "publish:demo": "node gh-pages.publish.js"
   },
   "devDependencies": {
     "@types/jest": "^29.5.2",
