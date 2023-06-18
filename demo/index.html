@@ -2,7 +2,6 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Parse Ingredients</title>
     <link
@@ -147,7 +146,13 @@ For The Cake
     <button type="button" id="parse">Parse</button>
     <h4>Results</h4>
     <pre id="results" class="language-json">(Click "Parse" to see results.)</pre>
-    <footer>Copyright © 2022 <a href="https://github.com/jakeboone02">Jake Boone</a></footer>
+    <footer>
+      Copyright © <span id="year">2023</span>
+      <a href="https://github.com/jakeboone02">Jake Boone</a>
+    </footer>
+    <script>
+      document.getElementById('year').innerText = new Date().getFullYear();
+    </script>
     <script src="https://unpkg.com/parse-ingredient"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
     <script>

@@ -1,9 +1,15 @@
-import { UnitOfMeasureDefinitions } from './types';
+import { ParseIngredientOptions, UnitOfMeasureDefinitions } from './types';
 
-export const fors = ['For'];
+export const defaultOptions = {
+  additionalUOMs: {},
+  allowLeadingOf: false,
+  normalizeUOM: false,
+} satisfies Required<ParseIngredientOptions>;
+
+export const fors = ['For'] as const;
 export const forsRegEx = new RegExp(`^(?:${fors.join('|')})\\s`, 'i');
 
-export const rangeSeparatorWords = ['or', 'to'];
+export const rangeSeparatorWords = ['or', 'to'] as const;
 export const rangeSeparatorRegEx = new RegExp(
   `^(-|–|—|(?:${rangeSeparatorWords.join('|')})\\s)`,
   'i'
@@ -11,10 +17,10 @@ export const rangeSeparatorRegEx = new RegExp(
 
 export const firstWordRegEx = /^(fl(?:uid)?(?:\s+|-)(?:oz|ounces?)|\w+[-.]?)(.+)/;
 
-export const ofs = ['of'];
+export const ofs = ['of'] as const;
 export const ofRegEx = new RegExp(`^(?:${ofs.join('|')})\\s+`, 'i');
 
-export const unitsOfMeasure: UnitOfMeasureDefinitions = {
+export const unitsOfMeasure = {
   bag: { short: 'bag', plural: 'bags', alternates: [] },
   box: { short: 'box', plural: 'boxes', alternates: [] },
   bunch: { short: 'bunch', plural: 'bunches', alternates: [] },
@@ -55,4 +61,4 @@ export const unitsOfMeasure: UnitOfMeasureDefinitions = {
   tablespoon: { short: 'tbsp', plural: 'tablespoons', alternates: ['tbsp.', 'T', 'Tbsp.'] },
   teaspoon: { short: 'tsp', plural: 'teaspoons', alternates: ['tsp.', 't'] },
   yard: { short: 'yd', plural: 'yards', alternates: ['yd.', 'yds.'] },
-};
+} satisfies UnitOfMeasureDefinitions;

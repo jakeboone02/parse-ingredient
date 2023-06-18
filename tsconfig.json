@@ -1,11 +1,12 @@
 {
   "compilerOptions": {
+    "types": ["bun-types", "jest"],
     "isolatedModules": true,
     "declaration": true,
     "sourceMap": true,
     "strictNullChecks": true,
     "strict": true,
-    "module": "es6",
+    "module": "esnext",
     "moduleResolution": "node",
     "target": "esnext",
     "esModuleInterop": true,
@@ -14,5 +15,5 @@
     "emitDeclarationOnly": true,
     "lib": ["ESNext"]
   },
-  "include": ["./src/index.ts"]
+  "include": [".", "./src"]
 }

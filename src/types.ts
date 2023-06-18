@@ -38,6 +38,8 @@ export interface ParseIngredientOptions {
    * Converts the unit of measure (`unitOfMeasure` property) of each
    * ingredient to its long, singular form. For example, "ml" becomes
    * "milliliter" and "cups" becomes "cup".
+   *
+   * @default false
    */
   normalizeUOM?: boolean;
   /**
@@ -45,11 +47,15 @@ export interface ParseIngredientOptions {
    * match any in `unitsOfMeasure` will be used instead of the default,
    * and any others will be added to the list of known units of measure
    * when parsing ingredients.
+   *
+   * @default {}
    */
   additionalUOMs?: UnitOfMeasureDefinitions;
   /**
    * If `true`, ingredient descriptions that start with "of " will not be
    * modified. (By default, a leading "of " will be removed all descriptions.)
+   *
+   * @default false
    */
   allowLeadingOf?: boolean;
 }
