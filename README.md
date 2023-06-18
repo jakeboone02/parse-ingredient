@@ -1,8 +1,8 @@
 # parse-ingredient
 
-[![npm version](https://badge.fury.io/js/parse-ingredient.svg)](//npmjs.com/package/parse-ingredient)
-![workflow status](https://github.com/jakeboone02/parse-ingredient/workflows/Continuous%20Integration/badge.svg)
-[![codecov.io](https://codecov.io/github/jakeboone02/parse-ingredient/coverage.svg?branch=master)](https://codecov.io/github/jakeboone02/parse-ingredient?branch=master)
+[![npm][badge-npm]](https://www.npmjs.com/package/parse-ingredient)
+![workflow status](https://github.com/jakeboone02/parse-ingredient/actions/workflows/main.yml/badge.svg)
+[![codecov.io](https://codecov.io/github/jakeboone02/parse-ingredient/coverage.svg?branch=main)](https://codecov.io/github/jakeboone02/parse-ingredient?branch=main)
 [![downloads](https://img.shields.io/npm/dm/parse-ingredient.svg)](http://npm-stat.com/charts.html?package=parse-ingredient&from=2015-08-01)
 [![MIT License](https://img.shields.io/npm/l/parse-ingredient.svg)](http://opensource.org/licenses/MIT)
 
@@ -61,10 +61,9 @@ yarn add parse-ingredient
 
 ### Browser
 
-In the browser, all exports including the `parseIngredient` function are available on the global object `ParseIngredient`. (Remember to first include `numeric-quantity`.)
+In the browser, all exports including the `parseIngredient` function are available on the global object `ParseIngredient`.
 
 ```html
-<script src="https://unpkg.com/numeric-quantity"></script>
 <script src="https://unpkg.com/parse-ingredient"></script>
 <script>
   console.log(ParseIngredient.parseIngredient('1 1/2 cups sugar'));
@@ -215,3 +214,5 @@ console.log(parseIngredient('1 cup of sugar', { allowLeadingOf: true }));
 | `Ingredient`               | `interface` | Interface describing the shape of each element in the returned ingredient array       |
 | `UnitOfMeasure`            | `interface` | Interface including short, plural, and alternate forms of a unit of measure           |
 | `UnitOfMeasureDefinitions` | `type`      | Object with keys representing a `unitOfMeasureID` and values of type `UnitOfMeasure`  |
+
+[badge-npm]: https://img.shields.io/npm/v/parse-ingredient.svg?cacheSeconds=3600&logo=npm

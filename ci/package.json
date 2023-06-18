@@ -1,0 +1,21 @@
+{
+  "name": "parse-ingredient-ci",
+  "version": "1.0.0",
+  "description": "parse-ingredient Test Page",
+  "main": "index.html",
+  "scripts": {
+    "start": "parcel index.html --open",
+    "build": "parcel build index.html"
+  },
+  "dependencies": {
+    "parse-ingredient": "0.6.0",
+    "parcel-bundler": "^1.12.5"
+  },
+  "devDependencies": {
+    "typescript": "^5.1.3"
+  },
+  "resolutions": {
+    "@babel/preset-env": "7.13.8"
+  },
+  "keywords": []
+}

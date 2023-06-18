@@ -23,13 +23,13 @@ For The Cake
 
 document.getElementById('ingredient-list')!.innerHTML = seed;
 
-document.getElementById('parse')!.addEventListener('click', function (event) {
-  var normalizeUOM = (document.getElementById('normalize-uom') as HTMLInputElement).checked;
-  var allowLeadingOf = (document.getElementById('allow-leading-of') as HTMLInputElement).checked;
+document.getElementById('parse')!.addEventListener('click', () => {
+  const normalizeUOM = (document.getElementById('normalize-uom') as HTMLInputElement).checked;
+  const allowLeadingOf = (document.getElementById('allow-leading-of') as HTMLInputElement).checked;
   document.getElementById('results')!.innerHTML = JSON.stringify(
     parseIngredient((document.getElementById('ingredient-list') as HTMLInputElement).value, {
-      normalizeUOM: normalizeUOM,
-      allowLeadingOf: allowLeadingOf,
+      normalizeUOM,
+      allowLeadingOf,
     }),
     null,
     2

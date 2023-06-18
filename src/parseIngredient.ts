@@ -1,12 +1,13 @@
-import numericQuantity from 'numeric-quantity';
+import { numericQuantity } from 'numeric-quantity';
 import {
+  defaultOptions,
   firstWordRegEx,
   forsRegEx,
   ofRegEx,
   rangeSeparatorRegEx,
   unitsOfMeasure,
 } from './constants';
-import { Ingredient, ParseIngredientOptions } from './types';
+import type { Ingredient, ParseIngredientOptions, UnitOfMeasureDefinitions } from './types';
 import { compactArray } from './utils';
 
 /**
@@ -16,10 +17,11 @@ import { compactArray } from './utils';
  */
 export const parseIngredient = (
   ingText: string,
-  options?: ParseIngredientOptions
+  options: ParseIngredientOptions = defaultOptions
 ): Ingredient[] => {
-  const mergedUOMs = { ...unitsOfMeasure, ...options?.additionalUOMs };
-  const uomArray = Object.keys(mergedUOMs).map(uom => ({ id: uom, ...mergedUOMs[uom] }));
+  const opts = { ...defaultOptions, ...options };
+  const mergedUOMs = { ...unitsOfMeasure, ...opts.additionalUOMs };
+  const uomArray = Object.entries(mergedUOMs).map(([uom, def]) => ({ id: uom, ...def }));
 
   const arrRaw = compactArray(
     ingText
@@ -46,7 +48,7 @@ export const parseIngredient = (
       oIng.description = line;
 
       // If the line ends with ":" or starts with "For ", then it is assumed to be a group header.
-      if (/:$/.test(oIng.description) || forsRegEx.test(oIng.description)) {
+      if (oIng.description.endsWith(':') || forsRegEx.test(oIng.description)) {
         oIng.isGroupHeader = true;
       }
     } else {
@@ -121,7 +123,7 @@ export const parseIngredient = (
 
       if (uom) {
         oIng.unitOfMeasureID = uomID;
-        if (options?.normalizeUOM) {
+        if (opts.normalizeUOM) {
           oIng.unitOfMeasure = uomID;
         } else {
           oIng.unitOfMeasure = uom;
@@ -130,7 +132,7 @@ export const parseIngredient = (
       }
     }
 
-    if (!options?.allowLeadingOf && oIng.description.match(ofRegEx)) {
+    if (!opts.allowLeadingOf && oIng.description.match(ofRegEx)) {
       oIng.description = oIng.description.replace(ofRegEx, '');
     }
 
