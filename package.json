@@ -42,7 +42,7 @@
     "build": "tsup",
     "test": "jest",
     "watch": "jest --watch",
-    "pretty-print": "prettier --write src",
+    "pretty-print": "prettier --write src *.{mjs,json,html,ts}",
     "publish:npm": "np",
     "publish:demo": "node gh-pages.publish.js",
     "generate-changelog": "npx github-changes -o jakeboone02 -r parse-ingredient -a --use-commit-body --date-format=\"(YYYY-MM-DD)\""
@@ -60,6 +60,5 @@
   },
   "dependencies": {
     "numeric-quantity": "2.0.0"
-  },
-  "packageManager": "yarn@3.2.3"
+  }
 }
