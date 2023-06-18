@@ -1,4 +1,7 @@
 # parse-ingredient
+<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
+<!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 [![npm][badge-npm]](https://www.npmjs.com/package/parse-ingredient)
 ![workflow status](https://github.com/jakeboone02/parse-ingredient/actions/workflows/main.yml/badge.svg)
@@ -216,3 +219,25 @@ console.log(parseIngredient('1 cup of sugar', { allowLeadingOf: true }));
 | `UnitOfMeasureDefinitions` | `type`      | Object with keys representing a `unitOfMeasureID` and values of type `UnitOfMeasure`  |
 
 [badge-npm]: https://img.shields.io/npm/v/parse-ingredient.svg?cacheSeconds=3600&logo=npm
+
+## Contributors ✨
+
+Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/jakeboone02"><img src="https://avatars.githubusercontent.com/u/366438?v=4?s=100" width="100px;" alt="Jake Boone"/><br /><sub><b>Jake Boone</b></sub></a><br /><a href="https://github.com/jakeboone02/parse-ingredient/commits?author=jakeboone02" title="Code">💻</a> <a href="https://github.com/jakeboone02/parse-ingredient/commits?author=jakeboone02" title="Documentation">📖</a> <a href="#example-jakeboone02" title="Examples">💡</a> <a href="#maintenance-jakeboone02" title="Maintenance">🚧</a> <a href="https://github.com/jakeboone02/parse-ingredient/commits?author=jakeboone02" title="Tests">⚠️</a></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
