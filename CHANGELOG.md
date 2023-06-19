@@ -7,7 +7,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-- [#8] Upgrade `numeric-quantity` to v2.0.0.
+- N/A
+
+## [v1.0.0] - 2023-06-18
+
+### Changed
+
+- [#8] Upgrade `numeric-quantity` to [v2.0.0](https://github.com/jakeboone02/numeric-quantity/releases/tag/v2.0.0).
 
 ## [v0.6.0] - 2022-10-15
 
@@ -104,6 +110,24 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Initial release.
 
+<!-- Issue/PR links -->
+
 [#1]: https://github.com/jakeboone02/parse-ingredient/pull/1
 [#7]: https://github.com/jakeboone02/parse-ingredient/pull/7
 [#8]: https://github.com/jakeboone02/parse-ingredient/pull/8
+
+<!-- Release comparison links -->
+
+[unreleased]: https://github.com/jakeboone02/parse-ingredient/compare/v1.0.0...HEAD
+[v1.0.0]: https://github.com/jakeboone02/parse-ingredient/compare/v0.6.0...v1.0.0
+[v0.6.0]: https://github.com/jakeboone02/parse-ingredient/compare/v0.5.0...v0.6.0
+[v0.5.0]: https://github.com/jakeboone02/parse-ingredient/compare/v0.4.0...v0.5.0
+[v0.4.0]: https://github.com/jakeboone02/parse-ingredient/compare/v0.3.0...v0.4.0
+[v0.3.0]: https://github.com/jakeboone02/parse-ingredient/compare/v0.2.4...v0.3.0
+[v0.2.4]: https://github.com/jakeboone02/parse-ingredient/compare/v0.2.3...v0.2.4
+[v0.2.3]: https://github.com/jakeboone02/parse-ingredient/compare/v0.2.2...v0.2.3
+[v0.2.2]: https://github.com/jakeboone02/parse-ingredient/compare/v0.2.1...v0.2.2
+[v0.2.1]: https://github.com/jakeboone02/parse-ingredient/compare/v0.2.0...v0.2.1
+[v0.2.0]: https://github.com/jakeboone02/parse-ingredient/compare/v0.1.2...v0.2.0
+[v0.1.2]: https://github.com/jakeboone02/parse-ingredient/compare/v0.1.1...v0.1.2
+[v0.1.1]: https://github.com/jakeboone02/parse-ingredient/tree/v0.1.1
