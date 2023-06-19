@@ -8,7 +8,7 @@
     "build": "parcel build index.html"
   },
   "dependencies": {
-    "parse-ingredient": "0.6.0",
+    "parse-ingredient": "^1.0.0",
     "parcel-bundler": "^1.12.5"
   },
   "devDependencies": {
