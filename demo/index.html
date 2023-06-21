@@ -156,19 +156,18 @@ For The Cake
     <script src="https://unpkg.com/parse-ingredient"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
     <script>
-      const gBId = document.getElementById;
-      gBId('parse').addEventListener('click', () => {
-        const normalizeUOM = gBId('normalize-uom').checked;
-        const allowLeadingOf = gBId('allow-leading-of').checked;
-        gBId('results').innerHTML = JSON.stringify(
-          ParseIngredient.parseIngredient(gBId('ingredient-list').value, {
+      document.getElementById('parse').addEventListener('click', () => {
+        const normalizeUOM = document.getElementById('normalize-uom').checked;
+        const allowLeadingOf = document.getElementById('allow-leading-of').checked;
+        document.getElementById('results').innerHTML = JSON.stringify(
+          ParseIngredient.parseIngredient(document.getElementById('ingredient-list').value, {
             normalizeUOM,
             allowLeadingOf,
           }),
           null,
           2
         );
-        hljs.highlightBlock(gBId('results'));
+        hljs.highlightBlock(document.getElementById('results'));
       });
     </script>
   </body>
