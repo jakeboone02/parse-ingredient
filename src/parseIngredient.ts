@@ -7,8 +7,12 @@ import {
   rangeSeparatorRegEx,
   unitsOfMeasure,
 } from './constants';
-import type { Ingredient, ParseIngredientOptions, UnitOfMeasureDefinitions } from './types';
-import { compactArray } from './utils';
+import type { Ingredient, ParseIngredientOptions, UnitOfMeasure } from './types';
+import { compactStringArray } from './utils';
+
+const newLineRegExp = /\r?\n/;
+
+const addIdToUomDefinition = ([uom, def]: [string, UnitOfMeasure]) => ({ id: uom, ...def });
 
 /**
  * Parses a string into an array of recipe ingredient objects
@@ -21,16 +25,10 @@ export const parseIngredient = (
 ): Ingredient[] => {
   const opts = { ...defaultOptions, ...options };
   const mergedUOMs = { ...unitsOfMeasure, ...opts.additionalUOMs };
-  const uomArray = Object.entries(mergedUOMs).map(([uom, def]) => ({ id: uom, ...def }));
+  const uomArray = Object.entries(mergedUOMs).map(addIdToUomDefinition);
+  const uomArrayLength = uomArray.length;
 
-  const arrRaw = compactArray(
-    ingText
-      .replace(/\n{2,}/g, '\n')
-      .split('\n')
-      .map(ing => ing.trim())
-  );
-
-  const arrIngs = arrRaw.map(line => {
+  return compactStringArray(ingText.split(newLineRegExp)).map(line => {
     const oIng: Ingredient = {
       quantity: null,
       quantity2: null,
@@ -76,23 +74,19 @@ export const parseIngredient = (
     const q2reMatch = rangeSeparatorRegEx.exec(oIng.description);
     if (q2reMatch) {
       const q2reMatchLen = q2reMatch[1].length;
-      const nqResultFirstChar = numericQuantity(
-        oIng.description.substring(q2reMatchLen).trim().substring(0, 1)
-      );
+      const nqResultFirstChar = numericQuantity(oIng.description.substring(q2reMatchLen).trim()[0]);
 
       if (!isNaN(nqResultFirstChar)) {
-        let lenNum = 6;
+        let lenNum = 7;
         let nqResult = NaN;
 
-        while (lenNum > 0 && isNaN(nqResult)) {
+        while (--lenNum > 0 && isNaN(nqResult)) {
           nqResult = numericQuantity(oIng.description.substring(q2reMatchLen, lenNum));
 
           if (!isNaN(nqResult)) {
             oIng.quantity2 = nqResult;
             oIng.description = oIng.description.substring(lenNum).trim();
           }
-
-          lenNum--;
         }
       }
     }
@@ -102,33 +96,26 @@ export const parseIngredient = (
 
     if (firstWordREMatches) {
       const firstWord = firstWordREMatches[1].replace(/\s+/g, ' ');
-      const remainingDesc = firstWordREMatches[2];
-      let uom = '';
-      let uomID = '';
-      let i = 0;
+      const remainingDesc = (firstWordREMatches[2] ?? '').trim();
+      if (remainingDesc) {
+        let uom = '';
+        let uomID = '';
+        let i = -1;
 
-      while (i < uomArray.length && !uom) {
-        const versions = [
-          ...uomArray[i].alternates,
-          uomArray[i].id,
-          uomArray[i].short,
-          uomArray[i].plural,
-        ];
-        if (versions.includes(firstWord)) {
-          uom = firstWord;
-          uomID = uomArray[i].id;
+        while (++i < uomArrayLength && !uom) {
+          const { alternates, id, short, plural } = uomArray[i];
+          const versions = [...alternates, id, short, plural];
+          if (versions.includes(firstWord)) {
+            uom = firstWord;
+            uomID = id;
+          }
         }
-        i++;
-      }
 
-      if (uom) {
-        oIng.unitOfMeasureID = uomID;
-        if (opts.normalizeUOM) {
-          oIng.unitOfMeasure = uomID;
-        } else {
-          oIng.unitOfMeasure = uom;
+        if (uom) {
+          oIng.unitOfMeasureID = uomID;
+          oIng.unitOfMeasure = opts.normalizeUOM ? uomID : uom;
+          oIng.description = remainingDesc;
         }
-        oIng.description = remainingDesc.trim();
       }
     }
 
@@ -138,6 +125,4 @@ export const parseIngredient = (
 
     return oIng;
   });
-
-  return arrIngs;
 };

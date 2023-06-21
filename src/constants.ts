@@ -15,7 +15,7 @@ export const rangeSeparatorRegEx = new RegExp(
   'i'
 );
 
-export const firstWordRegEx = /^(fl(?:uid)?(?:\s+|-)(?:oz|ounces?)|\w+[-.]?)(.+)/;
+export const firstWordRegEx = /^(fl(?:uid)?(?:\s+|-)(?:oz|ounces?)|\w+[-.]?)(.+)?/;
 
 export const ofs = ['of'] as const;
 export const ofRegEx = new RegExp(`^(?:${ofs.join('|')})\\s+`, 'i');

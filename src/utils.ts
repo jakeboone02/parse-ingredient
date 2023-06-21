@@ -3,14 +3,14 @@
  *
  * Originally from lodash: https://github.com/lodash/lodash/blob/4.17.15/lodash.js#L6874
  */
-export const compactArray = <T>(array: T[]) => {
+export const compactStringArray = (array: string[]) => {
   let index = -1;
   const length = array.length;
   let resIndex = 0;
-  const result: T[] = [];
+  const result: string[] = [];
 
   while (++index < length) {
-    const value = array[index];
+    const value = array[index].trim();
     // istanbul ignore else
     if (value) {
       result[resIndex++] = value;

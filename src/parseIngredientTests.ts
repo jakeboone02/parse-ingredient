@@ -323,7 +323,7 @@ export const parseIngredientTests: Record<
     ],
   ],
   'empty lines': [
-    '2/3 cup sugar\n\n    1 tsp baking powder',
+    '2/3 cup sugar\r\n  \n  1 tsp baking powder',
     [
       {
         quantity: 0.667,

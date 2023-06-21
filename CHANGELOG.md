@@ -7,7 +7,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-- N/A
+### Changed
+
+- `compactArray` is now `compactStringArray` and only works for arrays of actual strings.
+
+### Fixed
+
+- Properly handles CRLF line endings.
+- Minor performance improvements.
 
 ## [v1.0.0] - 2023-06-18
 
