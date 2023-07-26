@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+- N/A
+
+## [v1.0.1] - 2023-07-26
+
 ### Changed
 
 - `compactArray` is now `compactStringArray` and only works for arrays of actual strings.
@@ -125,7 +129,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 <!-- Release comparison links -->
 
-[unreleased]: https://github.com/jakeboone02/parse-ingredient/compare/v1.0.0...HEAD
+[unreleased]: https://github.com/jakeboone02/parse-ingredient/compare/v1.0.1...HEAD
+[v1.0.1]: https://github.com/jakeboone02/parse-ingredient/compare/v1.0.0...v1.0.1
 [v1.0.0]: https://github.com/jakeboone02/parse-ingredient/compare/v0.6.0...v1.0.0
 [v0.6.0]: https://github.com/jakeboone02/parse-ingredient/compare/v0.5.0...v0.6.0
 [v0.5.0]: https://github.com/jakeboone02/parse-ingredient/compare/v0.4.0...v0.5.0
