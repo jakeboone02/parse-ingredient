@@ -47,16 +47,16 @@
     "publish:demo": "bun ./gh-pages.publish.js"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.2",
-    "bun-types": "^0.6.9",
+    "@types/jest": "^29.5.3",
+    "bun-types": "^0.7.0",
     "gh-pages": "^5.0.0",
-    "jest": "^29.5.0",
+    "jest": "^29.6.1",
     "np": "^8.0.4",
     "open": "^9.1.0",
-    "prettier": "^2.8.8",
-    "ts-jest": "^29.1.0",
-    "tsup": "^7.0.0",
-    "typescript": "^5.1.3"
+    "prettier": "^3.0.0",
+    "ts-jest": "^29.1.1",
+    "tsup": "^7.1.0",
+    "typescript": "^5.1.6"
   },
   "dependencies": {
     "numeric-quantity": "2.0.0"
