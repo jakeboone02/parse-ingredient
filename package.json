@@ -40,6 +40,7 @@
   "scripts": {
     "start": "bun ./server.ts",
     "build": "tsup",
+    "docs": "bunx typedoc",
     "test": "jest",
     "watch": "jest --watch",
     "pretty-print": "prettier --write src *.{mjs,json,html,ts}",

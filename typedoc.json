@@ -1,6 +1,7 @@
 {
   "entryPoints": ["src/index.ts"],
   "out": "docs",
+  "includeVersion": true,
   "navigationLinks": {
     "Docs": "https://jakeboone02.github.io/parse-ingredient/",
     "Demo": "https://jakeboone02.github.io/parse-ingredient-demo/",
