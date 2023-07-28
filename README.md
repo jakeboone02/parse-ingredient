@@ -1,5 +1,3 @@
-# parse-ingredient
-
 [![npm][badge-npm]](https://www.npmjs.com/package/parse-ingredient)
 ![workflow status](https://github.com/jakeboone02/parse-ingredient/actions/workflows/main.yml/badge.svg)
 [![codecov.io](https://codecov.io/github/jakeboone02/parse-ingredient/coverage.svg?branch=main)](https://codecov.io/github/jakeboone02/parse-ingredient?branch=main)
@@ -7,7 +5,13 @@
 [![MIT License](https://img.shields.io/npm/l/parse-ingredient.svg)](http://opensource.org/licenses/MIT)
 [![All Contributors][badge-all-contributors]](#contributors-)
 
-Parses a string, which can include mixed numbers or vulgar fractions (thanks to [numeric-quantity](https://www.npmjs.com/package/numeric-quantity)), into an array of recipe ingredient objects with the following signature:
+Parses a string, which can include mixed numbers or vulgar fractions (thanks to [numeric-quantity](https://www.npmjs.com/package/numeric-quantity)), into an array of recipe ingredient objects.
+
+**[Full documentation](https://jakeboone02.github.io/parse-ingredient/)**
+
+**[Demo](https://jakeboone02.github.io/parse-ingredient-demo/)**
+
+Ingredient objects have the following signature:
 
 ```ts
 interface Ingredient {
@@ -40,13 +44,9 @@ interface Ingredient {
 
 For the `isGroupHeader` attribute to be `true`, the ingredient string must not start with a number, and must either start with `'For '` or end with `':'`.
 
-For a complimentary library that handles the inverse operation, displaying numeric values as imperial measurements (e.g. `'1 1/2'` instead of `1.5`), see [format-quantity](https://www.npmjs.com/package/format-quantity).
+If present (i.e., not `null`), the `unitOfMeasureID` property corresponds to a key from the exported `unitsOfMeasure` object which defines short, plural, and other alternate versions of known units of measure. To extend the list of units, use the `additionalUOMs` option and/or or submit a [pull request](https://github.com/jakeboone02/parse-ingredient/pulls) to add new units to this library's default list.
 
-If present (i.e. not `null`), the `unitOfMeasureID` property corresponds to a key from the exported `unitsOfMeasure` object which defines short, plural, and other alternate versions of known units of measure. To extend the list of units, use the [`additionalUOMs` option](#additionaluoms) and/or or submit a [pull request](https://github.com/jakeboone02/parse-ingredient/pulls) to add new units to this library's default list.
-
-## Demo
-
-[See demo here](https://jakeboone02.github.io/parse-ingredient/).
+> For a complimentary library that handles the inverse operation, displaying numeric values as imperial measurements (e.g. `'1 1/2'` instead of `1.5`), see [format-quantity](https://www.npmjs.com/package/format-quantity).
 
 ## Installation
 
@@ -205,16 +205,6 @@ console.log(parseIngredient('1 cup of sugar', { allowLeadingOf: true }));
 //   }
 // ]
 ```
-
-## Other exports
-
-| Name                       | Type        | Description                                                                           |
-| -------------------------- | ----------- | ------------------------------------------------------------------------------------- |
-| `unitsOfMeasure`           | `object`    | Information about natively-supported units of measure (see `UnitOfMeasure` interface) |
-| `ParseIngredientOptions`   | `interface` | Shape of the second parameter to the `parseIngredient` function                       |
-| `Ingredient`               | `interface` | Interface describing the shape of each element in the returned ingredient array       |
-| `UnitOfMeasure`            | `interface` | Interface including short, plural, and alternate forms of a unit of measure           |
-| `UnitOfMeasureDefinitions` | `type`      | Object with keys representing a `unitOfMeasureID` and values of type `UnitOfMeasure`  |
 
 ## Contributors ✨
 
