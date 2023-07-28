@@ -16,11 +16,13 @@ const addIdToUomDefinition = ([uom, def]: [string, UnitOfMeasure]) => ({ id: uom
 
 /**
  * Parses a string into an array of recipe ingredient objects
- * @param ingText The ingredient text
- * @param options Configuration options
  */
 export const parseIngredient = (
-  ingText: string,
+  /** The ingredient text. */
+  ingredientText: string,
+  /**
+   * Configuration options. Defaults to {@link defaultOptions}.
+   */
   options: ParseIngredientOptions = defaultOptions
 ): Ingredient[] => {
   const opts = { ...defaultOptions, ...options };
@@ -28,7 +30,7 @@ export const parseIngredient = (
   const uomArray = Object.entries(mergedUOMs).map(addIdToUomDefinition);
   const uomArrayLength = uomArray.length;
 
-  return compactStringArray(ingText.split(newLineRegExp)).map(line => {
+  return compactStringArray(ingredientText.split(newLineRegExp)).map(line => {
     const oIng: Ingredient = {
       quantity: null,
       quantity2: null,

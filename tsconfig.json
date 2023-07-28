@@ -1,19 +1,17 @@
 {
   "compilerOptions": {
-    "types": ["bun-types", "jest"],
+    "types": ["bun-types", "jest", "web"],
     "isolatedModules": true,
     "declaration": true,
     "sourceMap": true,
-    "strictNullChecks": true,
     "strict": true,
     "module": "esnext",
     "moduleResolution": "node",
-    "target": "esnext",
+    "target": "ES2020",
     "esModuleInterop": true,
-    "baseUrl": ".",
-    "outDir": "dist",
-    "emitDeclarationOnly": true,
-    "lib": ["ESNext"]
+    "noEmit": true,
+    "skipLibCheck": true,
+    "lib": ["ES2015", "DOM"]
   },
-  "include": [".", "./src"]
+  "include": ["./*.ts", "./src"]
 }

@@ -1,25 +1,42 @@
 import { ParseIngredientOptions, UnitOfMeasureDefinitions } from './types';
 
+/**
+ * Default options for {@link parseIngredient}.
+ */
 export const defaultOptions = {
   additionalUOMs: {},
   allowLeadingOf: false,
   normalizeUOM: false,
 } satisfies Required<ParseIngredientOptions>;
 
+/** List of "for" equivalents (for upcoming i18n support). */
 export const fors = ['For'] as const;
+/** Regex to capture "for" equivalents (for upcoming i18n support). */
 export const forsRegEx = new RegExp(`^(?:${fors.join('|')})\\s`, 'i');
 
+/** List of range separators (for upcoming i18n support). */
 export const rangeSeparatorWords = ['or', 'to'] as const;
+/** Regex to capture range separators (for upcoming i18n support). */
 export const rangeSeparatorRegEx = new RegExp(
   `^(-|–|—|(?:${rangeSeparatorWords.join('|')})\\s)`,
   'i'
 );
 
+/**
+ * Regex to capture the first word of a description, to see if it's a unit of measure.
+ */
 export const firstWordRegEx = /^(fl(?:uid)?(?:\s+|-)(?:oz|ounces?)|\w+[-.]?)(.+)?/;
 
+/** List of "of" equivalents (for upcoming i18n support). */
 export const ofs = ['of'] as const;
+/**
+ * Regex to capture "of" equivalents at the beginning of a string (for upcoming i18n support).
+ */
 export const ofRegEx = new RegExp(`^(?:${ofs.join('|')})\\s+`, 'i');
 
+/**
+ * Default unit of measure specifications.
+ */
 export const unitsOfMeasure = {
   bag: { short: 'bag', plural: 'bags', alternates: [] },
   box: { short: 'box', plural: 'boxes', alternates: [] },
