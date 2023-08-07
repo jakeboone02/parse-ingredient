@@ -34,8 +34,9 @@ jobs:
         run: bun run build
 
       - name: Test
-        run: bun run test --ci
+        run: bun test
 
-      - name: Upload coverage to Codecov
-        # if: matrix.os == 'ubuntu-latest' && matrix.node == '18.x'
-        uses: codecov/codecov-action@v1
+      # TODO: Upload to Codecov once Bun outputs lcov (https://github.com/oven-sh/bun/issues/4015)
+      # - name: Upload coverage to Codecov
+      #   # if: matrix.os == 'ubuntu-latest' && matrix.node == '18.x'
+      #   uses: codecov/codecov-action@v1
