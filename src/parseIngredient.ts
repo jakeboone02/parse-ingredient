@@ -5,6 +5,7 @@ import {
   forsRegEx,
   ofRegEx,
   rangeSeparatorRegEx,
+  trailingQuantityRegEx,
   unitsOfMeasure,
 } from './constants';
 import type { Ingredient, ParseIngredientOptions, UnitOfMeasure } from './types';
@@ -44,12 +45,54 @@ export const parseIngredient = (
     const nqResultFirstChar = numericQuantity(line.substring(0, 1));
 
     if (isNaN(nqResultFirstChar)) {
-      // The first character is not numeric, so the entire line is the description.
-      oIng.description = line;
+      // The first character is not numeric. First check for trailing quantity/uom.
+      const trailingQtyResult = trailingQuantityRegEx.exec(line);
 
-      // If the line ends with ":" or starts with "For ", then it is assumed to be a group header.
-      if (oIng.description.endsWith(':') || forsRegEx.test(oIng.description)) {
-        oIng.isGroupHeader = true;
+      if (trailingQtyResult) {
+        // Trailing quantity detected.
+        // Remove the quantity and unit of measure from the description.
+        oIng.description = line.replace(trailingQuantityRegEx, '').trim();
+
+        // Trailing quantity/range.
+        const firstQty = trailingQtyResult[3];
+        const secondQty = trailingQtyResult[12];
+        if (!firstQty) {
+          oIng.quantity = numericQuantity(secondQty);
+        } else {
+          oIng.quantity = numericQuantity(firstQty);
+          oIng.quantity2 = numericQuantity(secondQty);
+        }
+
+        // Trailing unit of measure.
+        const uomRaw = trailingQtyResult.at(-1);
+        if (uomRaw) {
+          let uom = '';
+          let uomID = '';
+          let i = -1;
+
+          while (++i < uomArrayLength && !uom) {
+            const { alternates, id, short, plural } = uomArray[i];
+            const versions = [...alternates, id, short, plural];
+            if (versions.includes(uomRaw)) {
+              uom = uomRaw;
+              uomID = id;
+            }
+          }
+
+          if (uom) {
+            oIng.unitOfMeasureID = uomID;
+            oIng.unitOfMeasure = opts.normalizeUOM ? uomID : uom;
+          }
+        }
+      } else {
+        // The first character is not numeric, and no trailing quantity was detected,
+        // so the entire line is the description.
+        oIng.description = line;
+
+        // If the line ends with ":" or starts with "For ", then it is assumed to be a group header.
+        if (oIng.description.endsWith(':') || forsRegEx.test(oIng.description)) {
+          oIng.isGroupHeader = true;
+        }
       }
     } else {
       // The first character is numeric. See how many of the first seven

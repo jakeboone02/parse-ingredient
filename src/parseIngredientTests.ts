@@ -356,4 +356,174 @@ export const parseIngredientTests: Record<
       },
     ],
   ],
+  ...Object.fromEntries(
+    [
+      ['basic', ''],
+      ['comma', ','],
+      ['colon', ':'],
+      ['dash', '-'],
+      ['emdash', '\u2013'],
+      ['endash', '\u2014'],
+      ['x', 'x'],
+      ['⨯', '⨯'],
+    ].map(([desc, char]) => [
+      `trailing quantity (${desc})`,
+      [
+        `Stuff ${char} 300mg`,
+        [
+          {
+            quantity: 300,
+            quantity2: null,
+            unitOfMeasureID: 'milligram',
+            unitOfMeasure: 'mg',
+            description: 'Stuff',
+            isGroupHeader: false,
+          },
+        ],
+      ],
+    ])
+  ),
+  'trailing range (hyphen)': [
+    'stuff 1-2 cups',
+    [
+      {
+        quantity: 1,
+        quantity2: 2,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cups',
+        description: 'stuff',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'trailing range (emdash)': [
+    'stuff 1\u20132 cups',
+    [
+      {
+        quantity: 1,
+        quantity2: 2,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cups',
+        description: 'stuff',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'trailing range (endash)': [
+    'stuff 1\u20142 cups',
+    [
+      {
+        quantity: 1,
+        quantity2: 2,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cups',
+        description: 'stuff',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'trailing range (spaced emdash)': [
+    'stuff 1 \u2013 2 cups',
+    [
+      {
+        quantity: 1,
+        quantity2: 2,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cups',
+        description: 'stuff',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'trailing range (spaced endash)': [
+    'stuff 1 \u2014 2 cups',
+    [
+      {
+        quantity: 1,
+        quantity2: 2,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cups',
+        description: 'stuff',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'trailing range (or)': [
+    'bananas 1 or 2',
+    [
+      {
+        quantity: 1,
+        quantity2: 2,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: 'bananas',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'trailing range (OR)': [
+    'bananas 1 OR 2',
+    [
+      {
+        quantity: 1,
+        quantity2: 2,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: 'bananas',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'trailing range (to)': [
+    'stuff 1 to 2 cups',
+    [
+      {
+        quantity: 1,
+        quantity2: 2,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cups',
+        description: 'stuff',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'trailing range (TO)': [
+    'stuff 1 TO 2 cups',
+    [
+      {
+        quantity: 1,
+        quantity2: 2,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cups',
+        description: 'stuff',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'trailing range (invalid quantity2)': [
+    'stuff 1-NaN cups',
+    [
+      {
+        quantity: null,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: 'stuff 1-NaN cups',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'prefers leading quantity over trailing': [
+    '4 lbs stuff 300 mg',
+    [
+      {
+        quantity: 4,
+        quantity2: null,
+        unitOfMeasureID: 'pound',
+        unitOfMeasure: 'lbs',
+        description: 'stuff 300 mg',
+        isGroupHeader: false,
+      },
+    ],
+  ],
 };

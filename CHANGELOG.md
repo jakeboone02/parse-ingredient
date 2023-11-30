@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-- N/A
+### Added
+
+- Quantity/range and unit of measure can be detected at the end of an ingredient line if not first detected at the beginning of the line.
 
 ## [v1.0.1] - 2023-07-26
 

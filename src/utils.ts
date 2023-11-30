@@ -11,7 +11,6 @@ export const compactStringArray = (array: string[]) => {
 
   while (++index < length) {
     const value = array[index].trim();
-    // istanbul ignore else
     if (value) {
       result[resIndex++] = value;
     }

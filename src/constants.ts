@@ -1,3 +1,4 @@
+import { numericRegex } from 'numeric-quantity';
 import { ParseIngredientOptions, UnitOfMeasureDefinitions } from './types';
 
 /**
@@ -16,16 +17,24 @@ export const forsRegEx = new RegExp(`^(?:${fors.join('|')})\\s`, 'i');
 
 /** List of range separators (for upcoming i18n support). */
 export const rangeSeparatorWords = ['or', 'to'] as const;
+const rangeSeparatorRegExSource = `(-|–|—|(?:${rangeSeparatorWords.join('|')})\\s)`;
 /** Regex to capture range separators (for upcoming i18n support). */
-export const rangeSeparatorRegEx = new RegExp(
-  `^(-|–|—|(?:${rangeSeparatorWords.join('|')})\\s)`,
-  'i'
-);
+export const rangeSeparatorRegEx = new RegExp(`^${rangeSeparatorRegExSource}`, 'i');
 
 /**
  * Regex to capture the first word of a description, to see if it's a unit of measure.
  */
 export const firstWordRegEx = /^(fl(?:uid)?(?:\s+|-)(?:oz|ounces?)|\w+[-.]?)(.+)?/;
+
+const numericRegexAnywhere = numericRegex.source.replace(/^\^/, '').replace(/\$$/, '');
+
+/**
+ * Regex to capture trailing quantity and unit of measure.
+ */
+export const trailingQuantityRegEx = new RegExp(
+  `(,|:|-|–|—|x|⨯)?\\s*((${numericRegexAnywhere})\\s*(${rangeSeparatorRegExSource}))?\\s*(${numericRegexAnywhere})\\s*(fl(?:uid)?(?:\\s+|-)(?:oz|ounces?)|\\w+)?$`,
+  'i'
+);
 
 /** List of "of" equivalents (for upcoming i18n support). */
 export const ofs = ['of'] as const;

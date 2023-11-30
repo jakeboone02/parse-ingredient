@@ -17,7 +17,7 @@ For The Cake
 1/2 teaspoon ground ginger
 3⁄4 teaspoon salt
 2 cups packed light-brown sugar
-2 large eggs
+Large eggs x 2
 4 Granny Smith apples, peeled, two coarsely grated and two diced
 `;
 
