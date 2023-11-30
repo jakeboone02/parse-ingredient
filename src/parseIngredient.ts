@@ -9,7 +9,6 @@ import {
   unitsOfMeasure,
 } from './constants';
 import type { Ingredient, ParseIngredientOptions, UnitOfMeasure } from './types';
-import { compactStringArray } from './utils';
 
 const newLineRegExp = /\r?\n/;
 
@@ -19,7 +18,9 @@ const addIdToUomDefinition = ([uom, def]: [string, UnitOfMeasure]) => ({ id: uom
  * Parses a string into an array of recipe ingredient objects
  */
 export const parseIngredient = (
-  /** The ingredient text. */
+  /**
+   * The ingredient list, as plain text.
+   */
   ingredientText: string,
   /**
    * Configuration options. Defaults to {@link defaultOptions}.
@@ -31,7 +32,12 @@ export const parseIngredient = (
   const uomArray = Object.entries(mergedUOMs).map(addIdToUomDefinition);
   const uomArrayLength = uomArray.length;
 
-  return compactStringArray(ingredientText.split(newLineRegExp)).map(line => {
+  const ingredientArray = ingredientText
+    .split(newLineRegExp)
+    .map(line => line.trim())
+    .filter(Boolean);
+
+  return ingredientArray.map(line => {
     const oIng: Ingredient = {
       quantity: null,
       quantity2: null,
@@ -42,9 +48,7 @@ export const parseIngredient = (
     };
 
     // Check if the first character is numeric.
-    const nqResultFirstChar = numericQuantity(line.substring(0, 1));
-
-    if (isNaN(nqResultFirstChar)) {
+    if (isNaN(numericQuantity(line[0]))) {
       // The first character is not numeric. First check for trailing quantity/uom.
       const trailingQtyResult = trailingQuantityRegEx.exec(line);
 

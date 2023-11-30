@@ -8,17 +8,25 @@ export const defaultOptions = {
   additionalUOMs: {},
   allowLeadingOf: false,
   normalizeUOM: false,
-} satisfies Required<ParseIngredientOptions>;
+} as const satisfies Required<ParseIngredientOptions>;
 
-/** List of "for" equivalents (for upcoming i18n support). */
+/**
+ * List of "for" equivalents (for upcoming i18n support).
+ */
 export const fors = ['For'] as const;
-/** Regex to capture "for" equivalents (for upcoming i18n support). */
+/**
+ * Regex to capture "for" equivalents (for upcoming i18n support).
+ */
 export const forsRegEx = new RegExp(`^(?:${fors.join('|')})\\s`, 'i');
 
-/** List of range separators (for upcoming i18n support). */
+/**
+ * List of range separators (for upcoming i18n support).
+ */
 export const rangeSeparatorWords = ['or', 'to'] as const;
 const rangeSeparatorRegExSource = `(-|–|—|(?:${rangeSeparatorWords.join('|')})\\s)`;
-/** Regex to capture range separators (for upcoming i18n support). */
+/**
+ * Regex to capture range separators (for upcoming i18n support).
+ */
 export const rangeSeparatorRegEx = new RegExp(`^${rangeSeparatorRegExSource}`, 'i');
 
 /**
@@ -36,7 +44,9 @@ export const trailingQuantityRegEx = new RegExp(
   'i'
 );
 
-/** List of "of" equivalents (for upcoming i18n support). */
+/**
+ * List of "of" equivalents (for upcoming i18n support).
+ */
 export const ofs = ['of'] as const;
 /**
  * Regex to capture "of" equivalents at the beginning of a string (for upcoming i18n support).

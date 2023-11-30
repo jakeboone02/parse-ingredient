@@ -1,3 +1,6 @@
+/**
+ * Ingredient properties.
+ */
 export interface Ingredient {
   /**
    * The primary quantity (the lower quantity in a range, if applicable)
@@ -25,13 +28,21 @@ export interface Ingredient {
   isGroupHeader: boolean;
 }
 
-/** Definition of a unit of measure */
+/**
+ * Unit of measure properties.
+ */
 export interface UnitOfMeasure {
-  /** Abbreviation or short name for the unit. */
+  /**
+   * Abbreviation or short name for the unit.
+   */
   short: string;
-  /** Full name of the unit used when quantity is greater than one. */
+  /**
+   * Full name of the unit used when quantity is greater than one.
+   */
   plural: string;
-  /** List of all known alternate spellings, abbreviations, etc. */
+  /**
+   * List of all known alternate spellings, abbreviations, etc.
+   */
   alternates: string[];
 }
 

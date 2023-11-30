@@ -7,9 +7,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+
+- `compactStringArray` has been removed. (`array.filter(Boolean)` is functionally equivalent to `compactStringArray(array)`.)
+
 ### Added
 
-- Quantity/range and unit of measure can be detected at the end of an ingredient line if not first detected at the beginning of the line.
+- If no quantity is detected at the beginning of an ingredient line, the _end_ of the line will be scanned for quantity/range and unit of measure.
 
 ## [v1.0.1] - 2023-07-26
 
