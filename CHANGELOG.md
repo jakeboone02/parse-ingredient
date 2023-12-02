@@ -7,13 +7,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+- N/A
+
+## [v1.1.0] - 2023-12-01
+
 ### Changed
 
-- `compactStringArray` has been removed. (`array.filter(Boolean)` is functionally equivalent to `compactStringArray(array)`.)
+- [#14] `compactStringArray` has been removed. (`array.filter(Boolean)` is functionally equivalent to `compactStringArray(array)`.)
 
 ### Added
 
-- If no quantity is detected at the beginning of an ingredient line, the _end_ of the line will be scanned for quantity/range and unit of measure.
+- [#14] If no quantity is detected at the beginning of an ingredient line, the _end_ of the line will be scanned for quantity/range and unit of measure.
 
 ## [v1.0.1] - 2023-07-26
 
@@ -132,10 +136,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [#1]: https://github.com/jakeboone02/parse-ingredient/pull/1
 [#7]: https://github.com/jakeboone02/parse-ingredient/pull/7
 [#8]: https://github.com/jakeboone02/parse-ingredient/pull/8
+[#14]: https://github.com/jakeboone02/parse-ingredient/pull/14
 
 <!-- Release comparison links -->
 
-[unreleased]: https://github.com/jakeboone02/parse-ingredient/compare/v1.0.1...HEAD
+[unreleased]: https://github.com/jakeboone02/parse-ingredient/compare/v1.1.0...HEAD
+[v1.1.0]: https://github.com/jakeboone02/parse-ingredient/compare/v1.0.1...v1.1.0
 [v1.0.1]: https://github.com/jakeboone02/parse-ingredient/compare/v1.0.0...v1.0.1
 [v1.0.0]: https://github.com/jakeboone02/parse-ingredient/compare/v0.6.0...v1.0.0
 [v0.6.0]: https://github.com/jakeboone02/parse-ingredient/compare/v0.5.0...v0.6.0
