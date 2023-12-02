@@ -50,14 +50,11 @@ If present (i.e., not `null`), the `unitOfMeasureID` property corresponds to a k
 
 ## Installation
 
-### npm/yarn
+### npm
 
 ```shell
-# npm
 npm i parse-ingredient
-
-# yarn
-yarn add parse-ingredient
+# OR yarn add / pnpm add / bun add
 ```
 
 ### Browser
@@ -130,6 +127,17 @@ console.log(parseIngredient('For cake:'));
 //     unitOfMeasureID: null,
 //     description: 'For cake:',
 //     isGroupHeader: true,
+//   }
+// ]
+console.log(parseIngredient('Ripe tomato x2'));
+// [
+//   {
+//     quantity: 2,
+//     quantity2: null,
+//     unitOfMeasure: null,
+//     unitOfMeasureID: null,
+//     description: 'Ripe tomato',
+//     isGroupHeader: false,
 //   }
 // ]
 ```

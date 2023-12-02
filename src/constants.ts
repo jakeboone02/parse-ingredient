@@ -1,3 +1,4 @@
+import { numericRegex } from 'numeric-quantity';
 import { ParseIngredientOptions, UnitOfMeasureDefinitions } from './types';
 
 /**
@@ -7,27 +8,45 @@ export const defaultOptions = {
   additionalUOMs: {},
   allowLeadingOf: false,
   normalizeUOM: false,
-} satisfies Required<ParseIngredientOptions>;
+} as const satisfies Required<ParseIngredientOptions>;
 
-/** List of "for" equivalents (for upcoming i18n support). */
+/**
+ * List of "for" equivalents (for upcoming i18n support).
+ */
 export const fors = ['For'] as const;
-/** Regex to capture "for" equivalents (for upcoming i18n support). */
+/**
+ * Regex to capture "for" equivalents (for upcoming i18n support).
+ */
 export const forsRegEx = new RegExp(`^(?:${fors.join('|')})\\s`, 'i');
 
-/** List of range separators (for upcoming i18n support). */
+/**
+ * List of range separators (for upcoming i18n support).
+ */
 export const rangeSeparatorWords = ['or', 'to'] as const;
-/** Regex to capture range separators (for upcoming i18n support). */
-export const rangeSeparatorRegEx = new RegExp(
-  `^(-|–|—|(?:${rangeSeparatorWords.join('|')})\\s)`,
-  'i'
-);
+const rangeSeparatorRegExSource = `(-|–|—|(?:${rangeSeparatorWords.join('|')})\\s)`;
+/**
+ * Regex to capture range separators (for upcoming i18n support).
+ */
+export const rangeSeparatorRegEx = new RegExp(`^${rangeSeparatorRegExSource}`, 'i');
 
 /**
  * Regex to capture the first word of a description, to see if it's a unit of measure.
  */
 export const firstWordRegEx = /^(fl(?:uid)?(?:\s+|-)(?:oz|ounces?)|\w+[-.]?)(.+)?/;
 
-/** List of "of" equivalents (for upcoming i18n support). */
+const numericRegexAnywhere = numericRegex.source.replace(/^\^/, '').replace(/\$$/, '');
+
+/**
+ * Regex to capture trailing quantity and unit of measure.
+ */
+export const trailingQuantityRegEx = new RegExp(
+  `(,|:|-|–|—|x|⨯)?\\s*((${numericRegexAnywhere})\\s*(${rangeSeparatorRegExSource}))?\\s*(${numericRegexAnywhere})\\s*(fl(?:uid)?(?:\\s+|-)(?:oz|ounces?)|\\w+)?$`,
+  'i'
+);
+
+/**
+ * List of "of" equivalents (for upcoming i18n support).
+ */
 export const ofs = ['of'] as const;
 /**
  * Regex to capture "of" equivalents at the beginning of a string (for upcoming i18n support).
@@ -38,44 +57,217 @@ export const ofRegEx = new RegExp(`^(?:${ofs.join('|')})\\s+`, 'i');
  * Default unit of measure specifications.
  */
 export const unitsOfMeasure = {
-  bag: { short: 'bag', plural: 'bags', alternates: [] },
-  box: { short: 'box', plural: 'boxes', alternates: [] },
-  bunch: { short: 'bunch', plural: 'bunches', alternates: [] },
-  can: { short: 'can', plural: 'cans', alternates: [] },
-  carton: { short: 'carton', plural: 'cartons', alternates: [] },
-  centimeter: { short: 'cm', plural: 'centimeters', alternates: ['cm.'] },
-  clove: { short: 'clove', plural: 'cloves', alternates: [] },
-  container: { short: 'container', plural: 'containers', alternates: [] },
-  cup: { short: 'c', plural: 'cups', alternates: ['c.', 'C'] },
-  dash: { short: 'dash', plural: 'dashes', alternates: [] },
-  drop: { short: 'drop', plural: 'drops', alternates: [] },
-  ear: { short: 'ear', plural: 'ears', alternates: [] },
-  'fluid ounce': { short: 'fl oz', plural: 'fluid ounces', alternates: ['fluidounce', 'floz', 'fl-oz', 'fluid-ounce', 'fluid-ounces', 'fluidounces', 'fl ounce', 'fl ounces', 'fl-ounce', 'fl-ounces', 'fluid oz', 'fluid-oz'] }, // prettier-ignore
-  foot: { short: 'ft', plural: 'feet', alternates: ['ft.'] },
-  gallon: { short: 'gal', plural: 'gallons', alternates: ['gal.'] },
-  gram: { short: 'g', plural: 'grams', alternates: ['g.'] },
-  head: { short: 'head', plural: 'heads', alternates: [] },
-  inch: { short: 'in', plural: 'inches', alternates: ['in.'] },
-  kilogram: { short: 'kg', plural: 'kilograms', alternates: ['kg.'] },
-  large: { short: 'lg', plural: 'large', alternates: ['lg', 'lg.'] },
-  liter: { short: 'l', plural: 'liters', alternates: [] },
-  medium: { short: 'md', plural: 'medium', alternates: ['med', 'med.', 'md.'] },
-  meter: { short: 'm', plural: 'meters', alternates: ['m.'] },
-  milligram: { short: 'mg', plural: 'milligrams', alternates: ['mg.'] },
-  milliliter: { short: 'ml', plural: 'milliliters', alternates: ['mL', 'ml.', 'mL.'] },
-  millimeter: { short: 'mm', plural: 'millimeters', alternates: ['mm.'] },
-  ounce: { short: 'oz', plural: 'ounces', alternates: ['oz.'] },
-  pack: { short: 'pack', plural: 'packs', alternates: [] },
-  package: { short: 'pkg', plural: 'packages', alternates: ['pkg.', 'pkgs'] },
-  piece: { short: 'piece', plural: 'pieces', alternates: ['pcs', 'pcs.'] },
-  pinch: { short: 'pinch', plural: 'pinches', alternates: [] },
-  pint: { short: 'pt', plural: 'pints', alternates: ['pt.'] },
-  pound: { short: 'lb', plural: 'pounds', alternates: ['lb.', 'lbs', 'lbs.'] },
-  quart: { short: 'qt', plural: 'quarts', alternates: ['qt.', 'qts', 'qts.'] },
-  small: { short: 'sm', plural: 'small', alternates: ['sm.'] },
-  sprig: { short: 'sprig', plural: 'sprigs', alternates: [] },
-  stick: { short: 'stick', plural: 'sticks', alternates: [] },
-  tablespoon: { short: 'tbsp', plural: 'tablespoons', alternates: ['tbsp.', 'T', 'Tbsp.'] },
-  teaspoon: { short: 'tsp', plural: 'teaspoons', alternates: ['tsp.', 't'] },
-  yard: { short: 'yd', plural: 'yards', alternates: ['yd.', 'yds.'] },
-} satisfies UnitOfMeasureDefinitions;
+  bag: {
+    short: 'bag',
+    plural: 'bags',
+    alternates: [] satisfies string[],
+  },
+  box: {
+    short: 'box',
+    plural: 'boxes',
+    alternates: [] satisfies string[],
+  },
+  bunch: {
+    short: 'bunch',
+    plural: 'bunches',
+    alternates: [] satisfies string[],
+  },
+  can: {
+    short: 'can',
+    plural: 'cans',
+    alternates: [] satisfies string[],
+  },
+  carton: {
+    short: 'carton',
+    plural: 'cartons',
+    alternates: [] satisfies string[],
+  },
+  centimeter: {
+    short: 'cm',
+    plural: 'centimeters',
+    alternates: ['cm.'] satisfies string[],
+  },
+  clove: {
+    short: 'clove',
+    plural: 'cloves',
+    alternates: [] satisfies string[],
+  },
+  container: {
+    short: 'container',
+    plural: 'containers',
+    alternates: [] satisfies string[],
+  },
+  cup: {
+    short: 'c',
+    plural: 'cups',
+    alternates: ['c.', 'C'] satisfies string[],
+  },
+  dash: {
+    short: 'dash',
+    plural: 'dashes',
+    alternates: [] satisfies string[],
+  },
+  drop: {
+    short: 'drop',
+    plural: 'drops',
+    alternates: [] satisfies string[],
+  },
+  ear: {
+    short: 'ear',
+    plural: 'ears',
+    alternates: [] satisfies string[],
+  },
+  'fluid ounce': {
+    short: 'fl oz',
+    plural: 'fluid ounces',
+    alternates: [
+      'fluidounce',
+      'floz',
+      'fl-oz',
+      'fluid-ounce',
+      'fluid-ounces',
+      'fluidounces',
+      'fl ounce',
+      'fl ounces',
+      'fl-ounce',
+      'fl-ounces',
+      'fluid oz',
+      'fluid-oz',
+    ] satisfies string[],
+  },
+  foot: {
+    short: 'ft',
+    plural: 'feet',
+    alternates: ['ft.'] satisfies string[],
+  },
+  gallon: {
+    short: 'gal',
+    plural: 'gallons',
+    alternates: ['gal.'] satisfies string[],
+  },
+  gram: {
+    short: 'g',
+    plural: 'grams',
+    alternates: ['g.'] satisfies string[],
+  },
+  head: {
+    short: 'head',
+    plural: 'heads',
+    alternates: [] satisfies string[],
+  },
+  inch: {
+    short: 'in',
+    plural: 'inches',
+    alternates: ['in.'] satisfies string[],
+  },
+  kilogram: {
+    short: 'kg',
+    plural: 'kilograms',
+    alternates: ['kg.'] satisfies string[],
+  },
+  large: {
+    short: 'lg',
+    plural: 'large',
+    alternates: ['lg', 'lg.'] satisfies string[],
+  },
+  liter: {
+    short: 'l',
+    plural: 'liters',
+    alternates: [] satisfies string[],
+  },
+  medium: {
+    short: 'md',
+    plural: 'medium',
+    alternates: ['med', 'med.', 'md.'] satisfies string[],
+  },
+  meter: {
+    short: 'm',
+    plural: 'meters',
+    alternates: ['m.'] satisfies string[],
+  },
+  milligram: {
+    short: 'mg',
+    plural: 'milligrams',
+    alternates: ['mg.'] satisfies string[],
+  },
+  milliliter: {
+    short: 'ml',
+    plural: 'milliliters',
+    alternates: ['mL', 'ml.', 'mL.'] satisfies string[],
+  },
+  millimeter: {
+    short: 'mm',
+    plural: 'millimeters',
+    alternates: ['mm.'] satisfies string[],
+  },
+  ounce: {
+    short: 'oz',
+    plural: 'ounces',
+    alternates: ['oz.'] satisfies string[],
+  },
+  pack: {
+    short: 'pack',
+    plural: 'packs',
+    alternates: [] satisfies string[],
+  },
+  package: {
+    short: 'pkg',
+    plural: 'packages',
+    alternates: ['pkg.', 'pkgs'] satisfies string[],
+  },
+  piece: {
+    short: 'piece',
+    plural: 'pieces',
+    alternates: ['pcs', 'pcs.'] satisfies string[],
+  },
+  pinch: {
+    short: 'pinch',
+    plural: 'pinches',
+    alternates: [] satisfies string[],
+  },
+  pint: {
+    short: 'pt',
+    plural: 'pints',
+    alternates: ['pt.'] satisfies string[],
+  },
+  pound: {
+    short: 'lb',
+    plural: 'pounds',
+    alternates: ['lb.', 'lbs', 'lbs.'] satisfies string[],
+  },
+  quart: {
+    short: 'qt',
+    plural: 'quarts',
+    alternates: ['qt.', 'qts', 'qts.'] satisfies string[],
+  },
+  small: {
+    short: 'sm',
+    plural: 'small',
+    alternates: ['sm.'] satisfies string[],
+  },
+  sprig: {
+    short: 'sprig',
+    plural: 'sprigs',
+    alternates: [] satisfies string[],
+  },
+  stick: {
+    short: 'stick',
+    plural: 'sticks',
+    alternates: [] satisfies string[],
+  },
+  tablespoon: {
+    short: 'tbsp',
+    plural: 'tablespoons',
+    alternates: ['tbsp.', 'T', 'Tbsp.'] satisfies string[],
+  },
+  teaspoon: {
+    short: 'tsp',
+    plural: 'teaspoons',
+    alternates: ['tsp.', 't'] satisfies string[],
+  },
+  yard: {
+    short: 'yd',
+    plural: 'yards',
+    alternates: ['yd.', 'yds.'] satisfies string[],
+  },
+} as const satisfies UnitOfMeasureDefinitions;

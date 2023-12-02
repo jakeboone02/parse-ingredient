@@ -1,7 +1,7 @@
 {
   "name": "parse-ingredient",
   "author": "Jake Boone",
-  "version": "1.0.1",
+  "version": "1.1.0-beta.0",
   "license": "MIT",
   "description": "Recipe ingredient parser with support for mixed numbers and vulgar fractions",
   "files": [
@@ -48,14 +48,14 @@
     "publish:demo": "bun ./gh-pages.publish.js"
   },
   "devDependencies": {
-    "@types/web": "^0.0.114",
-    "bun-types": "^1.0.1",
-    "np": "^8.0.4",
+    "@types/web": "^0.0.123",
+    "bun-types": "^1.0.14",
+    "np": "^9.0.0",
     "open": "^9.1.0",
-    "prettier": "^3.0.3",
-    "tsup": "^7.2.0",
-    "typedoc": "^0.25.1",
-    "typescript": "^5.2.2"
+    "prettier": "^3.1.0",
+    "tsup": "^8.0.1",
+    "typedoc": "^0.25.4",
+    "typescript": "^5.3.2"
   },
   "dependencies": {
     "numeric-quantity": "^2.0.0"
