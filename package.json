@@ -12,12 +12,12 @@
   "exports": {
     "./package.json": "./package.json",
     ".": {
-      "types": "./dist/parse-ingredient.d.ts",
+      "types": "./dist/parse-ingredient.d.mts",
       "import": "./dist/parse-ingredient.mjs",
       "require": "./dist/cjs/index.js"
     }
   },
-  "types": "./dist/parse-ingredient.d.ts",
+  "types": "./dist/parse-ingredient.d.mts",
   "unpkg": "./dist/parse-ingredient.umd.min.js",
   "keywords": [
     "parse",
