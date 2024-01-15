@@ -12,12 +12,17 @@
   "exports": {
     "./package.json": "./package.json",
     ".": {
-      "types": "./dist/parse-ingredient.d.ts",
-      "import": "./dist/parse-ingredient.mjs",
-      "require": "./dist/cjs/index.js"
+      "import": {
+        "types": "./dist/parse-ingredient.d.mts",
+        "default": "./dist/parse-ingredient.mjs"
+      },
+      "require": {
+        "types": "./dist/cjs/parse-ingredient.cjs.development.d.ts",
+        "default": "./dist/cjs/index.js"
+      }
     }
   },
-  "types": "./dist/parse-ingredient.d.ts",
+  "types": "./dist/cjs/parse-ingredient.cjs.production.d.ts",
   "unpkg": "./dist/parse-ingredient.umd.min.js",
   "keywords": [
     "parse",

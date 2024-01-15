@@ -8,7 +8,7 @@ export default defineConfig(options => {
       'parse-ingredient': 'src/index.ts',
     },
     sourcemap: true,
-    format: 'esm',
+    dts: true,
     ...options,
   };
 
@@ -21,8 +21,8 @@ export default defineConfig(options => {
     // ESM, standard bundler dev, embedded `process` references
     {
       ...commonOptions,
-      dts: true,
       clean: true,
+      format: 'esm',
     },
     // ESM, Webpack 4 support. Target ES2017 syntax to compile away optional chaining and spreads
     {
@@ -32,6 +32,7 @@ export default defineConfig(options => {
       },
       // ESBuild outputs `'.mjs'` by default for the 'esm' format. Force '.js'
       outExtension: () => ({ js: '.js' }),
+      format: 'esm',
       target: 'es2017',
     },
     // ESM for use in browsers. Minified, with `process` compiled away
@@ -41,6 +42,7 @@ export default defineConfig(options => {
       entry: {
         'parse-ingredient.production': 'src/index.ts',
       },
+      format: 'esm',
       outExtension: () => ({ js: '.mjs' }),
     },
     // CJS development
@@ -79,6 +81,7 @@ if (process.env.NODE_ENV === 'production') {
     {
       ...commonOptions,
       ...productionOptions,
+      dts: false,
       format: 'iife',
       globalName: 'ParseIngredient',
       outExtension: () => ({ js: '.umd.min.js' }),
