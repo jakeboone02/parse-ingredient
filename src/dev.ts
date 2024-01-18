@@ -26,10 +26,14 @@ document.getElementById('ingredient-list')!.innerHTML = seed;
 document.getElementById('parse')!.addEventListener('click', () => {
   const normalizeUOM = (document.getElementById('normalize-uom') as HTMLInputElement).checked;
   const allowLeadingOf = (document.getElementById('allow-leading-of') as HTMLInputElement).checked;
+  const ignoreUOMs = ((document.getElementById('ignore-uoms') as HTMLInputElement).value ?? '')
+    .split(',')
+    .map(s => s.trim());
   document.getElementById('results')!.innerHTML = JSON.stringify(
     parseIngredient((document.getElementById('ingredient-list') as HTMLInputElement).value, {
       normalizeUOM,
       allowLeadingOf,
+      ignoreUOMs,
     }),
     null,
     2

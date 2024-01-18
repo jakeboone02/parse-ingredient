@@ -20,6 +20,7 @@ const additionalUOMs = {
     alternates: ['ounce'],
   },
 } as const;
+const ignoreUOMs = ['cup', 'cups'] as const;
 
 for (const ex of examples) {
   const run = [
@@ -28,6 +29,7 @@ for (const ex of examples) {
     parseIngredient(ex, { allowLeadingOf }),
     parseIngredient(ex, { normalizeUOM }),
     parseIngredient(ex, { additionalUOMs }),
+    parseIngredient(ex, { ignoreUOMs }),
   ];
 
   gridInnerHTML.push(...run.map(e => `<div>${JSON.stringify(e, null, 2)}</div>`));
