@@ -8,6 +8,7 @@ export const defaultOptions = {
   additionalUOMs: {},
   allowLeadingOf: false,
   normalizeUOM: false,
+  ignoreUOMs: [],
 } as const satisfies Required<ParseIngredientOptions>;
 
 /**

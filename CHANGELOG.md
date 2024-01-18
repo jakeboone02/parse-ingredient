@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-- N/A
+### Added
+
+- New option `ignoreUOMs`, an array of strings that will _not_ be considered units of measure.
 
 ## [v1.1.1] - 2024-01-15
 

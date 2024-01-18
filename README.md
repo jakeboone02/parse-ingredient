@@ -64,7 +64,7 @@ In the browser, all exports including the `parseIngredient` function are availab
 ```html
 <script src="https://unpkg.com/parse-ingredient"></script>
 <script>
-  console.log(ParseIngredient.parseIngredient('1 1/2 cups sugar'));
+  ParseIngredient.parseIngredient('1 1/2 cups sugar');
   // [
   //   {
   //     quantity: 1.5,
@@ -83,7 +83,7 @@ In the browser, all exports including the `parseIngredient` function are availab
 ```js
 import { parseIngredient } from 'parse-ingredient';
 
-console.log(parseIngredient('1-2 pears'));
+parseIngredient('1-2 pears');
 // [
 //   {
 //     quantity: 1,
@@ -94,11 +94,10 @@ console.log(parseIngredient('1-2 pears'));
 //     isGroupHeader: false,
 //   }
 // ]
-console.log(
-  parseIngredient(
-    `2/3 cup flour
+
+parseIngredient(
+  `2/3 cup flour
 1 tsp baking powder`
-  )
 );
 // [
 //   {
@@ -118,7 +117,7 @@ console.log(
 //     isGroupHeader: false,
 //   },
 // ]
-console.log(parseIngredient('For cake:'));
+parseIngredient('For cake:');
 // [
 //   {
 //     quantity: null,
@@ -129,7 +128,7 @@ console.log(parseIngredient('For cake:'));
 //     isGroupHeader: true,
 //   }
 // ]
-console.log(parseIngredient('Ripe tomato x2'));
+parseIngredient('Ripe tomato x2');
 // [
 //   {
 //     quantity: 2,
@@ -148,10 +147,8 @@ console.log(parseIngredient('Ripe tomato x2'));
 
 Pass `true` to convert units of measure to their long, singular form, e.g. "ml" becomes "milliliter" and "cups" becomes "cup". This can help normalize the units of measure for processing. In most cases, this option will make `unitOfMeasure` equivalent to `unitOfMeasureID`.
 
-Example:
-
 ```js
-console.log(parseIngredient('1 c sugar', { normalizeUOM: true }));
+parseIngredient('1 c sugar', { normalizeUOM: true });
 // [
 //   {
 //     quantity: 1,
@@ -168,20 +165,16 @@ console.log(parseIngredient('1 c sugar', { normalizeUOM: true }));
 
 Pass an object that matches the format of the exported `unitsOfMeasure` object. Keys that match any in the exported object will be used instead of the default, and any others will be added to the list of known units of measure when parsing ingredients.
 
-Example:
-
 ```js
-console.log(
-  parseIngredient('2 buckets of widgets', {
-    additionalUOMs: {
-      bucket: {
-        short: 'bkt',
-        plural: 'buckets',
-        versions: ['bk'],
-      },
+parseIngredient('2 buckets of widgets', {
+  additionalUOMs: {
+    bucket: {
+      short: 'bkt',
+      plural: 'buckets',
+      versions: ['bk'],
     },
-  })
-);
+  },
+});
 // [
 //   {
 //     quantity: 2,
@@ -198,10 +191,8 @@ console.log(
 
 When `true`, ingredient descriptions that start with "of " will not be modified. (By default, a leading "of " will be removed from all descriptions.)
 
-Example:
-
 ```js
-console.log(parseIngredient('1 cup of sugar', { allowLeadingOf: true }));
+parseIngredient('1 cup of sugar', { allowLeadingOf: true });
 // [
 //   {
 //     quantity: 1,
@@ -209,6 +200,24 @@ console.log(parseIngredient('1 cup of sugar', { allowLeadingOf: true }));
 //     unitOfMeasure: 'cup',
 //     unitOfMeasureID: 'cup',
 //     description: 'of sugar',
+//     isGroupHeader: false,
+//   }
+// ]
+```
+
+### `ignoreUOMs`
+
+An array of strings to ignore as units of measure when parsing ingredients.
+
+```js
+parseIngredient('2 large eggs', { ignoreUOMs: ['large'] });
+// [
+//   {
+//     quantity: 2,
+//     quantity2: null,
+//     unitOfMeasure: null,
+//     unitOfMeasureID: null,
+//     description: 'large eggs',
 //     isGroupHeader: false,
 //   }
 // ]
