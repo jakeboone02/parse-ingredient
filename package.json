@@ -48,7 +48,7 @@
     "docs": "bunx typedoc",
     "test": "bun test",
     "watch": "bun test --watch",
-    "pretty-print": "prettier --write src *.{mjs,json,html,ts}",
+    "pretty-print": "prettier --write src *.{json,html,ts}",
     "publish:npm": "np",
     "publish:demo": "bun ./gh-pages.publish.js"
   },
