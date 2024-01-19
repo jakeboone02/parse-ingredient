@@ -52,8 +52,11 @@ export const parseIngredient = (
       // The first character is not numeric. First check for trailing quantity/uom.
       const trailingQtyResult = trailingQuantityRegEx.exec(line);
 
-      if (trailingQtyResult) {
-        // Trailing quantity detected.
+      if (trailingQtyResult && opts.ignoreUOMs.includes(trailingQtyResult.at(-1) ?? '')) {
+        // Trailing quantity detected, but bailing out since the UOM should be ignored.
+        oIng.description = line;
+      } else if (trailingQtyResult) {
+        // Trailing quantity detected with missing or non-ignored UOM.
         // Remove the quantity and unit of measure from the description.
         oIng.description = line.replace(trailingQuantityRegEx, '').trim();
 
@@ -153,7 +156,9 @@ export const parseIngredient = (
 
         while (++i < uomArrayLength && !uom) {
           const { alternates, id, short, plural } = uomArray[i];
-          const versions = [...alternates, id, short, plural];
+          const versions = [...alternates, id, short, plural].filter(
+            unit => !opts.ignoreUOMs.includes(unit)
+          );
           if (versions.includes(firstWord)) {
             uom = firstWord;
             uomID = id;

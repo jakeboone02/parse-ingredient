@@ -70,6 +70,30 @@ export interface ParseIngredientOptions {
    */
   additionalUOMs?: UnitOfMeasureDefinitions;
   /**
+   * An array of strings to ignore as units of measure when parsing ingredients.
+   *
+   * @example
+   *
+   * ```ts
+   * parseIngredient('2 small eggs', {
+   *   ignoreUOMs: ['small', 'medium', 'large']
+   * })
+   * // [
+   * //   {
+   * //     quantity: 2,
+   * //     quantity2: null,
+   * //     unitOfMeasure: null,
+   * //     unitOfMeasureID: null,
+   * //     description: 'small eggs',
+   * //     isGroupHeader: false,
+   * //   }
+   * // ]
+   * ```
+   *
+   * @default []
+   */
+  ignoreUOMs?: string[];
+  /**
    * If `true`, ingredient descriptions that start with "of " will not be
    * modified. (By default, a leading "of " will be removed from all descriptions.)
    *

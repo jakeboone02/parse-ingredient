@@ -5,22 +5,22 @@ body {
 
 #grid {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
   column-gap: 1rem;
   row-gap: 0.4rem;
 }
 
-#grid > *:nth-child(n + 5) {
+#grid > *:nth-child(n + 6) {
   border-bottom: 1px solid #dddddd;
 }
 
-#grid > *:nth-child(-n + 5) {
+#grid > *:nth-child(-n + 6) {
   border-bottom: 1px solid gray;
   font-weight: bold;
   text-align: center;
 }
 
-#grid > *:nth-child(5n + 1):nth-child(n + 5) {
+#grid > *:nth-child(6n + 1):nth-child(n + 6) {
   font-weight: bold;
   text-align: right;
 }

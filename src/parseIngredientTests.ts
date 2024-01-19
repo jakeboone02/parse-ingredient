@@ -526,4 +526,26 @@ export const parseIngredientTests: Record<
       },
     ],
   ],
+  'ignores units of measure': [
+    '1 cup stuff\nstuff x 2 cups',
+    [
+      {
+        quantity: 1,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: 'cup stuff',
+        isGroupHeader: false,
+      },
+      {
+        quantity: null,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: 'stuff x 2 cups',
+        isGroupHeader: false,
+      },
+    ],
+    { ignoreUOMs: ['cup', 'cups'] },
+  ],
 };
