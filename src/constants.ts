@@ -259,7 +259,7 @@ export const unitsOfMeasure = {
   tablespoon: {
     short: 'tbsp',
     plural: 'tablespoons',
-    alternates: ['tbsp.', 'T', 'Tbsp.'] satisfies string[],
+    alternates: ['tbsp.', 'T', 'Tbsp.', 'Tbsp'] satisfies string[],
   },
   teaspoon: {
     short: 'tsp',
