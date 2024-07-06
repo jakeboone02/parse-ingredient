@@ -8,5 +8,6 @@
     "GitHub": "https://github.com/jakeboone02/parse-ingredient/",
     "Support": "https://github.com/sponsors/jakeboone02"
   },
+  "plugin": ["./typedoc-plugin-ga.mjs"],
   "gaID": "G-TMFVDH6J7S"
 }
