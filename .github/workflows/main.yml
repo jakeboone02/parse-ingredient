@@ -11,6 +11,5 @@ jobs:
       - run: bun install --frozen-lockfile
       - run: bun run build
       - run: bun run test
-      # TODO: Upload to Codecov once Bun outputs lcov (https://github.com/oven-sh/bun/issues/4015)
-      # - name: Upload coverage to Codecov
-      #   uses: codecov/codecov-action@v1
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1

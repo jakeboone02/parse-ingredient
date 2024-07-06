@@ -356,6 +356,19 @@ export const parseIngredientTests: Record<
       },
     ],
   ],
+  'Capitalized': [
+    '2 Tbsp butter',
+    [
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: 'tablespoon',
+        unitOfMeasure: 'Tbsp',
+        description: 'butter',
+        isGroupHeader: false,
+      },
+    ],
+  ],
   ...Object.fromEntries(
     [
       ['basic', ''],

@@ -1,3 +1,4 @@
 [test]
 coverage = true
 coverageThreshold = 1
+coverageReporter = ["lcov", "text"]
