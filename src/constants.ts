@@ -174,7 +174,7 @@ export const unitsOfMeasure = {
   liter: {
     short: 'l',
     plural: 'liters',
-    alternates: [] satisfies string[],
+    alternates: ['l.'] satisfies string[],
   },
   medium: {
     short: 'md',
@@ -214,12 +214,12 @@ export const unitsOfMeasure = {
   package: {
     short: 'pkg',
     plural: 'packages',
-    alternates: ['pkg.', 'pkgs'] satisfies string[],
+    alternates: ['pkg.', 'pkgs', 'pkgs.'] satisfies string[],
   },
   piece: {
     short: 'piece',
     plural: 'pieces',
-    alternates: ['pcs', 'pcs.'] satisfies string[],
+    alternates: ['pc', 'pc.', 'pcs', 'pcs.'] satisfies string[],
   },
   pinch: {
     short: 'pinch',
