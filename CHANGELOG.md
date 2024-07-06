@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - N/A
 
+## [v1.2.1] - 2024-07-06
+
+### Fixed
+
+- [#20] Several missing alternate abbreviations were added.
+
 ## [v1.2.0] - 2024-01-18
 
 ### Added
@@ -150,10 +156,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [#8]: https://github.com/jakeboone02/parse-ingredient/pull/8
 [#14]: https://github.com/jakeboone02/parse-ingredient/pull/14
 [#18]: https://github.com/jakeboone02/parse-ingredient/pull/18
+[#20]: https://github.com/jakeboone02/parse-ingredient/pull/20
 
 <!-- Release comparison links -->
 
-[unreleased]: https://github.com/jakeboone02/parse-ingredient/compare/v1.2.0...HEAD
+[unreleased]: https://github.com/jakeboone02/parse-ingredient/compare/v1.2.1...HEAD
+[v1.2.1]: https://github.com/jakeboone02/parse-ingredient/compare/v1.2.0...v1.2.1
 [v1.2.0]: https://github.com/jakeboone02/parse-ingredient/compare/v1.1.1...v1.2.0
 [v1.1.1]: https://github.com/jakeboone02/parse-ingredient/compare/v1.1.0...v1.1.1
 [v1.1.0]: https://github.com/jakeboone02/parse-ingredient/compare/v1.0.1...v1.1.0
