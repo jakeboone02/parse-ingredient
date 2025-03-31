@@ -51,7 +51,7 @@
     "lint": "bunx oxlint@latest --format=github",
     "pretty-print": "prettier --write '*.{html,json,ts}' './src/*.*'",
     "publish:npm": "np",
-    "codesandbox-ci": "bun ./.codesandbox/ci.sh",
+    "codesandbox-ci": "bash .codesandbox/ci.sh",
     "publish:demo": "bun ./gh-pages.publish.js"
   },
   "devDependencies": {
