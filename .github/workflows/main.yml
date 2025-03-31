@@ -3,7 +3,7 @@ on: [push, pull_request, workflow_dispatch]
 
 jobs:
   build:
-    name: Build and test
+    name: Build, test, and lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -11,6 +11,7 @@ jobs:
       - run: bun install --frozen-lockfile
       - run: bun run build
       - run: bun run test
+      - run: bun run lint
       - uses: codecov/codecov-action@v4
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
