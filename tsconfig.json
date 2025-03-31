@@ -2,6 +2,7 @@
   "compilerOptions": {
     "types": ["bun-types", "web"],
     "isolatedModules": true,
+    "isolatedDeclarations": true,
     "declaration": true,
     "sourceMap": true,
     "strict": true,

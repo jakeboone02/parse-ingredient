@@ -1,7 +1,7 @@
 // @ts-check
 // Adapted from https://github.com/TypeStrong/typedoc/issues/2600#issuecomment-2184995074
 
-import td from 'typedoc';
+import * as td from 'typedoc';
 
 /** @param {td.Application} app */
 export function load(app) {
@@ -26,11 +26,7 @@ gtag('config', '${gaID}');
           async: true,
           src: 'https://www.googletagmanager.com/gtag/js?id=' + gaID,
         }),
-        td.JSX.createElement(
-          'script',
-          null,
-          td.JSX.createElement(td.JSX.Raw, { html: script })
-        ),
+        td.JSX.createElement('script', null, td.JSX.createElement(td.JSX.Raw, { html: script })),
       ]);
     }
 

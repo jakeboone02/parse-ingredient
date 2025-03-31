@@ -4,12 +4,12 @@ import { ParseIngredientOptions, UnitOfMeasureDefinitions } from './types';
 /**
  * Default options for {@link parseIngredient}.
  */
-export const defaultOptions = {
+export const defaultOptions: Required<ParseIngredientOptions> = {
   additionalUOMs: {},
   allowLeadingOf: false,
   normalizeUOM: false,
   ignoreUOMs: [],
-} as const satisfies Required<ParseIngredientOptions>;
+} as const;
 
 /**
  * List of "for" equivalents (for upcoming i18n support).
@@ -18,7 +18,7 @@ export const fors = ['For'] as const;
 /**
  * Regex to capture "for" equivalents (for upcoming i18n support).
  */
-export const forsRegEx = new RegExp(`^(?:${fors.join('|')})\\s`, 'i');
+export const forsRegEx: RegExp = new RegExp(`^(?:${fors.join('|')})\\s`, 'i');
 
 /**
  * List of range separators (for upcoming i18n support).
@@ -28,19 +28,19 @@ const rangeSeparatorRegExSource = `(-|–|—|(?:${rangeSeparatorWords.join('|')
 /**
  * Regex to capture range separators (for upcoming i18n support).
  */
-export const rangeSeparatorRegEx = new RegExp(`^${rangeSeparatorRegExSource}`, 'i');
+export const rangeSeparatorRegEx: RegExp = new RegExp(`^${rangeSeparatorRegExSource}`, 'i');
 
 /**
  * Regex to capture the first word of a description, to see if it's a unit of measure.
  */
-export const firstWordRegEx = /^(fl(?:uid)?(?:\s+|-)(?:oz|ounces?)|\w+[-.]?)(.+)?/;
+export const firstWordRegEx: RegExp = /^(fl(?:uid)?(?:\s+|-)(?:oz|ounces?)|\w+[-.]?)(.+)?/;
 
 const numericRegexAnywhere = numericRegex.source.replace(/^\^/, '').replace(/\$$/, '');
 
 /**
  * Regex to capture trailing quantity and unit of measure.
  */
-export const trailingQuantityRegEx = new RegExp(
+export const trailingQuantityRegEx: RegExp = new RegExp(
   `(,|:|-|–|—|x|⨯)?\\s*((${numericRegexAnywhere})\\s*(${rangeSeparatorRegExSource}))?\\s*(${numericRegexAnywhere})\\s*(fl(?:uid)?(?:\\s+|-)(?:oz|ounces?)|\\w+)?$`,
   'i'
 );
@@ -52,12 +52,12 @@ export const ofs = ['of'] as const;
 /**
  * Regex to capture "of" equivalents at the beginning of a string (for upcoming i18n support).
  */
-export const ofRegEx = new RegExp(`^(?:${ofs.join('|')})\\s+`, 'i');
+export const ofRegEx: RegExp = new RegExp(`^(?:${ofs.join('|')})\\s+`, 'i');
 
 /**
  * Default unit of measure specifications.
  */
-export const unitsOfMeasure = {
+export const unitsOfMeasure: UnitOfMeasureDefinitions = {
   bag: {
     short: 'bag',
     plural: 'bags',
@@ -271,4 +271,4 @@ export const unitsOfMeasure = {
     plural: 'yards',
     alternates: ['yd.', 'yds.'] satisfies string[],
   },
-} as const satisfies UnitOfMeasureDefinitions;
+} as const;
