@@ -23,7 +23,7 @@ Large eggs x 2
 
 document.getElementById('ingredient-list')!.innerHTML = seed;
 
-document.getElementById('parse')!.addEventListener('click', () => {
+const parse = () => {
   const normalizeUOM = (document.getElementById('normalize-uom') as HTMLInputElement).checked;
   const allowLeadingOf = (document.getElementById('allow-leading-of') as HTMLInputElement).checked;
   const ignoreUOMs = ((document.getElementById('ignore-uoms') as HTMLInputElement).value ?? '')
@@ -39,4 +39,12 @@ document.getElementById('parse')!.addEventListener('click', () => {
     2
   );
   hljs.highlightBlock(document.getElementById('results'));
-});
+};
+
+document.getElementById('ingredient-list')!.addEventListener('change', parse);
+document.getElementById('normalize-uom')!.addEventListener('change', parse);
+document.getElementById('allow-leading-of')!.addEventListener('change', parse);
+document.getElementById('ignore-uoms')!.addEventListener('change', parse);
+document.getElementById('parse')!.addEventListener('click', parse);
+
+parse();
