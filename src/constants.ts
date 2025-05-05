@@ -55,6 +55,15 @@ export const ofs = ['of'] as const;
 export const ofRegEx: RegExp = new RegExp(`^(?:${ofs.join('|')})\\s+`, 'i');
 
 /**
+ * List of "from" equivalents (for upcoming i18n support).
+ */
+export const froms = ['from', 'of'] as const;
+/**
+ * Regex to capture "from" equivalents at the end of a string (for upcoming i18n support).
+ */
+export const fromRegEx: RegExp = new RegExp(`\\s+(?:${froms.join('|')})$`, 'i');
+
+/**
  * Default unit of measure specifications.
  */
 export const unitsOfMeasure: UnitOfMeasureDefinitions = {

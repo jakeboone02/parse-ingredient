@@ -3,6 +3,7 @@ import {
   defaultOptions,
   firstWordRegEx,
   forsRegEx,
+  fromRegEx,
   ofRegEx,
   rangeSeparatorRegEx,
   trailingQuantityRegEx,
@@ -89,6 +90,8 @@ export const parseIngredient = (
           if (uom) {
             oIng.unitOfMeasureID = uomID;
             oIng.unitOfMeasure = opts.normalizeUOM ? uomID : uom;
+          } else if (oIng.description.match(fromRegEx)) {
+            oIng.description += ` ${uomRaw}`;
           }
         }
       } else {
