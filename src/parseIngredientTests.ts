@@ -356,7 +356,7 @@ export const parseIngredientTests: Record<
       },
     ],
   ],
-  'Capitalized': [
+  Capitalized: [
     '2 Tbsp butter',
     [
       {
@@ -365,6 +365,27 @@ export const parseIngredientTests: Record<
         unitOfMeasureID: 'tablespoon',
         unitOfMeasure: 'Tbsp',
         description: 'butter',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'extract of/from N things': [
+    'Juice of 1 lemon\nPeels from 40-50 bananas',
+    [
+      {
+        quantity: 1,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: 'Juice of lemon',
+        isGroupHeader: false,
+      },
+      {
+        quantity: 40,
+        quantity2: 50,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: 'Peels from bananas',
         isGroupHeader: false,
       },
     ],

@@ -7,7 +7,7 @@
     "sourceMap": true,
     "strict": true,
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "esModuleInterop": true,
     "noEmit": true,
     "skipLibCheck": true,

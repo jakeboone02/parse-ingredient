@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-- N/A
+### Added
+
+- [#26] Support for the pattern "Extract of/from N things", e.g. "Juice of 1 lemon".
 
 ## [v1.2.1] - 2024-07-06
 
@@ -157,6 +159,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [#14]: https://github.com/jakeboone02/parse-ingredient/pull/14
 [#18]: https://github.com/jakeboone02/parse-ingredient/pull/18
 [#20]: https://github.com/jakeboone02/parse-ingredient/pull/20
+[#26]: https://github.com/jakeboone02/parse-ingredient/pull/26
 
 <!-- Release comparison links -->
 
