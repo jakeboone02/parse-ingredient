@@ -1,6 +1,6 @@
 import { writeFile } from 'fs/promises';
-import type { Options } from 'tsup';
-import { defineConfig } from 'tsup';
+import type { Options } from 'tsdown';
+import { defineConfig } from 'tsdown';
 import { defaultIgnore, generateDTS } from '@jakeboone02/generate-dts';
 
 const config: ReturnType<typeof defineConfig> = defineConfig(options => {
@@ -8,13 +8,20 @@ const config: ReturnType<typeof defineConfig> = defineConfig(options => {
     entry: {
       'parse-ingredient': 'src/index.ts',
     },
+    dts: false,
+    outputOptions: {
+      globals: {
+        'numeric-quantity': 'NumericQuantity',
+      },
+    },
+    platform: 'neutral',
     sourcemap: true,
     ...options,
   };
 
   const productionOptions: Options = {
     minify: true,
-    replaceNodeEnv: true,
+    define: { NODE_ENV: 'production' },
   };
 
   const opts: Options[] = [
@@ -36,7 +43,7 @@ const config: ReturnType<typeof defineConfig> = defineConfig(options => {
         'parse-ingredient.legacy-esm': 'src/index.ts',
       },
       // ESBuild outputs `'.mjs'` by default for the 'esm' format. Force '.js'
-      outExtension: () => ({ js: '.js' }),
+      outExtensions: () => ({ js: '.js' }),
       format: 'esm',
       target: 'es2017',
     },
@@ -48,7 +55,7 @@ const config: ReturnType<typeof defineConfig> = defineConfig(options => {
         'parse-ingredient.production': 'src/index.ts',
       },
       format: 'esm',
-      outExtension: () => ({ js: '.mjs' }),
+      outExtensions: () => ({ js: '.mjs' }),
     },
     // CJS development
     {
@@ -89,7 +96,7 @@ if (process.env.NODE_ENV === 'production') {
       dts: false,
       format: 'iife',
       globalName: 'ParseIngredient',
-      outExtension: () => ({ js: '.umd.min.js' }),
+      outExtensions: () => ({ js: '.umd.min.js' }),
     },
   ];
 

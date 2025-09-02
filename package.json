@@ -44,7 +44,7 @@
   },
   "scripts": {
     "start": "bun --hot ./index.html",
-    "build": "bun --bun x tsup",
+    "build": "bun --bun x tsdown",
     "docs": "typedoc",
     "test": "bun test",
     "watch": "bun test --watch",
@@ -55,18 +55,18 @@
     "publish:demo": "bun ./gh-pages.publish.js"
   },
   "devDependencies": {
-    "@jakeboone02/generate-dts": "0.1.1",
-    "@types/bun": "^1.2.8",
-    "@types/node": "^22.13.14",
-    "@types/web": "^0.0.214",
+    "@jakeboone02/generate-dts": "0.1.2",
+    "@types/bun": "^1.2.21",
+    "@types/node": "^24.3.0",
+    "@types/web": "^0.0.265",
     "np": "^10.2.0",
-    "prettier": "3.5.3",
-    "prettier-plugin-organize-imports": "4.1.0",
-    "tsup": "^8.4.0",
-    "typedoc": "^0.28.1",
-    "typescript": "^5.8.2"
+    "prettier": "3.6.2",
+    "prettier-plugin-organize-imports": "4.2.0",
+    "tsdown": "^0.14.2",
+    "typedoc": "^0.28.12",
+    "typescript": "^5.9.2"
   },
   "dependencies": {
-    "numeric-quantity": "^2.0.1"
+    "numeric-quantity": "^2.1.0"
   }
 }

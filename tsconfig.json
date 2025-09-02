@@ -11,7 +11,7 @@
     "esModuleInterop": true,
     "noEmit": true,
     "skipLibCheck": true,
-    "lib": ["ES2015", "DOM"]
+    "lib": ["ES2022", "DOM"]
   },
   "include": ["./*.ts", "./src"]
 }
