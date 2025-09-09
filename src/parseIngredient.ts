@@ -48,8 +48,27 @@ export const parseIngredient = (
       isGroupHeader: false,
     };
 
-    // Check if the first character is numeric.
-    if (isNaN(numericQuantity(line[0]))) {
+    // Check if the line begins with either (1) at least one numeric character, or
+    // (2) a decimal point followed by at least one numeric character.
+    if (
+      !isNaN(numericQuantity(line[0])) ||
+      (line[0] === '.' && !isNaN(numericQuantity(line.slice(0, 2))))
+    ) {
+      // See how many of the first seven characters constitute a single value. This will be `quantity`.
+      let lenNum = 6;
+      let nqResult = NaN;
+
+      while (lenNum > 0 && isNaN(nqResult)) {
+        nqResult = numericQuantity(line.substring(0, lenNum).trim());
+
+        if (nqResult > -1) {
+          oIng.quantity = nqResult;
+          oIng.description = line.substring(lenNum).trim();
+        }
+
+        lenNum--;
+      }
+    } else {
       // The first character is not numeric. First check for trailing quantity/uom.
       const trailingQtyResult = trailingQuantityRegEx.exec(line);
 
@@ -103,22 +122,6 @@ export const parseIngredient = (
         if (oIng.description.endsWith(':') || forsRegEx.test(oIng.description)) {
           oIng.isGroupHeader = true;
         }
-      }
-    } else {
-      // The first character is numeric. See how many of the first seven
-      // constitute a single value. This will be `quantity`.
-      let lenNum = 6;
-      let nqResult = NaN;
-
-      while (lenNum > 0 && isNaN(nqResult)) {
-        nqResult = numericQuantity(line.substring(0, lenNum).trim());
-
-        if (nqResult > -1) {
-          oIng.quantity = nqResult;
-          oIng.description = line.substring(lenNum).trim();
-        }
-
-        lenNum--;
       }
     }
 

@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - N/A
 
+## [v1.3.1] - 2025-09-08
+
+### Fixed
+
+- [#31] Accept decimal quantities that omit the leading zero.
+
 ## [v1.3.0] - 2025-05-06
 
 ### Added
@@ -164,10 +170,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [#18]: https://github.com/jakeboone02/parse-ingredient/pull/18
 [#20]: https://github.com/jakeboone02/parse-ingredient/pull/20
 [#26]: https://github.com/jakeboone02/parse-ingredient/pull/26
+[#31]: https://github.com/jakeboone02/parse-ingredient/pull/31
 
 <!-- Release comparison links -->
 
-[unreleased]: https://github.com/jakeboone02/parse-ingredient/compare/v1.3.0...HEAD
+[unreleased]: https://github.com/jakeboone02/parse-ingredient/compare/v1.3.1...HEAD
+[v1.3.1]: https://github.com/jakeboone02/parse-ingredient/compare/v1.3.0...v1.3.1
 [v1.3.0]: https://github.com/jakeboone02/parse-ingredient/compare/v1.2.1...v1.3.0
 [v1.2.1]: https://github.com/jakeboone02/parse-ingredient/compare/v1.2.0...v1.2.1
 [v1.2.0]: https://github.com/jakeboone02/parse-ingredient/compare/v1.1.1...v1.2.0
