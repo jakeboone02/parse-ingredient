@@ -43,6 +43,19 @@ export const parseIngredientTests: Record<
       },
     ],
   ],
+  'leading zero-less decimal': [
+    '.5 cup stuff',
+    [
+      {
+        quantity: 0.5,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cup',
+        description: 'stuff',
+        isGroupHeader: false,
+      },
+    ],
+  ],
   'range (hyphen)': [
     '1-2 cups stuff',
     [
@@ -417,6 +430,19 @@ export const parseIngredientTests: Record<
       ],
     ])
   ),
+  'trailing zero-less decimal': [
+    'stuff .5 cup',
+    [
+      {
+        quantity: 0.5,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cup',
+        description: 'stuff',
+        isGroupHeader: false,
+      },
+    ],
+  ],
   'trailing range (hyphen)': [
     'stuff 1-2 cups',
     [
