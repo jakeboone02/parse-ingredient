@@ -403,6 +403,19 @@ export const parseIngredientTests: Record<
       },
     ],
   ],
+  'comma decimal to decimal point': [
+    '1,2 kg pork loin',
+    [
+      {
+        "quantity": 1.2,
+        "quantity2": null,
+        "unitOfMeasureID": "kilogram",
+        "unitOfMeasure": "kg",
+        "description": "pork loin",
+        "isGroupHeader": false
+      }
+    ],
+  ],
   ...Object.fromEntries(
     [
       ['basic', ''],

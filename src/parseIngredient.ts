@@ -39,6 +39,9 @@ export const parseIngredient = (
     .filter(Boolean);
 
   return ingredientArray.map(line => {
+    // Normalize comma decimals to dot decimals (Ex. "1,5" to "1.5")
+    line = line.replace(/(\d),(?!\d{3}(?!\d))(\d+)/g, '$1.$2');
+
     const oIng: Ingredient = {
       quantity: null,
       quantity2: null,
