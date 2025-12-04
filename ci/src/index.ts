@@ -1,3 +1,4 @@
+// @ts-ignore
 import { parseIngredient } from 'parse-ingredient';
 import { examples } from './examples';
 import './styles.css';

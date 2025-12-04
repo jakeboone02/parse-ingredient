@@ -12,7 +12,7 @@ export function load(app) {
   });
 
   app.renderer.hooks.on('body.end', () => {
-    const gaID = app.options.getValue('gaID');
+    const gaID = /** @type {string | undefined} */ (app.options.getValue('gaID'));
     if (gaID) {
       const script = `
 window.dataLayer = window.dataLayer || [];
