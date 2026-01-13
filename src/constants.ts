@@ -33,7 +33,7 @@ export const rangeSeparatorRegEx: RegExp = new RegExp(`^${rangeSeparatorRegExSou
 /**
  * Regex to capture the first word of a description, to see if it's a unit of measure.
  */
-export const firstWordRegEx: RegExp = /^(fl(?:uid)?(?:\s+|-)(?:oz|ounces?)|\p{L}+[-.]?)(.+)?/u;
+export const firstWordRegEx: RegExp = /^(fl(?:uid)?(?:\s+|-)(?:oz|ounces?)|[\p{L}\p{N}_]+[-.]?)(.+)?/u;
 
 const numericRegexAnywhere = numericRegex.source.replace(/^\^/, '').replace(/\$$/, '');
 
