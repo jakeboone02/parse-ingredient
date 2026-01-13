@@ -608,4 +608,26 @@ export const parseIngredientTests: Record<
     ],
     { ignoreUOMs: ['cup', 'cups'] },
   ],
+  'additional UOMs with umlauts (German)': [
+    '1 Päckchen Backpulver',
+    [
+      {
+        quantity: 1,
+        quantity2: null,
+        unitOfMeasureID:  'paeckchen',
+        unitOfMeasure: 'Päckchen',
+        description: 'Backpulver',
+        isGroupHeader: false,
+      },
+    ],
+    {
+      additionalUOMs: {
+        paeckchen:  {
+          short: 'Pck',
+          plural: 'Päckchen',
+          alternates:  ['Pck', 'Pck.'],
+        },
+      },
+    },
+  ],
 };
