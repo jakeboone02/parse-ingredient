@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "target": "es2022",
     "types": ["bun-types", "web"],
     "isolatedModules": true,
     "isolatedDeclarations": true,
