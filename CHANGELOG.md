@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-- N/A
+### Fixed
+
+- [#34] All Unicode letter and number characters identified correctly, not just ASCII.
 
 ## [v1.3.1] - 2025-09-08
 
@@ -171,6 +173,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [#20]: https://github.com/jakeboone02/parse-ingredient/pull/20
 [#26]: https://github.com/jakeboone02/parse-ingredient/pull/26
 [#31]: https://github.com/jakeboone02/parse-ingredient/pull/31
+[#34]: https://github.com/jakeboone02/parse-ingredient/pull/34
 
 <!-- Release comparison links -->
 
