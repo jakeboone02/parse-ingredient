@@ -614,7 +614,7 @@ export const parseIngredientTests: Record<
       {
         quantity: 1,
         quantity2: null,
-        unitOfMeasureID:  'paeckchen',
+        unitOfMeasureID: 'paeckchen',
         unitOfMeasure: 'Päckchen',
         description: 'Backpulver',
         isGroupHeader: false,
@@ -622,10 +622,10 @@ export const parseIngredientTests: Record<
     ],
     {
       additionalUOMs: {
-        paeckchen:  {
+        paeckchen: {
           short: 'Pck',
           plural: 'Päckchen',
-          alternates:  ['Pck', 'Pck.'],
+          alternates: ['Pck', 'Pck.'],
         },
       },
     },
