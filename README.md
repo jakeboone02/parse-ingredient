@@ -237,6 +237,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://studioterabyte.nl/"><img src="https://avatars.githubusercontent.com/u/25407622?v=4?s=100" width="100px;" alt="Stefan van der Weide"/><br /><sub><b>Stefan van der Weide</b></sub></a><br /><a href="https://github.com/jakeboone02/parse-ingredient/commits?author=StefanVDWeide" title="Code">💻</a> <a href="https://github.com/jakeboone02/parse-ingredient/commits?author=StefanVDWeide" title="Tests">⚠️</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/rogermparent"><img src="https://avatars.githubusercontent.com/u/9111807?v=4?s=100" width="100px;" alt="Roger"/><br /><sub><b>Roger</b></sub></a><br /><a href="https://github.com/jakeboone02/parse-ingredient/commits?author=rogermparent" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="http://site.tylermayoff.com"><img src="https://avatars.githubusercontent.com/u/10094264?v=4?s=100" width="100px;" alt="Tyler"/><br /><sub><b>Tyler</b></sub></a><br /><a href="https://github.com/jakeboone02/parse-ingredient/commits?author=tmayoff" title="Code">💻</a> <a href="https://github.com/jakeboone02/parse-ingredient/commits?author=tmayoff" title="Tests">⚠️</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/AfoxDesignz"><img src="https://avatars.githubusercontent.com/u/45944543?v=4?s=100" width="100px;" alt="AfoxDesignz"/><br /><sub><b>AfoxDesignz</b></sub></a><br /><a href="https://github.com/jakeboone02/parse-ingredient/commits?author=AfoxDesignz" title="Code">💻</a> <a href="https://github.com/jakeboone02/parse-ingredient/commits?author=AfoxDesignz" title="Tests">⚠️</a></td>
     </tr>
   </tbody>
 </table>
@@ -250,7 +251,7 @@ This project follows the [all-contributors](https://github.com/all-contributors/
 
 <!-- prettier-ignore-start -->
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[badge-all-contributors]: https://img.shields.io/badge/all_contributors-4-orange.svg
+[badge-all-contributors]: https://img.shields.io/badge/all_contributors-5-orange.svg
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 <!-- prettier-ignore-end -->
 

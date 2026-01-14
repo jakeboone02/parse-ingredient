@@ -1,7 +1,5 @@
 {
-  "files": [
-    "README.md"
-  ],
+  "files": ["README.md"],
   "imageSize": 100,
   "commit": false,
   "commitType": "docs",
@@ -13,42 +11,35 @@
       "name": "Jake Boone",
       "avatar_url": "https://avatars.githubusercontent.com/u/366438?v=4",
       "profile": "https://github.com/jakeboone02",
-      "contributions": [
-        "code",
-        "doc",
-        "example",
-        "maintenance",
-        "test"
-      ]
+      "contributions": ["code", "doc", "example", "maintenance", "test"]
     },
     {
       "login": "StefanVDWeide",
       "name": "Stefan van der Weide",
       "avatar_url": "https://avatars.githubusercontent.com/u/25407622?v=4",
       "profile": "https://studioterabyte.nl/",
-      "contributions": [
-        "code",
-        "test"
-      ]
+      "contributions": ["code", "test"]
     },
     {
       "login": "rogermparent",
       "name": "Roger",
       "avatar_url": "https://avatars.githubusercontent.com/u/9111807?v=4",
       "profile": "https://github.com/rogermparent",
-      "contributions": [
-        "code"
-      ]
+      "contributions": ["code"]
     },
     {
       "login": "tmayoff",
       "name": "Tyler",
       "avatar_url": "https://avatars.githubusercontent.com/u/10094264?v=4",
       "profile": "http://site.tylermayoff.com",
-      "contributions": [
-        "code",
-        "test"
-      ]
+      "contributions": ["code", "test"]
+    },
+    {
+      "login": "AfoxDesignz",
+      "name": "AfoxDesignz",
+      "avatar_url": "https://avatars.githubusercontent.com/u/45944543?v=4",
+      "profile": "https://github.com/AfoxDesignz",
+      "contributions": ["code", "test"]
     }
   ],
   "contributorsPerLine": 7,
@@ -58,3 +49,4 @@
   "projectName": "parse-ingredient",
   "projectOwner": "jakeboone02"
 }
+
