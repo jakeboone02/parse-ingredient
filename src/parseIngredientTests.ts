@@ -630,4 +630,26 @@ export const parseIngredientTests: Record<
       },
     },
   ],
+  'trailing range with umlaut': [
+    'Backpulver 1-2 Päckchen',
+    [
+      {
+        quantity: 1,
+        quantity2: 2,
+        unitOfMeasureID: 'paeckchen',
+        unitOfMeasure: 'Päckchen',
+        description: 'Backpulver',
+        isGroupHeader: false,
+      },
+    ],
+    {
+      additionalUOMs: {
+        paeckchen: {
+          short: 'Pck',
+          plural: 'Päckchen',
+          alternates: ['Pck', 'Pck.'],
+        },
+      },
+    },
+  ],
 };
