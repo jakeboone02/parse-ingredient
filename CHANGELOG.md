@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 N/A
 
+## [v1.3.3] - 2026-01-16
+
+### Fixed
+
+- [#37] Unit of measure matching is now case insensitive.
+
 ## [v1.3.2] - 2026-01-14
 
 ### Fixed
@@ -178,10 +184,12 @@ N/A
 [#26]: https://github.com/jakeboone02/parse-ingredient/pull/26
 [#31]: https://github.com/jakeboone02/parse-ingredient/pull/31
 [#34]: https://github.com/jakeboone02/parse-ingredient/pull/34
+[#37]: https://github.com/jakeboone02/parse-ingredient/pull/37
 
 <!-- Release comparison links -->
 
-[unreleased]: https://github.com/jakeboone02/parse-ingredient/compare/v1.3.2...HEAD
+[unreleased]: https://github.com/jakeboone02/parse-ingredient/compare/v1.3.3...HEAD
+[v1.3.3]: https://github.com/jakeboone02/parse-ingredient/compare/v1.3.2...v1.3.3
 [v1.3.2]: https://github.com/jakeboone02/parse-ingredient/compare/v1.3.1...v1.3.2
 [v1.3.1]: https://github.com/jakeboone02/parse-ingredient/compare/v1.3.0...v1.3.1
 [v1.3.0]: https://github.com/jakeboone02/parse-ingredient/compare/v1.2.1...v1.3.0
