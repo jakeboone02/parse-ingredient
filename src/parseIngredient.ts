@@ -72,7 +72,7 @@ export const parseIngredient = (
       // The first character is not numeric. First check for trailing quantity/uom.
       const trailingQtyResult = trailingQuantityRegEx.exec(line);
 
-      if (trailingQtyResult && opts.ignoreUOMs.includes(trailingQtyResult.at(-1) ?? '')) {
+      if (trailingQtyResult && opts.ignoreUOMs.some(ignored => ignored.toLowerCase() === (trailingQtyResult.at(-1) ?? '').toLowerCase())) {
         // Trailing quantity detected, but bailing out since the UOM should be ignored.
         oIng.description = line;
       } else if (trailingQtyResult) {
@@ -100,7 +100,7 @@ export const parseIngredient = (
           while (++i < uomArrayLength && !uom) {
             const { alternates, id, short, plural } = uomArray[i];
             const versions = [...alternates, id, short, plural];
-            if (versions.includes(uomRaw)) {
+            if (versions.some(v => v.toLowerCase() === uomRaw.toLowerCase())) {
               uom = uomRaw;
               uomID = id;
             }
@@ -163,9 +163,9 @@ export const parseIngredient = (
         while (++i < uomArrayLength && !uom) {
           const { alternates, id, short, plural } = uomArray[i];
           const versions = [...alternates, id, short, plural].filter(
-            unit => !opts.ignoreUOMs.includes(unit)
+            unit => !opts.ignoreUOMs.some(ignored => ignored.toLowerCase() === unit.toLowerCase())
           );
-          if (versions.includes(firstWord)) {
+          if (versions.some(v => v.toLowerCase() === firstWord.toLowerCase())) {
             uom = firstWord;
             uomID = id;
           }

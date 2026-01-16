@@ -630,4 +630,61 @@ export const parseIngredientTests: Record<
       },
     },
   ],
+  'case-insensitive UOM (leading, preserved capitalization)': [
+    '2 Grams sugar',
+    [
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: 'gram',
+        unitOfMeasure: 'Grams',
+        description: 'sugar',
+        isGroupHeader: false,
+      },
+    ],
+    {
+      additionalUOMs: {
+        gram: {
+          short: 'g',
+          plural: 'grams',
+          alternates: [],
+        },
+      },
+    },
+  ],
+  'case-insensitive UOM (builtin uppercase)': [
+    '3 CUPS flour',
+    [
+      {
+        quantity: 3,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'CUPS',
+        description: 'flour',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'case-insensitive UOM (trailing)': [
+    'sugar 2 Grams',
+    [
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: 'gram',
+        unitOfMeasure: 'Grams',
+        description: 'sugar',
+        isGroupHeader: false,
+      },
+    ],
+    {
+      additionalUOMs: {
+        gram: {
+          short: 'g',
+          plural: 'grams',
+          alternates: [],
+        },
+      },
+    },
+  ],
 };
