@@ -18,7 +18,7 @@ export const fors = ['For'] as const;
 /**
  * Regex to capture "for" equivalents (for upcoming i18n support).
  */
-export const forsRegEx: RegExp = new RegExp(`^(?:${fors.join('|')})\\s`, 'i');
+export const forsRegEx: RegExp = new RegExp(`^(?:${fors.join('|')})\\s`, 'iu');
 
 /**
  * List of range separators (for upcoming i18n support).
@@ -28,22 +28,22 @@ const rangeSeparatorRegExSource = `(-|–|—|(?:${rangeSeparatorWords.join('|')
 /**
  * Regex to capture range separators (for upcoming i18n support).
  */
-export const rangeSeparatorRegEx: RegExp = new RegExp(`^${rangeSeparatorRegExSource}`, 'i');
+export const rangeSeparatorRegEx: RegExp = new RegExp(`^${rangeSeparatorRegExSource}`, 'iu');
 
 /**
  * Regex to capture the first word of a description, to see if it's a unit of measure.
  */
 export const firstWordRegEx: RegExp =
-  /^(fl(?:uid)?(?:\s+|-)(?:oz|ounces?)|[\p{L}\p{N}_]+[-.]?)(.+)?/u;
+  /^(fl(?:uid)?(?:\s+|-)(?:oz|ounces?)|[\p{L}\p{N}_]+[-.]?)(.+)?/iu;
 
-const numericRegexAnywhere = numericRegex.source.replace(/^\^/, '').replace(/\$$/, '');
+const numericRegexAnywhere = numericRegex.source.replace('^', '').replace(/\$$/, '');
 
 /**
  * Regex to capture trailing quantity and unit of measure.
  */
 export const trailingQuantityRegEx: RegExp = new RegExp(
-  `(,|:|-|–|—|x|⨯)?\\s*((${numericRegexAnywhere})\\s*(${rangeSeparatorRegExSource}))?\\s*(${numericRegexAnywhere})\\s*(fl(?:uid)?(?:\\s+|-)(?:oz|ounces?)|\\w+)?$`,
-  'i'
+  `(,|:|-|–|—|x|⨯)?\\s*((${numericRegexAnywhere})\\s*(${rangeSeparatorRegExSource}))?\\s*(${numericRegexAnywhere})\\s*(fl(?:uid)?(?:\\s+|-)(?:oz|ounces?)|[\\p{L}\\p{N}_]+)?$`,
+  'iu'
 );
 
 /**
@@ -53,7 +53,7 @@ export const ofs = ['of'] as const;
 /**
  * Regex to capture "of" equivalents at the beginning of a string (for upcoming i18n support).
  */
-export const ofRegEx: RegExp = new RegExp(`^(?:${ofs.join('|')})\\s+`, 'i');
+export const ofRegEx: RegExp = new RegExp(`^(?:${ofs.join('|')})\\s+`, 'iu');
 
 /**
  * List of "from" equivalents (for upcoming i18n support).
@@ -62,7 +62,7 @@ export const froms = ['from', 'of'] as const;
 /**
  * Regex to capture "from" equivalents at the end of a string (for upcoming i18n support).
  */
-export const fromRegEx: RegExp = new RegExp(`\\s+(?:${froms.join('|')})$`, 'i');
+export const fromRegEx: RegExp = new RegExp(`\\s+(?:${froms.join('|')})$`, 'iu');
 
 /**
  * Default unit of measure specifications.
