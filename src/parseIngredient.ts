@@ -71,8 +71,12 @@ export const parseIngredient = (
     } else {
       // The first character is not numeric. First check for trailing quantity/uom.
       const trailingQtyResult = trailingQuantityRegEx.exec(line);
+      const trailingQtyMaybeUom = trailingQtyResult?.at(-1)?.toLowerCase();
 
-      if (trailingQtyResult && opts.ignoreUOMs.includes(trailingQtyResult.at(-1) ?? '')) {
+      if (
+        trailingQtyMaybeUom &&
+        opts.ignoreUOMs.some(ignored => ignored.toLowerCase() === trailingQtyMaybeUom)
+      ) {
         // Trailing quantity detected, but bailing out since the UOM should be ignored.
         oIng.description = line;
       } else if (trailingQtyResult) {
@@ -93,6 +97,7 @@ export const parseIngredient = (
         // Trailing unit of measure.
         const uomRaw = trailingQtyResult.at(-1);
         if (uomRaw) {
+          const uomLC = uomRaw.toLowerCase();
           let uom = '';
           let uomID = '';
           let i = -1;
@@ -100,7 +105,7 @@ export const parseIngredient = (
           while (++i < uomArrayLength && !uom) {
             const { alternates, id, short, plural } = uomArray[i];
             const versions = [...alternates, id, short, plural];
-            if (versions.includes(uomRaw)) {
+            if (versions.some(v => v.toLowerCase() === uomLC)) {
               uom = uomRaw;
               uomID = id;
             }
@@ -154,6 +159,7 @@ export const parseIngredient = (
 
     if (firstWordREMatches) {
       const firstWord = firstWordREMatches[1].replace(/\s+/g, ' ');
+      const firstWordLC = firstWord.toLowerCase();
       const remainingDesc = (firstWordREMatches[2] ?? '').trim();
       if (remainingDesc) {
         let uom = '';
@@ -162,10 +168,11 @@ export const parseIngredient = (
 
         while (++i < uomArrayLength && !uom) {
           const { alternates, id, short, plural } = uomArray[i];
-          const versions = [...alternates, id, short, plural].filter(
-            unit => !opts.ignoreUOMs.includes(unit)
-          );
-          if (versions.includes(firstWord)) {
+          const versions = [...alternates, id, short, plural].filter(unit => {
+            const unitLC = unit.toLowerCase();
+            return !opts.ignoreUOMs.some(ignored => ignored.toLowerCase() === unitLC);
+          });
+          if (versions.some(v => v.toLowerCase() === firstWordLC)) {
             uom = firstWord;
             uomID = id;
           }
