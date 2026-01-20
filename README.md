@@ -1,8 +1,8 @@
 [![npm][badge-npm]](https://www.npmjs.com/package/parse-ingredient)
 ![workflow status](https://github.com/jakeboone02/parse-ingredient/actions/workflows/main.yml/badge.svg)
 [![codecov.io](https://codecov.io/github/jakeboone02/parse-ingredient/coverage.svg?branch=main)](https://codecov.io/github/jakeboone02/parse-ingredient?branch=main)
-[![downloads](https://img.shields.io/npm/dm/parse-ingredient.svg)](http://npm-stat.com/charts.html?package=parse-ingredient&from=2015-08-01)
-[![MIT License](https://img.shields.io/npm/l/parse-ingredient.svg)](http://opensource.org/licenses/MIT)
+[![downloads](https://img.shields.io/npm/dm/parse-ingredient.svg)](https://npm-stat.com/charts.html?package=parse-ingredient&from=2015-08-01)
+[![MIT License](https://img.shields.io/npm/l/parse-ingredient.svg)](https://opensource.org/licenses/MIT)
 [![All Contributors][badge-all-contributors]](#contributors-)
 
 Parses a string, which can include mixed numbers or vulgar fractions (thanks to [numeric-quantity](https://www.npmjs.com/package/numeric-quantity)), into an array of recipe ingredient objects.
