@@ -709,6 +709,19 @@ export const parseIngredientTests: Record<
       },
     },
   ],
+  'repeated separators (invalid)': [
+    '1__5 cup stuff',
+    [
+      {
+        quantity: 1,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: '__5 cup stuff',
+        isGroupHeader: false,
+      },
+    ],
+  ],
   'decimal comma (basic)': [
     '1,5 cup stuff',
     [
