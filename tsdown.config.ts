@@ -1,10 +1,10 @@
 import { writeFile } from 'fs/promises';
-import type { Options } from 'tsdown';
+import type { UserConfig } from 'tsdown';
 import { defineConfig } from 'tsdown';
 import { defaultIgnore, generateDTS } from '@jakeboone02/generate-dts';
 
 const config: ReturnType<typeof defineConfig> = defineConfig(options => {
-  const commonOptions: Options = {
+  const commonOptions = {
     entry: {
       'parse-ingredient': 'src/index.ts',
     },
@@ -17,14 +17,14 @@ const config: ReturnType<typeof defineConfig> = defineConfig(options => {
     platform: 'neutral',
     sourcemap: true,
     ...options,
-  };
+  } satisfies UserConfig;
 
-  const productionOptions: Options = {
+  const productionOptions = {
     minify: true,
     define: { NODE_ENV: 'production' },
-  };
+  } satisfies UserConfig;
 
-  const opts: Options[] = [
+  const opts: UserConfig[] = [
     // ESM, standard bundler dev, embedded `process` references
     {
       ...commonOptions,
