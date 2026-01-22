@@ -100,4 +100,11 @@ export interface ParseIngredientOptions {
    * @default false
    */
   allowLeadingOf?: boolean;
+  /**
+   * The character used as a decimal separator in numeric quantities.
+   * Use `","` for European-style decimal commas (e.g., "1,5" for 1.5).
+   *
+   * @default "."
+   */
+  decimalSeparator?: '.' | ',';
 }

@@ -1,4 +1,4 @@
-import { numericQuantity } from 'numeric-quantity';
+import { numericQuantity, NumericQuantityOptions } from 'numeric-quantity';
 import {
   defaultOptions,
   firstWordRegEx,
@@ -29,6 +29,8 @@ export const parseIngredient = (
   options: ParseIngredientOptions = defaultOptions
 ): Ingredient[] => {
   const opts = { ...defaultOptions, ...options };
+  const nqOpts: NumericQuantityOptions | undefined =
+    opts.decimalSeparator === ',' ? { decimalSeparator: ',' } : undefined;
   const mergedUOMs = { ...unitsOfMeasure, ...opts.additionalUOMs };
   const uomArray = Object.entries(mergedUOMs).map(addIdToUomDefinition);
   const uomArrayLength = uomArray.length;
@@ -49,17 +51,17 @@ export const parseIngredient = (
     };
 
     // Check if the line begins with either (1) at least one numeric character, or
-    // (2) a decimal point followed by at least one numeric character.
+    // (2) a decimal separator followed by at least one numeric character.
     if (
-      !isNaN(numericQuantity(line[0])) ||
-      (line[0] === '.' && !isNaN(numericQuantity(line.slice(0, 2))))
+      !isNaN(numericQuantity(line[0], nqOpts)) ||
+      (line[0] === opts.decimalSeparator && !isNaN(numericQuantity(line.slice(0, 2), nqOpts)))
     ) {
       // See how many of the first seven characters constitute a single value. This will be `quantity`.
       let lenNum = 6;
       let nqResult = NaN;
 
       while (lenNum > 0 && isNaN(nqResult)) {
-        nqResult = numericQuantity(line.substring(0, lenNum).trim());
+        nqResult = numericQuantity(line.substring(0, lenNum).trim(), nqOpts);
 
         if (nqResult > -1) {
           oIng.quantity = nqResult;
@@ -88,10 +90,10 @@ export const parseIngredient = (
         const firstQty = trailingQtyResult[3];
         const secondQty = trailingQtyResult[12];
         if (!firstQty) {
-          oIng.quantity = numericQuantity(secondQty);
+          oIng.quantity = numericQuantity(secondQty, nqOpts);
         } else {
-          oIng.quantity = numericQuantity(firstQty);
-          oIng.quantity2 = numericQuantity(secondQty);
+          oIng.quantity = numericQuantity(firstQty, nqOpts);
+          oIng.quantity2 = numericQuantity(secondQty, nqOpts);
         }
 
         // Trailing unit of measure.
@@ -137,14 +139,17 @@ export const parseIngredient = (
     const q2reMatch = rangeSeparatorRegEx.exec(oIng.description);
     if (q2reMatch) {
       const q2reMatchLen = q2reMatch[1].length;
-      const nqResultFirstChar = numericQuantity(oIng.description.substring(q2reMatchLen).trim()[0]);
+      const nqResultFirstChar = numericQuantity(
+        oIng.description.substring(q2reMatchLen).trim()[0],
+        nqOpts
+      );
 
       if (!isNaN(nqResultFirstChar)) {
         let lenNum = 7;
         let nqResult = NaN;
 
         while (--lenNum > 0 && isNaN(nqResult)) {
-          nqResult = numericQuantity(oIng.description.substring(q2reMatchLen, lenNum));
+          nqResult = numericQuantity(oIng.description.substring(q2reMatchLen, lenNum), nqOpts);
 
           if (!isNaN(nqResult)) {
             oIng.quantity2 = nqResult;

@@ -709,4 +709,145 @@ export const parseIngredientTests: Record<
       },
     },
   ],
+  'repeated separators (invalid)': [
+    '1__5 cup stuff',
+    [
+      {
+        quantity: 1,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: '__5 cup stuff',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'decimal comma (basic)': [
+    '1,5 cup stuff',
+    [
+      {
+        quantity: 1.5,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cup',
+        description: 'stuff',
+        isGroupHeader: false,
+      },
+    ],
+    { decimalSeparator: ',' },
+  ],
+  'decimal comma (leading zero-less)': [
+    ',5 cup stuff',
+    [
+      {
+        quantity: 0.5,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cup',
+        description: 'stuff',
+        isGroupHeader: false,
+      },
+    ],
+    { decimalSeparator: ',' },
+  ],
+  'decimal comma (range)': [
+    '1,5-2,5 cups stuff',
+    [
+      {
+        quantity: 1.5,
+        quantity2: 2.5,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cups',
+        description: 'stuff',
+        isGroupHeader: false,
+      },
+    ],
+    { decimalSeparator: ',' },
+  ],
+  'decimal comma (trailing)': [
+    'stuff 1,5 cup',
+    [
+      {
+        quantity: 1.5,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cup',
+        description: 'stuff',
+        isGroupHeader: false,
+      },
+    ],
+    { decimalSeparator: ',' },
+  ],
+  'decimal comma (trailing range)': [
+    'stuff 1,5-2,5 cups',
+    [
+      {
+        quantity: 1.5,
+        quantity2: 2.5,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cups',
+        description: 'stuff',
+        isGroupHeader: false,
+      },
+    ],
+    { decimalSeparator: ',' },
+  ],
+  'decimal comma (multi-line)': [
+    '0,667 cup sugar\n1,5 tsp baking powder',
+    [
+      {
+        quantity: 0.667,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cup',
+        description: 'sugar',
+        isGroupHeader: false,
+      },
+      {
+        quantity: 1.5,
+        quantity2: null,
+        unitOfMeasureID: 'teaspoon',
+        unitOfMeasure: 'tsp',
+        description: 'baking powder',
+        isGroupHeader: false,
+      },
+    ],
+    { decimalSeparator: ',' },
+  ],
+  'decimal comma (extract of/from N things)': [
+    'Juice of 1,5 lemons',
+    [
+      {
+        quantity: 1.5,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: 'Juice of lemons',
+        isGroupHeader: false,
+      },
+    ],
+    { decimalSeparator: ',' },
+  ],
+  'invalid decimal separator': [
+    'Juice of 1,5 lemons\nJuice of 1.5 lemons',
+    [
+      {
+        quantity: 15,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: 'Juice of lemons',
+        isGroupHeader: false,
+      },
+      {
+        quantity: 1.5,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: 'Juice of lemons',
+        isGroupHeader: false,
+      },
+    ],
+    { decimalSeparator: 'x' as unknown as ',' },
+  ],
 };

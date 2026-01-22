@@ -7,7 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-N/A
+### Changed
+
+- Repeated separators (e.g. `"1__0"` or `"1,,0"`) are considered invalid within quantities.
+
+### Added
+
+- Option `decimalSeparator`, accepting values `"."` (default) and `","`. When set to `","`, numbers will be evaluated with European-style decimal comma (e.g. `1,0` is equivalent to `1`, not `10`).
 
 ## [v1.3.3] - 2026-01-16
 

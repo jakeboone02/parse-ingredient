@@ -9,6 +9,7 @@ export const defaultOptions: Required<ParseIngredientOptions> = {
   allowLeadingOf: false,
   normalizeUOM: false,
   ignoreUOMs: [],
+  decimalSeparator: '.',
 } as const;
 
 /**
