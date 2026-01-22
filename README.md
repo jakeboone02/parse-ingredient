@@ -223,6 +223,24 @@ parseIngredient('2 large eggs', { ignoreUOMs: ['large'] });
 // ]
 ```
 
+### `decimalSeparator`
+
+The character used as a decimal separator in numeric quantities. Use `','` for European-style decimal commas (e.g., `'1,5'` for 1.5). Defaults to `'.'`.
+
+```js
+parseIngredient('1,5 cups sugar', { decimalSeparator: ',' });
+// [
+//   {
+//     quantity: 1.5,
+//     quantity2: null,
+//     unitOfMeasure: 'cups',
+//     unitOfMeasureID: 'cup',
+//     description: 'sugar',
+//     isGroupHeader: false,
+//   }
+// ]
+```
+
 ## Contributors ✨
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
