@@ -29,6 +29,24 @@ export interface Ingredient {
 }
 
 /**
+ * The type of measurement.
+ */
+export type UnitType = 'volume' | 'mass' | 'length' | 'count' | 'other';
+
+/**
+ * The measurement system.
+ */
+export type UnitSystem = 'us' | 'imperial';
+
+/**
+ * Conversion factor that differs between US and Imperial systems.
+ */
+export interface DualConversionFactor {
+  us: number;
+  imperial: number;
+}
+
+/**
  * Unit of measure properties.
  */
 export interface UnitOfMeasure {
@@ -44,6 +62,16 @@ export interface UnitOfMeasure {
    * List of all known alternate spellings, abbreviations, etc.
    */
   alternates: string[];
+  /**
+   * The type of measurement (volume, mass, length, count, or other).
+   */
+  type?: UnitType;
+  /**
+   * Conversion factor to base unit (ml for volume, g for mass, mm for length).
+   * A number means the same factor applies to all systems.
+   * An object with `us` and `imperial` keys means the factor differs by system.
+   */
+  conversionFactor?: number | DualConversionFactor;
 }
 
 export type UnitOfMeasureDefinitions = Record<string, UnitOfMeasure>;
