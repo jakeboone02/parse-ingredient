@@ -29,6 +29,33 @@ export interface Ingredient {
 }
 
 /**
+ * Kinds of units of measure.
+ * - volume: Units measuring volume (liters, cups, etc.)
+ * - mass: Units measuring mass/weight (grams, pounds, etc.)
+ * - length: Units measuring length (meters, inches, etc.)
+ * - count: Units measuring countable items (pieces, items, etc.)
+ * - package: Units measuring packaged goods (cans, bottles, etc.)
+ * - size: Units measuring size (slices, wedges, etc.)
+ * - other: Units that do not fit into the above categories
+ */
+export type UnitKind = 'volume' | 'mass' | 'length' | 'count' | 'package' | 'size' | 'other';
+
+/**
+ * Systems of units of measure.
+ * - metric: Metric system (liters, grams, etc.)
+ * - imperial: Imperial system (cups, pounds, etc.)
+ * - none: Units that do not belong to a specific system (e.g., "pinch", "can")
+ */
+export type UnitSystem = 'metric' | 'imperial' | 'none';
+
+/**
+ * Variants of imperial units. 
+ * - us: United States customary units
+ * - uk: United Kingdom imperial units
+ */
+export type ImperialVariant = 'us' | 'uk';
+
+/**
  * Unit of measure properties.
  */
 export interface UnitOfMeasure {
@@ -44,6 +71,18 @@ export interface UnitOfMeasure {
    * List of all known alternate spellings, abbreviations, etc.
    */
   alternates: string[];
+  /**
+   * Kind of unit.
+   */
+  kind: UnitKind;
+  /**
+   * System of the unit.
+   */
+  system: UnitSystem;
+  /**
+   * Variant of the imperial unit, if applicable.
+   */
+  variant?: ImperialVariant;
 }
 
 export type UnitOfMeasureDefinitions = Record<string, UnitOfMeasure>;
