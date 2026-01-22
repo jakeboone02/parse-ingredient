@@ -36,14 +36,15 @@ export type UnitType = 'volume' | 'mass' | 'length' | 'count' | 'other';
 /**
  * The measurement system.
  */
-export type UnitSystem = 'us' | 'imperial';
+export type UnitSystem = 'us' | 'imperial' | 'metric';
 
 /**
- * Conversion factor that differs between US and Imperial systems.
+ * Conversion factor that differs between measurement systems.
  */
-export interface DualConversionFactor {
-  us: number;
-  imperial: number;
+export interface MultiSystemConversionFactor {
+  us?: number;
+  imperial?: number;
+  metric?: number;
 }
 
 /**
@@ -69,9 +70,9 @@ export interface UnitOfMeasure {
   /**
    * Conversion factor to base unit (ml for volume, g for mass, mm for length).
    * A number means the same factor applies to all systems.
-   * An object with `us` and `imperial` keys means the factor differs by system.
+   * An object with `us`, `imperial`, and/or `metric` keys means the factor differs by system.
    */
-  conversionFactor?: number | DualConversionFactor;
+  conversionFactor?: number | MultiSystemConversionFactor;
 }
 
 export type UnitOfMeasureDefinitions = Record<string, UnitOfMeasure>;

@@ -324,14 +324,14 @@ export const unitsOfMeasure: UnitOfMeasureDefinitions = {
     plural: 'tablespoons',
     alternates: ['tbsp.', 'T', 'Tbsp.', 'Tbsp'] satisfies string[],
     type: 'volume',
-    conversionFactor: { us: 14.787, imperial: 17.758 },
+    conversionFactor: { us: 14.787, imperial: 17.758, metric: 15 },
   },
   teaspoon: {
     short: 'tsp',
     plural: 'teaspoons',
     alternates: ['tsp.', 't'] satisfies string[],
     type: 'volume',
-    conversionFactor: { us: 4.929, imperial: 5.919 },
+    conversionFactor: { us: 4.929, imperial: 5.919, metric: 5 },
   },
 
   // Volume units without conversion factor (imprecise)

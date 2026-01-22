@@ -1,5 +1,5 @@
 import { unitsOfMeasure } from './constants';
-import { DualConversionFactor, UnitOfMeasureDefinitions, UnitSystem } from './types';
+import { MultiSystemConversionFactor, UnitOfMeasureDefinitions, UnitSystem } from './types';
 
 /**
  * Options for {@link convertUnit}.
@@ -10,7 +10,13 @@ export interface ConvertUnitOptions {
    *
    * @default 'us'
    */
-  system?: UnitSystem;
+  fromSystem?: UnitSystem;
+  /**
+   * The measurement system to use when units have different US/Imperial conversion factors.
+   *
+   * @default 'us'
+   */
+  toSystem?: UnitSystem;
   /**
    * Additional unit definitions to use for conversion.
    * These are merged with the default {@link unitsOfMeasure}.
@@ -19,20 +25,13 @@ export interface ConvertUnitOptions {
 }
 
 /**
- * Gets the conversion factor for a unit, handling both single and dual factors.
+ * Gets the conversion factor for a unit, handling both single and multi-system factors.
  */
-function getConversionFactor(
-  factor: number | DualConversionFactor | undefined,
+const getConversionFactor = (
+  factor: number | MultiSystemConversionFactor | undefined,
   system: UnitSystem
-): number | null {
-  if (factor === undefined) {
-    return null;
-  }
-  if (typeof factor === 'number') {
-    return factor;
-  }
-  return factor[system];
-}
+): number | null =>
+  factor === undefined ? null : typeof factor === 'number' ? factor : (factor[system] ?? null);
 
 /**
  * Converts a value from one unit to another.
@@ -58,7 +57,7 @@ export function convertUnit(
   toUnit: string,
   options: ConvertUnitOptions = {}
 ): number | null {
-  const { system = 'us', additionalUOMs = {} } = options;
+  const { fromSystem = 'us', toSystem = 'us', additionalUOMs = {} } = options;
   const mergedUOMs = { ...unitsOfMeasure, ...additionalUOMs };
 
   const fromDef = mergedUOMs[fromUnit];
@@ -74,8 +73,8 @@ export function convertUnit(
     return null;
   }
 
-  const fromFactor = getConversionFactor(fromDef.conversionFactor, system);
-  const toFactor = getConversionFactor(toDef.conversionFactor, system);
+  const fromFactor = getConversionFactor(fromDef.conversionFactor, fromSystem);
+  const toFactor = getConversionFactor(toDef.conversionFactor, toSystem);
 
   // Missing conversion factors
   if (fromFactor === null || toFactor === null) {
