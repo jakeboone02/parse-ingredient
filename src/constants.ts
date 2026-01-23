@@ -262,7 +262,7 @@ export const unitsOfMeasure: UnitOfMeasureDefinitions = {
     plural: 'cups',
     alternates: ['c.', 'C'] satisfies string[],
     type: 'volume',
-    conversionFactor: { us: 236.588, imperial: 284.131 },
+    conversionFactor: { us: 236.588, imperial: 284.131, metric: 250 },
   },
   'fluid ounce': {
     short: 'fl oz',
@@ -322,14 +322,14 @@ export const unitsOfMeasure: UnitOfMeasureDefinitions = {
   tablespoon: {
     short: 'tbsp',
     plural: 'tablespoons',
-    alternates: ['tbsp.', 'T', 'Tbsp.', 'Tbsp'] satisfies string[],
+    alternates: ['tbsp.', 'T', 'Tbsp.', 'Tbsp', 'tablespoonful'] satisfies string[],
     type: 'volume',
     conversionFactor: { us: 14.787, imperial: 17.758, metric: 15 },
   },
   teaspoon: {
     short: 'tsp',
     plural: 'teaspoons',
-    alternates: ['tsp.', 't'] satisfies string[],
+    alternates: ['tsp.', 't', 'teaspoonful'] satisfies string[],
     type: 'volume',
     conversionFactor: { us: 4.929, imperial: 5.919, metric: 5 },
   },

@@ -36,25 +36,25 @@ const getConversionFactor = (
 /**
  * Converts a value from one unit to another.
  *
- * @param value - The numeric value to convert.
- * @param fromUnit - The unit to convert from (unit ID, e.g., 'cup', 'milliliter').
- * @param toUnit - The unit to convert to (unit ID, e.g., 'cup', 'milliliter').
- * @param options - Conversion options.
  * @returns The converted value, or `null` if conversion is not possible
  *          (incompatible types, missing conversion factors, or unknown units).
  *
  * @example
  * ```ts
  * convertUnit(1, 'cup', 'milliliter') // ~236.588 (US)
- * convertUnit(1, 'cup', 'milliliter', { system: 'imperial' }) // ~284.131
+ * convertUnit(1, 'cup', 'milliliter', { fromSystem: 'imperial' }) // ~284.131
  * convertUnit(1, 'pound', 'gram') // ~453.592
  * convertUnit(1, 'cup', 'gram') // null (incompatible types)
  * ```
  */
 export function convertUnit(
+  /** The numeric value to convert. */
   value: number,
+  /** The unit to convert from (unit ID, e.g., 'cup', 'milliliter'). */
   fromUnit: string,
+  /** The unit to convert to (unit ID, e.g., 'cup', 'milliliter'). */
   toUnit: string,
+  /** Conversion options. */
   options: ConvertUnitOptions = {}
 ): number | null {
   const { fromSystem = 'us', toSystem = 'us', additionalUOMs = {} } = options;

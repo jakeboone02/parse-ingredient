@@ -16,8 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#40] Option `decimalSeparator`, accepting values `"."` (default) and `","`. When set to `","`, numbers will be evaluated with European-style decimal comma (e.g. `1,0` is equivalent to `1`, not `10`).
 - Additional metadata in `unitsOfMeasure`
   - `type`: "volume", "mass", "length", "count", or "other"
-  - `conversionFactor`: ratio of the unit to a base unit of the same type (millimeter for length, gram for mass, milliliter for volume)
-    - Includes both US Customary and Imperial ratios for overloaded units like "gallon"
+  - `conversionFactor`: ratio of the unit to a base unit of the same type (base units are millimeter for length, gram for mass, milliliter for volume)
+    - Includes applicable US Customary, Imperial, and metric ratios for overloaded units like "teaspoon"
 - `convertUnit` utility function to convert values from one unit to another
 
 ## [v1.3.3] - 2026-01-16
