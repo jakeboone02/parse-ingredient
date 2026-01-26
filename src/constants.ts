@@ -270,6 +270,13 @@ export const unitsOfMeasure: UnitOfMeasureDefinitions = {
     type: 'volume',
     conversionFactor: { us: 236.588, imperial: 284.131, metric: 250 },
   },
+  deciliter: {
+    short: 'dl',
+    plural: 'deciliters',
+    alternates: ['dl.'] satisfies string[],
+    type: 'volume',
+    conversionFactor: 100,
+  },
   'fluid ounce': {
     short: 'fl oz',
     plural: 'fluid ounces',
