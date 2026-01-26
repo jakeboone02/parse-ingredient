@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `conversionFactor`: ratio of the unit to a base unit of the same type (base units are millimeter for length, gram for mass, milliliter for volume)
     - Includes applicable US Customary, Imperial, and metric ratios for overloaded units like "teaspoon"
 - `convertUnit` utility function to convert values from one unit to another
+- Added "dozen" and "deciliter" to default list
 
 ## [v1.3.3] - 2026-01-16
 
