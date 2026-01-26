@@ -112,6 +112,12 @@ export const unitsOfMeasure: UnitOfMeasureDefinitions = {
     alternates: [] satisfies string[],
     type: 'count',
   },
+  dozen: {
+    short: 'dz',
+    plural: 'dozen',
+    alternates: ['dz.'] satisfies string[],
+    type: 'count',
+  },
   ear: {
     short: 'ear',
     plural: 'ears',
