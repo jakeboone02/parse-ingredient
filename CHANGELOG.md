@@ -9,11 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Repeated separators (e.g. `"1__0"` or `"1,,0"`) are considered invalid within quantities.
+- [#40] Repeated separators (e.g. `"1__0"` or `"1,,0"`) are considered invalid within quantities.
 
 ### Added
 
-- Option `decimalSeparator`, accepting values `"."` (default) and `","`. When set to `","`, numbers will be evaluated with European-style decimal comma (e.g. `1,0` is equivalent to `1`, not `10`).
+- [#40] Option `decimalSeparator`, accepting values `"."` (default) and `","`. When set to `","`, numbers will be evaluated with European-style decimal comma (e.g. `1,0` is equivalent to `1`, not `10`).
+- Additional metadata in `unitsOfMeasure`
+  - `type`: "volume", "mass", "length", "count", or "other"
+  - `conversionFactor`: ratio of the unit to a base unit of the same type (base units are millimeter for length, gram for mass, milliliter for volume)
+    - Includes applicable US Customary, Imperial, and metric ratios for overloaded units like "teaspoon"
+- `convertUnit` utility function to convert values from one unit to another
+- Added "dozen" and "deciliter" to default list
 
 ## [v1.3.3] - 2026-01-16
 
@@ -191,6 +197,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#31]: https://github.com/jakeboone02/parse-ingredient/pull/31
 [#34]: https://github.com/jakeboone02/parse-ingredient/pull/34
 [#37]: https://github.com/jakeboone02/parse-ingredient/pull/37
+[#40]: https://github.com/jakeboone02/parse-ingredient/pull/40
 
 <!-- Release comparison links -->
 
