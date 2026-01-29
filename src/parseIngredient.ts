@@ -8,7 +8,7 @@ import {
   rangeSeparatorRegEx,
   trailingQuantityRegEx,
 } from './constants';
-import { identifyUnit, IdentifyUnitOptions } from './convertUnit';
+import { identifyUnit } from './convertUnit';
 import type { Ingredient, ParseIngredientOptions } from './types';
 
 const newLineRegExp = /\r?\n/;
