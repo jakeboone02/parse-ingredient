@@ -241,6 +241,75 @@ parseIngredient('1,5 cups sugar', { decimalSeparator: ',' });
 // ]
 ```
 
+## Unit Conversion
+
+### `convertUnit`
+
+Converts a numeric value from one unit of measure to another. Accepts unit IDs, short forms, plurals, or alternate spellings (e.g., `'cup'`, `'c'`, `'cups'`, `'C'`). Returns the converted value, or `null` if conversion is not possible (incompatible types, missing conversion factors, or unknown units).
+
+```js
+import { convertUnit } from 'parse-ingredient';
+
+convertUnit(1, 'cup', 'milliliter'); // ~236.588 (US)
+convertUnit(1, 'cups', 'ml'); // ~236.588 (same as above)
+convertUnit(1, 'pound', 'gram'); // ~453.592
+convertUnit(1, 'lbs', 'g'); // ~453.592 (same as above)
+convertUnit(1, 'inch', 'centimeter'); // ~2.54
+convertUnit(1, 'cup', 'gram'); // null (incompatible types: volume vs mass)
+```
+
+#### Options
+
+- **`fromSystem`**: The measurement system to use for the source unit (`'us'`, `'imperial'`, or `'metric'`). Defaults to `'us'`.
+- **`toSystem`**: The measurement system to use for the target unit. Defaults to `'us'`.
+- **`additionalUOMs`**: Additional unit definitions to use for conversion (merged with the default `unitsOfMeasure`).
+
+```js
+// Convert using different measurement systems
+convertUnit(1, 'cup', 'milliliter', { fromSystem: 'imperial' }); // ~284.131
+convertUnit(1, 'cup', 'cup', { fromSystem: 'us', toSystem: 'imperial' }); // ~0.833
+
+// Use custom unit definitions
+convertUnit(1, 'bucket', 'liter', {
+  additionalUOMs: {
+    bucket: {
+      short: 'bkt',
+      plural: 'buckets',
+      alternates: [],
+      type: 'volume',
+      conversionFactor: 10000, // 10000 ml = 10 liters
+    },
+  },
+}); // 10
+```
+
+### `conversionFactor`
+
+The `conversionFactor` property in unit definitions enables the `convertUnit` function. Units with the same `type` (e.g., `'volume'`, `'mass'`, `'length'`) can be converted between each other.
+
+- **Number**: A single conversion factor applies to all measurement systems.
+- **Object**: Different factors for `us`, `imperial`, and/or `metric` systems.
+
+```ts
+// Single factor (same for all systems)
+gram: {
+  short: 'g',
+  plural: 'grams',
+  type: 'mass',
+  conversionFactor: 1, // base unit for mass
+}
+
+// Multi-system factors
+cup: {
+  short: 'c',
+  plural: 'cups',
+  type: 'volume',
+  conversionFactor: { us: 236.588, imperial: 284.131, metric: 250 },
+}
+```
+
+Supported unit types: `volume`, `mass`, `length`. Units without a `conversionFactor` or `type` (such as `pinch`, `clove`, or count-based units like `bag`) cannot be converted.
+
 ## Contributors ✨
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):

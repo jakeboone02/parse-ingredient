@@ -7,13 +7,11 @@ import {
   ofRegEx,
   rangeSeparatorRegEx,
   trailingQuantityRegEx,
-  unitsOfMeasure,
 } from './constants';
-import type { Ingredient, ParseIngredientOptions, UnitOfMeasure } from './types';
+import { identifyUnit, IdentifyUnitOptions } from './convertUnit';
+import type { Ingredient, ParseIngredientOptions } from './types';
 
 const newLineRegExp = /\r?\n/;
-
-const addIdToUomDefinition = ([uom, def]: [string, UnitOfMeasure]) => ({ id: uom, ...def });
 
 /**
  * Parses a string into an array of recipe ingredient objects
@@ -31,9 +29,9 @@ export const parseIngredient = (
   const opts = { ...defaultOptions, ...options };
   const nqOpts: NumericQuantityOptions | undefined =
     opts.decimalSeparator === ',' ? { decimalSeparator: ',' } : undefined;
-  const mergedUOMs = { ...unitsOfMeasure, ...opts.additionalUOMs };
-  const uomArray = Object.entries(mergedUOMs).map(addIdToUomDefinition);
-  const uomArrayLength = uomArray.length;
+
+  // Pre-compute lowercase ignored UOMs for the trailing quantity bail-out check
+  const ignoredUOMsLC = opts.ignoreUOMs.map(u => u.toLowerCase());
 
   const ingredientArray = ingredientText
     .split(newLineRegExp)
@@ -75,10 +73,7 @@ export const parseIngredient = (
       const trailingQtyResult = trailingQuantityRegEx.exec(line);
       const trailingQtyMaybeUom = trailingQtyResult?.at(-1)?.toLowerCase();
 
-      if (
-        trailingQtyMaybeUom &&
-        opts.ignoreUOMs.some(ignored => ignored.toLowerCase() === trailingQtyMaybeUom)
-      ) {
+      if (trailingQtyMaybeUom && ignoredUOMsLC.includes(trailingQtyMaybeUom)) {
         // Trailing quantity detected, but bailing out since the UOM should be ignored.
         oIng.description = line;
       } else if (trailingQtyResult) {
@@ -99,23 +94,11 @@ export const parseIngredient = (
         // Trailing unit of measure.
         const uomRaw = trailingQtyResult.at(-1);
         if (uomRaw) {
-          const uomLC = uomRaw.toLowerCase();
-          let uom = '';
-          let uomID = '';
-          let i = -1;
+          const uomID = identifyUnit(uomRaw, options);
 
-          while (++i < uomArrayLength && !uom) {
-            const { alternates, id, short, plural } = uomArray[i];
-            const versions = [...alternates, id, short, plural];
-            if (versions.some(v => v.toLowerCase() === uomLC)) {
-              uom = uomRaw;
-              uomID = id;
-            }
-          }
-
-          if (uom) {
+          if (uomID) {
             oIng.unitOfMeasureID = uomID;
-            oIng.unitOfMeasure = opts.normalizeUOM ? uomID : uom;
+            oIng.unitOfMeasure = opts.normalizeUOM ? uomID : uomRaw;
           } else if (oIng.description.match(fromRegEx)) {
             oIng.description += ` ${uomRaw}`;
           }
@@ -164,28 +147,13 @@ export const parseIngredient = (
 
     if (firstWordREMatches) {
       const firstWord = firstWordREMatches[1].replace(/\s+/g, ' ');
-      const firstWordLC = firstWord.toLowerCase();
       const remainingDesc = (firstWordREMatches[2] ?? '').trim();
       if (remainingDesc) {
-        let uom = '';
-        let uomID = '';
-        let i = -1;
+        const uomID = identifyUnit(firstWord, options);
 
-        while (++i < uomArrayLength && !uom) {
-          const { alternates, id, short, plural } = uomArray[i];
-          const versions = [...alternates, id, short, plural].filter(unit => {
-            const unitLC = unit.toLowerCase();
-            return !opts.ignoreUOMs.some(ignored => ignored.toLowerCase() === unitLC);
-          });
-          if (versions.some(v => v.toLowerCase() === firstWordLC)) {
-            uom = firstWord;
-            uomID = id;
-          }
-        }
-
-        if (uom) {
+        if (uomID) {
           oIng.unitOfMeasureID = uomID;
-          oIng.unitOfMeasure = opts.normalizeUOM ? uomID : uom;
+          oIng.unitOfMeasure = opts.normalizeUOM ? uomID : firstWord;
           oIng.description = remainingDesc;
         }
       }

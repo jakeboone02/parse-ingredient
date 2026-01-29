@@ -1,5 +1,68 @@
-import { expect, test, describe } from 'bun:test';
-import { convertUnit } from './convertUnit';
+import { describe, expect, test } from 'bun:test';
+import { convertUnit, identifyUnit } from './convertUnit';
+
+describe('identifyUnit', () => {
+  test('returns unit ID for exact match', () => {
+    expect(identifyUnit('cup')).toBe('cup');
+    expect(identifyUnit('tablespoon')).toBe('tablespoon');
+  });
+
+  test('returns unit ID for short form', () => {
+    expect(identifyUnit('c')).toBe('cup');
+    expect(identifyUnit('tbsp')).toBe('tablespoon');
+    expect(identifyUnit('tsp')).toBe('teaspoon');
+    expect(identifyUnit('oz')).toBe('ounce');
+  });
+
+  test('returns unit ID for plural form', () => {
+    expect(identifyUnit('cups')).toBe('cup');
+    expect(identifyUnit('tablespoons')).toBe('tablespoon');
+    expect(identifyUnit('ounces')).toBe('ounce');
+  });
+
+  test('returns unit ID for alternates', () => {
+    expect(identifyUnit('T')).toBe('tablespoon');
+    expect(identifyUnit('Tbsp')).toBe('tablespoon');
+    expect(identifyUnit('lbs')).toBe('pound');
+  });
+
+  test('distinguishes case-sensitive units (T vs t)', () => {
+    expect(identifyUnit('T')).toBe('tablespoon');
+    expect(identifyUnit('t')).toBe('teaspoon');
+  });
+
+  test('is case-insensitive for non-conflicting units', () => {
+    expect(identifyUnit('CUP')).toBe('cup');
+    expect(identifyUnit('Cup')).toBe('cup');
+    expect(identifyUnit('TBSP')).toBe('tablespoon');
+  });
+
+  test('returns null for unknown units', () => {
+    expect(identifyUnit('unknown')).toBeNull();
+    expect(identifyUnit('foo')).toBeNull();
+  });
+
+  test('uses additionalUOMs', () => {
+    expect(identifyUnit('bucket')).toBeNull();
+    expect(
+      identifyUnit('bucket', {
+        additionalUOMs: { bucket: { short: 'bkt', plural: 'buckets', alternates: [] } },
+      })
+    ).toBe('bucket');
+    expect(
+      identifyUnit('bkt', {
+        additionalUOMs: { bucket: { short: 'bkt', plural: 'buckets', alternates: [] } },
+      })
+    ).toBe('bucket');
+  });
+
+  test('respects ignoreUOMs', () => {
+    expect(identifyUnit('large')).toBe('large');
+    expect(identifyUnit('large', { ignoreUOMs: ['large'] })).toBeNull();
+    expect(identifyUnit('Large', { ignoreUOMs: ['large'] })).toBeNull();
+    expect(identifyUnit('lg', { ignoreUOMs: ['large'] })).toBe('large'); // only ignores exact input match
+  });
+});
 
 describe('volume conversions', () => {
   test('cup to milliliter (US)', () => {
@@ -66,7 +129,7 @@ describe('mass conversions', () => {
 
   test('gram to milligram', () => {
     const result = convertUnit(1, 'gram', 'milligram');
-    expect(result).toBeCloseTo(1000, 0);
+    expect(result).toBe(1000);
   });
 });
 
@@ -88,7 +151,7 @@ describe('length conversions', () => {
 
   test('meter to centimeter', () => {
     const result = convertUnit(1, 'meter', 'centimeter');
-    expect(result).toBeCloseTo(100, 0);
+    expect(result).toBe(100);
   });
 });
 
@@ -274,7 +337,7 @@ describe('with additionalUOMs', () => {
         },
       },
     });
-    expect(result).toBeCloseTo(10, 0);
+    expect(result).toBe(10);
   });
 
   test('overrides existing unit definitions', () => {
@@ -289,6 +352,29 @@ describe('with additionalUOMs', () => {
         },
       },
     });
-    expect(result).toBeCloseTo(250, 0);
+    expect(result).toBe(250);
+  });
+});
+
+describe('unit spelling variations', () => {
+  test('accepts short form units', () => {
+    expect(convertUnit(1, 'c', 'ml')).toBeCloseTo(236.588, 2);
+    expect(convertUnit(1, 'tbsp', 'tsp')).toBeCloseTo(3, 0);
+    expect(convertUnit(1, 'lb', 'g')).toBeCloseTo(453.592, 2);
+  });
+
+  test('accepts plural form units', () => {
+    expect(convertUnit(1, 'cups', 'milliliters')).toBeCloseTo(236.588, 2);
+    expect(convertUnit(1, 'pounds', 'grams')).toBeCloseTo(453.592, 2);
+  });
+
+  test('accepts alternate spellings', () => {
+    expect(convertUnit(1, 'T', 'tsp')).toBeCloseTo(3, 0);
+    expect(convertUnit(1, 'lbs', 'g')).toBeCloseTo(453.592, 2);
+  });
+
+  test('handles mixed spelling styles', () => {
+    expect(convertUnit(1, 'cups', 'ml')).toBeCloseTo(236.588, 2);
+    expect(convertUnit(1, 'c', 'milliliter')).toBeCloseTo(236.588, 2);
   });
 });

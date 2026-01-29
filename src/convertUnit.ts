@@ -1,5 +1,55 @@
 import { unitsOfMeasure } from './constants';
-import { MultiSystemConversionFactor, UnitOfMeasureDefinitions, UnitSystem } from './types';
+import {
+  MultiSystemConversionFactor,
+  ParseIngredientOptions,
+  UnitOfMeasureDefinitions,
+  UnitSystem,
+} from './types';
+import { buildUnitLookupMaps, getDefaultUnitLookupMaps, lookupUnit } from './unitLookup';
+
+export type IdentifyUnitOptions = Pick<ParseIngredientOptions, 'additionalUOMs' | 'ignoreUOMs'>;
+
+/**
+ * Identifies a unit of measure from a string, returning the canonical unit ID.
+ * Matches against the unit ID, short form, plural form, and all alternates.
+ * Case-sensitive matches are tried first (e.g., 'T' = tablespoon, 't' = teaspoon),
+ * then falls back to case-insensitive matching.
+ *
+ * @returns The canonical unit ID (e.g., 'cup'), or `null` if the unit is not recognized
+ *          or is in the `ignoreUOMs` list.
+ *
+ * @example
+ * ```ts
+ * identifyUnit('cups') // 'cup'
+ * identifyUnit('c') // 'cup'
+ * identifyUnit('T') // 'tablespoon'
+ * identifyUnit('t') // 'teaspoon'
+ * identifyUnit('tbsp') // 'tablespoon'
+ * identifyUnit('unknown') // null
+ * identifyUnit('large', { ignoreUOMs: ['large'] }) // null
+ * ```
+ */
+export const identifyUnit = (
+  /** The unit string to identify (e.g., 'cups', 'c', 'C', 'cup'). */
+  unit: string,
+  /** Options for unit identification. */
+  options: IdentifyUnitOptions = {}
+): string | null => {
+  const { additionalUOMs = {}, ignoreUOMs = [] } = options;
+
+  // Check if the unit should be ignored (case-insensitive)
+  if (ignoreUOMs.length > 0) {
+    const unitLC = unit.toLowerCase();
+    if (ignoreUOMs.some(ignored => ignored.toLowerCase() === unitLC)) {
+      return null;
+    }
+  }
+
+  const hasAdditionalUOMs = Object.keys(additionalUOMs).length > 0;
+  const maps = hasAdditionalUOMs ? buildUnitLookupMaps(additionalUOMs) : getDefaultUnitLookupMaps();
+
+  return lookupUnit(unit, maps);
+};
 
 /**
  * Options for {@link convertUnit}.
@@ -47,26 +97,29 @@ const getConversionFactor = (
  * convertUnit(1, 'cup', 'gram') // null (incompatible types)
  * ```
  */
-export function convertUnit(
+export const convertUnit = (
   /** The numeric value to convert. */
   value: number,
-  /** The unit to convert from (unit ID, e.g., 'cup', 'milliliter'). */
+  /** The unit to convert from (unit ID, short, plural, or alternate spelling). */
   fromUnit: string,
-  /** The unit to convert to (unit ID, e.g., 'cup', 'milliliter'). */
+  /** The unit to convert to (unit ID, short, plural, or alternate spelling). */
   toUnit: string,
   /** Conversion options. */
   options: ConvertUnitOptions = {}
-): number | null {
+): number | null => {
   const { fromSystem = 'us', toSystem = 'us', additionalUOMs = {} } = options;
   const mergedUOMs = { ...unitsOfMeasure, ...additionalUOMs };
 
-  const fromDef = mergedUOMs[fromUnit];
-  const toDef = mergedUOMs[toUnit];
+  const fromUnitID = identifyUnit(fromUnit, { additionalUOMs });
+  const toUnitID = identifyUnit(toUnit, { additionalUOMs });
 
   // Unknown units
-  if (!fromDef || !toDef) {
+  if (!fromUnitID || !toUnitID) {
     return null;
   }
+
+  const fromDef = mergedUOMs[fromUnitID];
+  const toDef = mergedUOMs[toUnitID];
 
   // Incompatible or missing types
   if (!fromDef.type || !toDef.type || fromDef.type !== toDef.type) {
@@ -83,4 +136,4 @@ export function convertUnit(
 
   // Convert via base unit: value * fromFactor / toFactor
   return (value * fromFactor) / toFactor;
-}
+};
