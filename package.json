@@ -13,16 +13,16 @@
     "./package.json": "./package.json",
     ".": {
       "import": {
-        "types": "./dist/types-esm/index.d.mts",
+        "types": "./dist/parse-ingredient.d.mts",
         "default": "./dist/parse-ingredient.mjs"
       },
       "require": {
-        "types": "./dist/types/index.d.ts",
+        "types": "./dist/cjs/index.d.ts",
         "default": "./dist/cjs/index.js"
       }
     }
   },
-  "types": "./dist/types/index.d.ts",
+  "types": "./dist/parse-ingredient.legacy-esm.d.ts",
   "unpkg": "./dist/parse-ingredient.umd.min.js",
   "keywords": [
     "parse",
@@ -51,21 +51,19 @@
     "lint": "bunx oxlint --type-aware --report-unused-disable-directives --type-check",
     "pretty-print": "prettier --write '*.{html,json,ts}' './src/*.*'",
     "publish:npm": "np",
-    "codesandbox-ci": "bash .codesandbox/ci.sh",
-    "publish:demo": "bun ./gh-pages.publish.js"
+    "codesandbox-ci": "bash .codesandbox/ci.sh"
   },
   "devDependencies": {
-    "@jakeboone02/generate-dts": "0.1.2",
-    "@types/bun": "^1.3.6",
-    "@types/node": "^25.0.10",
-    "@types/web": "^0.0.321",
-    "@typescript/native-preview": "^7.0.0-dev.20260122.3",
-    "np": "^11.0.0",
-    "oxlint": "^1.41.0",
-    "oxlint-tsgolint": "^0.11.1",
+    "@types/bun": "^1.3.7",
+    "@types/node": "^25.1.0",
+    "@types/web": "^0.0.323",
+    "@typescript/native-preview": "^7.0.0-dev.20260129.1",
+    "np": "^11.0.2",
+    "oxlint": "^1.42.0",
+    "oxlint-tsgolint": "^0.11.3",
     "prettier": "3.8.1",
     "prettier-plugin-organize-imports": "4.3.0",
-    "tsdown": "^0.20.0-beta.4",
+    "tsdown": "^0.20.1",
     "typedoc": "^0.28.16",
     "typescript": "^5.9.3"
   },

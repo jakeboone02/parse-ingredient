@@ -1,14 +1,13 @@
 import { writeFile } from 'fs/promises';
 import type { UserConfig } from 'tsdown';
 import { defineConfig } from 'tsdown';
-import { defaultIgnore, generateDTS } from '@jakeboone02/generate-dts';
 
 const config: ReturnType<typeof defineConfig> = defineConfig(options => {
   const commonOptions = {
     entry: {
       'parse-ingredient': 'src/index.ts',
     },
-    dts: false,
+    dts: { tsgo: true },
     outputOptions: {
       globals: {
         'numeric-quantity': 'NumericQuantity',
@@ -30,11 +29,6 @@ const config: ReturnType<typeof defineConfig> = defineConfig(options => {
       ...commonOptions,
       clean: true,
       format: 'esm',
-      onSuccess: () =>
-        generateDTS({
-          ignore: filePath =>
-            defaultIgnore(filePath) || filePath.endsWith('Tests.ts') || filePath.endsWith('dev.ts'),
-        }),
     },
     // ESM, Webpack 4 support. Target ES2017 syntax to compile away optional chaining and spreads
     {
@@ -77,16 +71,22 @@ const config: ReturnType<typeof defineConfig> = defineConfig(options => {
       outDir: './dist/cjs/',
       onSuccess: async () => {
         // Write the CJS index file
-        await writeFile(
-          'dist/cjs/index.js',
-          `'use strict';
+        await Promise.all([
+          writeFile(
+            'dist/cjs/index.js',
+            `'use strict';
 if (process.env.NODE_ENV === 'production') {
   module.exports = require('./parse-ingredient.cjs.production.js');
 } else {
   module.exports = require('./parse-ingredient.cjs.development.js');
 }
 `
-        );
+          ),
+          writeFile(
+            'dist/cjs/index.d.ts',
+            `export * from './parse-ingredient.cjs.development.js';`
+          ),
+        ]);
       },
     },
     // UMD (ish)
