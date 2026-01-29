@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+N/A
+
+## [v2.0.0] - 2026-01-29
+
 ### Changed
 
 - [#40] Repeated separators (e.g. `"1__0"` or `"1,,0"`) are considered invalid within quantities.
@@ -201,7 +205,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- Release comparison links -->
 
-[unreleased]: https://github.com/jakeboone02/parse-ingredient/compare/v1.3.3...HEAD
+[unreleased]: https://github.com/jakeboone02/parse-ingredient/compare/v2.0.0...HEAD
+[v2.0.0]: https://github.com/jakeboone02/parse-ingredient/compare/v1.3.3...v2.0.0
 [v1.3.3]: https://github.com/jakeboone02/parse-ingredient/compare/v1.3.2...v1.3.3
 [v1.3.2]: https://github.com/jakeboone02/parse-ingredient/compare/v1.3.1...v1.3.2
 [v1.3.1]: https://github.com/jakeboone02/parse-ingredient/compare/v1.3.0...v1.3.1
