@@ -93,17 +93,17 @@ describe('volume conversions', () => {
 
   test('tablespoon to teaspoon (US)', () => {
     const result = convertUnit(1, 'tablespoon', 'teaspoon', { fromSystem: 'us' });
-    expect(result).toBeCloseTo(3, 0);
+    expect(result).toBe(3);
   });
 
   test('pint to cup (US)', () => {
     const result = convertUnit(1, 'pint', 'cup', { fromSystem: 'us' });
-    expect(result).toBeCloseTo(2, 0);
+    expect(result).toBe(2);
   });
 
   test('quart to pint (US)', () => {
     const result = convertUnit(1, 'quart', 'pint', { fromSystem: 'us' });
-    expect(result).toBeCloseTo(2, 0);
+    expect(result).toBe(2);
   });
 
   test('fluid ounce to milliliter (US)', () => {
@@ -142,12 +142,12 @@ describe('length conversions', () => {
 
   test('foot to inch', () => {
     const result = convertUnit(1, 'foot', 'inch');
-    expect(result).toBeCloseTo(12, 0);
+    expect(result).toBe(12);
   });
 
   test('yard to foot', () => {
     const result = convertUnit(1, 'yard', 'foot');
-    expect(result).toBeCloseTo(3, 0);
+    expect(result).toBe(3);
   });
 
   test('meter to centimeter', () => {
@@ -187,12 +187,12 @@ describe('fromSystem/toSystem relationships', () => {
   describe('same unit conversions', () => {
     test('cup US to cup US returns 1', () => {
       const result = convertUnit(1, 'cup', 'cup', { fromSystem: 'us', toSystem: 'us' });
-      expect(result).toBeCloseTo(1, 5);
+      expect(result).toBe(1);
     });
 
     test('cup Imperial to cup Imperial returns 1', () => {
       const result = convertUnit(1, 'cup', 'cup', { fromSystem: 'imperial', toSystem: 'imperial' });
-      expect(result).toBeCloseTo(1, 5);
+      expect(result).toBe(1);
     });
 
     test('cup US to cup Imperial', () => {
@@ -208,12 +208,12 @@ describe('fromSystem/toSystem relationships', () => {
     });
 
     test('tablespoon US to tablespoon Imperial', () => {
-      // US tbsp (14.787 ml) to Imperial tbsp (17.758 ml)
+      // US tbsp (14.786765 ml) to Imperial tbsp (15 ml)
       const result = convertUnit(1, 'tablespoon', 'tablespoon', {
         fromSystem: 'us',
         toSystem: 'imperial',
       });
-      expect(result).toBeCloseTo(14.787 / 17.758, 4);
+      expect(result).toBeCloseTo(14.786765 / 15, 4);
     });
 
     test('gallon Imperial to gallon US', () => {
@@ -248,16 +248,16 @@ describe('fromSystem/toSystem relationships', () => {
         fromSystem: 'metric',
         toSystem: 'metric',
       });
-      expect(result).toBeCloseTo(1, 5);
+      expect(result).toBe(1);
     });
 
     test('tablespoon Imperial to tablespoon metric', () => {
-      // Imperial tbsp (17.758 ml) to metric tbsp (15 ml)
+      // Imperial tbsp (15 ml) to metric tbsp (15 ml)
       const result = convertUnit(1, 'tablespoon', 'tablespoon', {
         fromSystem: 'imperial',
         toSystem: 'metric',
       });
-      expect(result).toBeCloseTo(17.758 / 15, 4);
+      expect(result).toBeCloseTo(15 / 15, 4);
     });
   });
 
@@ -276,12 +276,12 @@ describe('fromSystem/toSystem relationships', () => {
     });
 
     test('US tablespoon to Imperial teaspoon', () => {
-      // US tbsp (14.787 ml) to Imperial tsp (5.919 ml)
+      // US tbsp (14.786765 ml) to Imperial tsp (5 ml)
       const result = convertUnit(1, 'tablespoon', 'teaspoon', {
         fromSystem: 'us',
         toSystem: 'imperial',
       });
-      expect(result).toBeCloseTo(14.787 / 5.919, 3);
+      expect(result).toBeCloseTo(14.786765 / 5, 3);
     });
 
     test('Imperial pint to US cup', () => {
@@ -309,12 +309,12 @@ describe('fromSystem/toSystem relationships', () => {
   describe('units without multi-system factors', () => {
     test('gram to gram returns 1 regardless of system', () => {
       const result = convertUnit(1, 'gram', 'gram', { fromSystem: 'us', toSystem: 'imperial' });
-      expect(result).toBeCloseTo(1, 5);
+      expect(result).toBe(1);
     });
 
     test('liter to liter returns 1 regardless of system', () => {
       const result = convertUnit(1, 'liter', 'liter', { fromSystem: 'imperial', toSystem: 'us' });
-      expect(result).toBeCloseTo(1, 5);
+      expect(result).toBe(1);
     });
 
     test('pound to kilogram same regardless of system', () => {
@@ -360,7 +360,7 @@ describe('with additionalUOMs', () => {
 describe('unit spelling variations', () => {
   test('accepts short form units', () => {
     expect(convertUnit(1, 'c', 'ml')).toBeCloseTo(236.588, 2);
-    expect(convertUnit(1, 'tbsp', 'tsp')).toBeCloseTo(3, 0);
+    expect(convertUnit(1, 'tbsp', 'tsp')).toBe(3);
     expect(convertUnit(1, 'lb', 'g')).toBeCloseTo(453.592, 2);
   });
 
@@ -370,7 +370,7 @@ describe('unit spelling variations', () => {
   });
 
   test('accepts alternate spellings', () => {
-    expect(convertUnit(1, 'T', 'tsp')).toBeCloseTo(3, 0);
+    expect(convertUnit(1, 'T', 'tsp')).toBe(3);
     expect(convertUnit(1, 'lbs', 'g')).toBeCloseTo(453.592, 2);
   });
 
@@ -425,7 +425,7 @@ describe('fromSystem and toSystem case-insensitivity', () => {
       fromSystem: 'METRIC' as UnitSystem,
       toSystem: 'metric',
     });
-    expect(result).toBeCloseTo(1, 5);
+    expect(result).toBe(1);
   });
 
   test('mixed case produces same result as lowercase', () => {

@@ -252,14 +252,14 @@ export const unitsOfMeasure: UnitOfMeasureDefinitions = {
     plural: 'ounces',
     alternates: ['oz.'] satisfies string[],
     type: 'mass',
-    conversionFactor: 28.3495,
+    conversionFactor: 28.349523,
   },
   pound: {
     short: 'lb',
     plural: 'pounds',
     alternates: ['lb.', 'lbs', 'lbs.'] satisfies string[],
     type: 'mass',
-    conversionFactor: 453.592,
+    conversionFactor: 453.59237,
   },
 
   // Volume units (conversion factor in ml)
@@ -268,7 +268,7 @@ export const unitsOfMeasure: UnitOfMeasureDefinitions = {
     plural: 'cups',
     alternates: ['c.', 'C'] satisfies string[],
     type: 'volume',
-    conversionFactor: { us: 236.588, imperial: 284.131, metric: 250 },
+    conversionFactor: { us: 236.58824, imperial: 284.13063, metric: 250 },
   },
   deciliter: {
     short: 'dl',
@@ -295,14 +295,14 @@ export const unitsOfMeasure: UnitOfMeasureDefinitions = {
       'fluid-oz',
     ] satisfies string[],
     type: 'volume',
-    conversionFactor: { us: 29.5735, imperial: 28.4131 },
+    conversionFactor: { us: 29.57353, imperial: 28.413063 },
   },
   gallon: {
     short: 'gal',
     plural: 'gallons',
     alternates: ['gal.'] satisfies string[],
     type: 'volume',
-    conversionFactor: { us: 3785.41, imperial: 4546.09 },
+    conversionFactor: { us: 3785.4118, imperial: 4546.09 },
   },
   liter: {
     short: 'l',
@@ -323,28 +323,28 @@ export const unitsOfMeasure: UnitOfMeasureDefinitions = {
     plural: 'pints',
     alternates: ['pt.'] satisfies string[],
     type: 'volume',
-    conversionFactor: { us: 473.176, imperial: 568.261 },
+    conversionFactor: { us: 473.17647, imperial: 568.26125 },
   },
   quart: {
     short: 'qt',
     plural: 'quarts',
     alternates: ['qt.', 'qts', 'qts.'] satisfies string[],
     type: 'volume',
-    conversionFactor: { us: 946.353, imperial: 1136.52 },
+    conversionFactor: { us: 946.35295, imperial: 1136.5225 },
   },
   tablespoon: {
     short: 'tbsp',
     plural: 'tablespoons',
     alternates: ['tbsp.', 'T', 'Tbsp.', 'Tbsp', 'tablespoonful'] satisfies string[],
     type: 'volume',
-    conversionFactor: { us: 14.787, imperial: 17.758, metric: 15 },
+    conversionFactor: { us: 14.786765, imperial: 15, metric: 15 },
   },
   teaspoon: {
     short: 'tsp',
     plural: 'teaspoons',
     alternates: ['tsp.', 't', 'teaspoonful'] satisfies string[],
     type: 'volume',
-    conversionFactor: { us: 4.929, imperial: 5.919, metric: 5 },
+    conversionFactor: { us: 4.9289216, imperial: 5, metric: 5 },
   },
 
   // Volume units without conversion factor (imprecise)

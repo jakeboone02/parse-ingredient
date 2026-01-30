@@ -121,6 +121,11 @@ export const convertUnit = (
     return null;
   }
 
+  // Same unit with same system - return value as-is
+  if (fromUnitID === toUnitID && normalizedFromSystem === normalizedToSystem) {
+    return value;
+  }
+
   const fromDef = mergedUOMs[fromUnitID];
   const toDef = mergedUOMs[toUnitID];
 
@@ -138,5 +143,6 @@ export const convertUnit = (
   }
 
   // Convert via base unit: value * fromFactor / toFactor
-  return (value * fromFactor) / toFactor;
+  const result = (value * fromFactor) / toFactor;
+  return Math.round(result * 1e6) / 1e6;
 };

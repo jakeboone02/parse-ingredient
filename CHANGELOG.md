@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - `convertUnit` options `fromSystem` and `toSystem` are now case-insensitive.
+- `convertUnit` rounds results to 6 decimal places for more accurate conversions. Updated conversion factors with more precise values.
 
 ## [v2.0.0] - 2026-01-29
 
