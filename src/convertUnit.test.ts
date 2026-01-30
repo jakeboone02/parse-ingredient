@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'bun:test';
 import { convertUnit, identifyUnit } from './convertUnit';
+import { UnitSystem } from './types';
 
 describe('identifyUnit', () => {
   test('returns unit ID for exact match', () => {
@@ -376,5 +377,62 @@ describe('unit spelling variations', () => {
   test('handles mixed spelling styles', () => {
     expect(convertUnit(1, 'cups', 'ml')).toBeCloseTo(236.588, 2);
     expect(convertUnit(1, 'c', 'milliliter')).toBeCloseTo(236.588, 2);
+  });
+});
+
+describe('fromSystem and toSystem case-insensitivity', () => {
+  test('fromSystem is case-insensitive (uppercase)', () => {
+    const result = convertUnit(1, 'cup', 'milliliter', { fromSystem: 'US' as UnitSystem });
+    expect(result).toBeCloseTo(236.588, 2);
+  });
+
+  test('fromSystem is case-insensitive (mixed case)', () => {
+    const result = convertUnit(1, 'cup', 'milliliter', { fromSystem: 'Imperial' as UnitSystem });
+    expect(result).toBeCloseTo(284.131, 2);
+  });
+
+  test('fromSystem is case-insensitive (all caps)', () => {
+    const result = convertUnit(1, 'cup', 'milliliter', { fromSystem: 'IMPERIAL' as UnitSystem });
+    expect(result).toBeCloseTo(284.131, 2);
+  });
+
+  test('toSystem is case-insensitive (uppercase)', () => {
+    const result = convertUnit(1, 'cup', 'cup', {
+      fromSystem: 'us',
+      toSystem: 'IMPERIAL' as UnitSystem,
+    });
+    expect(result).toBeCloseTo(236.588 / 284.131, 4);
+  });
+
+  test('toSystem is case-insensitive (mixed case)', () => {
+    const result = convertUnit(1, 'gallon', 'liter', {
+      fromSystem: 'us',
+      toSystem: 'Us' as UnitSystem,
+    });
+    expect(result).toBeCloseTo(3.78541, 2);
+  });
+
+  test('both fromSystem and toSystem are case-insensitive', () => {
+    const result = convertUnit(1, 'teaspoon', 'teaspoon', {
+      fromSystem: 'METRIC' as UnitSystem,
+      toSystem: 'US' as UnitSystem,
+    });
+    expect(result).toBeCloseTo(5 / 4.929, 4);
+  });
+
+  test('works with all uppercase METRIC', () => {
+    const result = convertUnit(1, 'tablespoon', 'tablespoon', {
+      fromSystem: 'METRIC' as UnitSystem,
+      toSystem: 'metric',
+    });
+    expect(result).toBeCloseTo(1, 5);
+  });
+
+  test('mixed case produces same result as lowercase', () => {
+    const lowercaseResult = convertUnit(1, 'cup', 'milliliter', { fromSystem: 'imperial' });
+    const mixedCaseResult = convertUnit(1, 'cup', 'milliliter', {
+      fromSystem: 'ImPeRiAl' as UnitSystem,
+    });
+    expect(lowercaseResult).toBeCloseTo(mixedCaseResult!, 5);
   });
 });

@@ -108,6 +108,9 @@ export const convertUnit = (
   options: ConvertUnitOptions = {}
 ): number | null => {
   const { fromSystem = 'us', toSystem = 'us', additionalUOMs = {} } = options;
+  // Normalize system names to lowercase for case-insensitive matching
+  const normalizedFromSystem = fromSystem.toLowerCase() as UnitSystem;
+  const normalizedToSystem = toSystem.toLowerCase() as UnitSystem;
   const mergedUOMs = { ...unitsOfMeasure, ...additionalUOMs };
 
   const fromUnitID = identifyUnit(fromUnit, { additionalUOMs });
@@ -126,8 +129,8 @@ export const convertUnit = (
     return null;
   }
 
-  const fromFactor = getConversionFactor(fromDef.conversionFactor, fromSystem);
-  const toFactor = getConversionFactor(toDef.conversionFactor, toSystem);
+  const fromFactor = getConversionFactor(fromDef.conversionFactor, normalizedFromSystem);
+  const toFactor = getConversionFactor(toDef.conversionFactor, normalizedToSystem);
 
   // Missing conversion factors
   if (fromFactor === null || toFactor === null) {

@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-N/A
+### Fixed
+
+- `convertUnit` options `fromSystem` and `toSystem` are now case-insensitive.
 
 ## [v2.0.0] - 2026-01-29
 
