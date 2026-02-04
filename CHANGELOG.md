@@ -7,7 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-N/A
+### Added
+
+- Internationalization (i18n) support for parsing keywords
+  - `groupHeaderPatterns`: customizable patterns for group headers (supports strings and RegExp)
+  - `rangeSeparators`: customizable range separator words (e.g., "bis", "oder", "à")
+  - `descriptionStripPrefixes`: customizable prefix words to strip from descriptions
+  - `trailingQuantityContext`: customizable context words for trailing quantities
+- Deprecated legacy exports (`fors`, `forsRegEx`, `rangeSeparatorWords`, `rangeSeparatorRegEx`, `ofs`, `ofRegEx`, `froms`, `fromRegEx`) in favor of new configurable defaults and regex builders
 
 ## [v2.0.1] - 2026-01-30
 

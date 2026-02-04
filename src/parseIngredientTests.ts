@@ -850,4 +850,294 @@ export const parseIngredientTests: Record<
     ],
     { decimalSeparator: 'x' as unknown as ',' },
   ],
+
+  // --- i18n: groupHeaderPatterns ---
+  'i18n: group header with custom prefix (Für)': [
+    'Für den Teig',
+    [
+      {
+        quantity: null,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: 'Für den Teig',
+        isGroupHeader: true,
+      },
+    ],
+    { groupHeaderPatterns: ['For', 'Für'] },
+  ],
+  'i18n: group header with regex pattern': [
+    'Pour la pâte',
+    [
+      {
+        quantity: null,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: 'Pour la pâte',
+        isGroupHeader: true,
+      },
+    ],
+    { groupHeaderPatterns: ['For', /^Pour\s+l[ea]/iu] },
+  ],
+  'i18n: group header - colon still works with custom patterns': [
+    'Glasur:',
+    [
+      {
+        quantity: null,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: 'Glasur:',
+        isGroupHeader: true,
+      },
+    ],
+    { groupHeaderPatterns: ['Für'] },
+  ],
+  'i18n: group header - original For still detected with mixed patterns': [
+    'For the icing',
+    [
+      {
+        quantity: null,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: 'For the icing',
+        isGroupHeader: true,
+      },
+    ],
+    { groupHeaderPatterns: ['For', 'Für', 'Pour'] },
+  ],
+
+  // --- i18n: rangeSeparators ---
+  'i18n: range with German "bis"': [
+    '1 bis 2 cups stuff',
+    [
+      {
+        quantity: 1,
+        quantity2: 2,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cups',
+        description: 'stuff',
+        isGroupHeader: false,
+      },
+    ],
+    { rangeSeparators: ['to', 'or', 'bis', 'oder'] },
+  ],
+  'i18n: range with German "oder"': [
+    '3 oder 4 bananas',
+    [
+      {
+        quantity: 3,
+        quantity2: 4,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: 'bananas',
+        isGroupHeader: false,
+      },
+    ],
+    { rangeSeparators: ['to', 'or', 'bis', 'oder'] },
+  ],
+  'i18n: range with French "à"': [
+    '2 à 3 cups flour',
+    [
+      {
+        quantity: 2,
+        quantity2: 3,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cups',
+        description: 'flour',
+        isGroupHeader: false,
+      },
+    ],
+    { rangeSeparators: ['to', 'or', 'à', 'ou'] },
+  ],
+  'i18n: trailing range with custom separator': [
+    'stuff 1 bis 2 cups',
+    [
+      {
+        quantity: 1,
+        quantity2: 2,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cups',
+        description: 'stuff',
+        isGroupHeader: false,
+      },
+    ],
+    { rangeSeparators: ['to', 'or', 'bis'] },
+  ],
+  'i18n: range - dashes still work with custom separators': [
+    '1-2 cups stuff',
+    [
+      {
+        quantity: 1,
+        quantity2: 2,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cups',
+        description: 'stuff',
+        isGroupHeader: false,
+      },
+    ],
+    { rangeSeparators: ['bis', 'oder'] },
+  ],
+
+  // --- i18n: descriptionStripPrefixes ---
+  'i18n: strip German "von" prefix': [
+    '1 cup von sugar',
+    [
+      {
+        quantity: 1,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cup',
+        description: 'sugar',
+        isGroupHeader: false,
+      },
+    ],
+    { descriptionStripPrefixes: ['of', 'von'] },
+  ],
+  'i18n: strip French "de" prefix': [
+    '2 cups de farine',
+    [
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cups',
+        description: 'farine',
+        isGroupHeader: false,
+      },
+    ],
+    { descriptionStripPrefixes: ['of', 'de'] },
+  ],
+  'i18n: custom strip prefix only - "of" not stripped': [
+    '1 cup of sugar',
+    [
+      {
+        quantity: 1,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cup',
+        description: 'of sugar',
+        isGroupHeader: false,
+      },
+    ],
+    { descriptionStripPrefixes: ['von', 'de'] },
+  ],
+
+  // --- i18n: trailingQuantityContext ---
+  'i18n: trailing quantity with German "von"': [
+    'Saft von 3 lemons',
+    [
+      {
+        quantity: 3,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: 'Saft von lemons',
+        isGroupHeader: false,
+      },
+    ],
+    { trailingQuantityContext: ['from', 'of', 'von'] },
+  ],
+  'i18n: trailing quantity with French "de"': [
+    'Jus de 2 citrons',
+    [
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: 'Jus de citrons',
+        isGroupHeader: false,
+      },
+    ],
+    { trailingQuantityContext: ['from', 'of', 'de'] },
+  ],
+
+  // --- i18n: Combined German example ---
+  'i18n: full German example': [
+    'Für den Kuchen:\n2 bis 3 Tassen Mehl\n1 Tasse von Zucker',
+    [
+      {
+        quantity: null,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: 'Für den Kuchen:',
+        isGroupHeader: true,
+      },
+      {
+        quantity: 2,
+        quantity2: 3,
+        unitOfMeasureID: 'tasse',
+        unitOfMeasure: 'Tassen',
+        description: 'Mehl',
+        isGroupHeader: false,
+      },
+      {
+        quantity: 1,
+        quantity2: null,
+        unitOfMeasureID: 'tasse',
+        unitOfMeasure: 'Tasse',
+        description: 'Zucker',
+        isGroupHeader: false,
+      },
+    ],
+    {
+      groupHeaderPatterns: ['For', 'Für'],
+      rangeSeparators: ['to', 'or', 'bis', 'oder'],
+      descriptionStripPrefixes: ['of', 'von'],
+      additionalUOMs: {
+        tasse: {
+          short: 'T',
+          plural: 'Tassen',
+          alternates: ['Tasse'],
+        },
+      },
+    },
+  ],
+
+  // --- i18n: Combined French example ---
+  'i18n: full French example': [
+    'Pour la pâte:\n1 à 2 tasses farine\nJus de 3 citrons',
+    [
+      {
+        quantity: null,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: 'Pour la pâte:',
+        isGroupHeader: true,
+      },
+      {
+        quantity: 1,
+        quantity2: 2,
+        unitOfMeasureID: 'tasse',
+        unitOfMeasure: 'tasses',
+        description: 'farine',
+        isGroupHeader: false,
+      },
+      {
+        quantity: 3,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: 'Jus de citrons',
+        isGroupHeader: false,
+      },
+    ],
+    {
+      groupHeaderPatterns: ['For', /^Pour\s+l[ea]/iu],
+      rangeSeparators: ['to', 'or', 'à', 'ou'],
+      trailingQuantityContext: ['from', 'of', 'de'],
+      additionalUOMs: {
+        tasse: {
+          short: 't',
+          plural: 'tasses',
+          alternates: ['tasse'],
+        },
+      },
+    },
+  ],
 };
