@@ -87,6 +87,7 @@ export const defaultOptions: Required<ParseIngredientOptions> = {
   rangeSeparators: defaultRangeSeparators as unknown as string[],
   descriptionStripPrefixes: defaultDescriptionStripPrefixes as unknown as string[],
   trailingQuantityContext: defaultTrailingQuantityContext as unknown as string[],
+  includeMeta: false,
 } as const;
 
 // --- Legacy Exports (for backward compatibility) ---

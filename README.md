@@ -223,6 +223,37 @@ parseIngredient('2 large eggs', { ignoreUOMs: ['large'] });
 // ]
 ```
 
+### `includeMeta`
+
+When `true`, each ingredient object will include a `meta` property containing source metadata:
+
+- `sourceText`: The original text of the ingredient line before parsing.
+- `sourceIndex`: The zero-based line number in the original input (accounts for empty lines).
+
+```js
+parseIngredient('1 cup flour\n\n2 tbsp sugar', { includeMeta: true });
+// [
+//   {
+//     quantity: 1,
+//     quantity2: null,
+//     unitOfMeasure: 'cup',
+//     unitOfMeasureID: 'cup',
+//     description: 'flour',
+//     isGroupHeader: false,
+//     meta: { sourceText: '1 cup flour', sourceIndex: 0 },
+//   },
+//   {
+//     quantity: 2,
+//     quantity2: null,
+//     unitOfMeasure: 'tbsp',
+//     unitOfMeasureID: 'tablespoon',
+//     description: 'sugar',
+//     isGroupHeader: false,
+//     meta: { sourceText: '2 tbsp sugar', sourceIndex: 2 },
+//   },
+// ]
+```
+
 ## Internationalization (i18n)
 
 The library supports parsing ingredients in multiple languages through configurable keyword options. While unit names can be localized using `additionalUOMs`, the following options allow localization of parsing keywords and quantities.

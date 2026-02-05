@@ -1,4 +1,19 @@
 /**
+ * Metadata about the parsed ingredient line.
+ */
+export interface IngredientMeta {
+  /**
+   * The source text of the ingredient line before parsing.
+   */
+  sourceText: string;
+  /**
+   * The source index (line number) of the ingredient in the input.
+   * Zero-based index relative to the order of non-empty lines.
+   */
+  sourceIndex: number;
+}
+
+/**
  * Ingredient properties.
  */
 export interface Ingredient {
@@ -26,6 +41,11 @@ export interface Ingredient {
    * Whether the "ingredient" is actually a group header, e.g. "For icing:"
    */
   isGroupHeader: boolean;
+  /**
+   * Metadata about the parsed ingredient line.
+   * Only included when the `includeMeta` option is `true`.
+   */
+  meta?: IngredientMeta;
 }
 
 /**
@@ -173,4 +193,11 @@ export interface ParseIngredientOptions {
    * @example ['from', 'of', 'von', 'de']
    */
   trailingQuantityContext?: string[];
+  /**
+   * If `true`, include a `meta` property on each ingredient containing
+   * the original text, original index, and other metadata.
+   *
+   * @default false
+   */
+  includeMeta?: boolean;
 }

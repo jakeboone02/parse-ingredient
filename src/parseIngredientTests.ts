@@ -1140,4 +1140,108 @@ export const parseIngredientTests: Record<
       },
     },
   ],
+  'includeMeta option - single line': [
+    '1 cup flour',
+    [
+      {
+        quantity: 1,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cup',
+        description: 'flour',
+        isGroupHeader: false,
+        meta: {
+          sourceText: '1 cup flour',
+          sourceIndex: 0,
+        },
+      },
+    ],
+    { includeMeta: true },
+  ],
+  'includeMeta option - multiple lines': [
+    '1 cup flour\n2 tbsp sugar\n3 eggs',
+    [
+      {
+        quantity: 1,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cup',
+        description: 'flour',
+        isGroupHeader: false,
+        meta: {
+          sourceText: '1 cup flour',
+          sourceIndex: 0,
+        },
+      },
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: 'tablespoon',
+        unitOfMeasure: 'tbsp',
+        description: 'sugar',
+        isGroupHeader: false,
+        meta: {
+          sourceText: '2 tbsp sugar',
+          sourceIndex: 1,
+        },
+      },
+      {
+        quantity: 3,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: 'eggs',
+        isGroupHeader: false,
+        meta: {
+          sourceText: '3 eggs',
+          sourceIndex: 2,
+        },
+      },
+    ],
+    { includeMeta: true },
+  ],
+  'includeMeta option - skips empty lines in index': [
+    '1 cup flour\n\n2 tbsp sugar',
+    [
+      {
+        quantity: 1,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cup',
+        description: 'flour',
+        isGroupHeader: false,
+        meta: {
+          sourceText: '1 cup flour',
+          sourceIndex: 0,
+        },
+      },
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: 'tablespoon',
+        unitOfMeasure: 'tbsp',
+        description: 'sugar',
+        isGroupHeader: false,
+        meta: {
+          sourceText: '2 tbsp sugar',
+          sourceIndex: 2,
+        },
+      },
+    ],
+    { includeMeta: true },
+  ],
+  'includeMeta false - no meta property': [
+    '1 cup flour',
+    [
+      {
+        quantity: 1,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cup',
+        description: 'flour',
+        isGroupHeader: false,
+      },
+    ],
+    { includeMeta: false },
+  ],
 };

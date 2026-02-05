@@ -42,10 +42,10 @@ export const parseIngredient = (
 
   const ingredientArray = ingredientText
     .split(newLineRegExp)
-    .map(line => line.trim())
-    .filter(Boolean);
+    .map((line, index) => ({ line: line.trim(), sourceIndex: index }))
+    .filter(({ line }) => Boolean(line));
 
-  return ingredientArray.map(line => {
+  return ingredientArray.map(({ line, sourceIndex }) => {
     const oIng: Ingredient = {
       quantity: null,
       quantity2: null,
@@ -54,6 +54,13 @@ export const parseIngredient = (
       description: '',
       isGroupHeader: false,
     };
+
+    if (opts.includeMeta) {
+      oIng.meta = {
+        sourceText: line,
+        sourceIndex,
+      };
+    }
 
     // Check if the line begins with either (1) at least one numeric character, or
     // (2) a decimal separator followed by at least one numeric character.
