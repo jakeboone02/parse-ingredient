@@ -709,6 +709,132 @@ export const parseIngredientTests: Record<
       },
     },
   ],
+  // Multi-word unit of measure tests
+  'multi-word UOM with single-word collision (leading, space-separated)': [
+    '2 gestr. TL butter',
+    [
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: 'gestr-tl',
+        unitOfMeasure: 'gestr. TL',
+        description: 'butter',
+        isGroupHeader: false,
+      },
+    ],
+    {
+      additionalUOMs: {
+        'gestr-tl': {
+          short: 'gestr. TL',
+          plural: 'gestr. TL',
+          alternates: ['gestr.TL', 'gestr. tl'],
+        },
+        'tl': {
+          short: 'tl',
+          plural: 'tl',
+          alternates: ['tsp', 'teaspoon', 'teaspoons'],
+        },
+      },
+    },
+  ],
+  'multi-word UOM with single-word collision swapped (leading, space-separated)': [
+    '2 TL gestr. butter',
+    [
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: 'gestr-tl',
+        unitOfMeasure: 'TL gestr.',
+        description: 'butter',
+        isGroupHeader: false,
+      },
+    ],
+    {
+      additionalUOMs: {
+        'gestr-tl': {
+          short: 'TL gestr.',
+          plural: 'TL gestr.',
+          alternates: ['gestr.TL', 'gestr. tl'],
+        },
+        'tl': {
+          short: 'tl',
+          plural: 'tl',
+          alternates: ['tsp', 'teaspoon', 'teaspoons'],
+        },
+      },
+    },
+  ],
+  'single-word UOM with multi-word collision (leading)': [
+    '2 TL butter',
+    [
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: 'tl',
+        unitOfMeasure: 'TL',
+        description: 'butter',
+        isGroupHeader: false,
+      },
+    ],
+    {
+      additionalUOMs: {
+        'gestr-tl': {
+          short: 'gestr. TL',
+          plural: 'gestr. TL',
+          alternates: ['gestr.TL', 'gestr. tl'],
+        },
+        'tl': {
+          short: 'tl',
+          plural: 'tl',
+          alternates: ['tsp', 'teaspoon', 'teaspoons'],
+        },
+      },
+    },
+  ],
+  'multi-word UOM (trailing, consolidated form)': [
+    'butter, 2 gestr.TL',
+    [
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: 'gestr-tl',
+        unitOfMeasure: 'gestr.TL',
+        description: 'butter',
+        isGroupHeader: false,
+      },
+    ],
+    {
+      additionalUOMs: {
+        'gestr-tl': {
+          short: 'gestr. TL',
+          plural: 'gestr. TL',
+          alternates: ['gestr.TL', 'gestr. tl'],
+        },
+      },
+    },
+  ],
+  'multi-word UOM (trailing, space-separated)': [
+    'butter gestr, 2 TL',
+    [
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: 'gestr-tl',
+        unitOfMeasure: 'gestr TL',
+        description: 'butter',
+        isGroupHeader: false,
+      },
+    ],
+    {
+      additionalUOMs: {
+        'gestr-tl': {
+          short: 'gestr. TL',
+          plural: 'gestr. TL',
+          alternates: ['gestr TL', 'gestr.TL'],
+        },
+      },
+    },
+  ],
   'repeated separators (invalid)': [
     '1__5 cup stuff',
     [

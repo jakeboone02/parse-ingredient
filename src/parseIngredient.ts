@@ -94,11 +94,29 @@ export const parseIngredient = (
         // Trailing unit of measure.
         const uomRaw = trailingQtyResult.at(-1);
         if (uomRaw) {
-          const uomID = identifyUnit(uomRaw, options);
+          let uomID = identifyUnit(uomRaw, options);
+          let finalUomRaw = uomRaw;
+
+          // Try multi-word unit: check if description ends with the first word of a two-word unit
+          if (!uomID && oIng.description) {
+            const descWords = oIng.description.trim().split(/\s+/);
+            if (descWords.length >= 1) {
+              const lastDescWord = descWords[descWords.length - 1];
+              const twoWordUnit = lastDescWord + ' ' + uomRaw;
+              const twoWordID = identifyUnit(twoWordUnit, options);
+
+              if (twoWordID) {
+                uomID = twoWordID;
+                finalUomRaw = twoWordUnit;
+                // Remove the last word from description
+                oIng.description = descWords.slice(0, -1).join(' ');
+              }
+            }
+          }
 
           if (uomID) {
             oIng.unitOfMeasureID = uomID;
-            oIng.unitOfMeasure = opts.normalizeUOM ? uomID : uomRaw;
+            oIng.unitOfMeasure = opts.normalizeUOM ? uomID : finalUomRaw;
           } else if (oIng.description.match(fromRegEx)) {
             oIng.description += ` ${uomRaw}`;
           }
@@ -149,12 +167,28 @@ export const parseIngredient = (
       const firstWord = firstWordREMatches[1].replace(/\s+/g, ' ');
       const remainingDesc = (firstWordREMatches[2] ?? '').trim();
       if (remainingDesc) {
-        const uomID = identifyUnit(firstWord, options);
+        let uomID = identifyUnit(firstWord, options);
+        let matchedUnit = firstWord;
+        let finalDesc = remainingDesc;
+
+        // Try multi-word unit combinations (greedy matching: prefer longer matches over shorter ones)
+        const nextWords = remainingDesc.match(/^([\p{L}\p{N}_]+(?:[.-]?[\p{L}\p{N}_]+)*[-.]?)\s+/iu);
+        if (nextWords) {
+          const twoWordCombo = firstWord + ' ' + nextWords[1];
+          const twoWordID = identifyUnit(twoWordCombo, options);
+
+          // If multi-word unit exists, prefer it over single-word match
+          if (twoWordID) {
+            uomID = twoWordID;
+            matchedUnit = twoWordCombo;
+            finalDesc = remainingDesc.substring(nextWords[0].length).trim();
+          }
+        }
 
         if (uomID) {
           oIng.unitOfMeasureID = uomID;
-          oIng.unitOfMeasure = opts.normalizeUOM ? uomID : firstWord;
-          oIng.description = remainingDesc;
+          oIng.unitOfMeasure = opts.normalizeUOM ? uomID : matchedUnit;
+          oIng.description = finalDesc;
         }
       }
     }
