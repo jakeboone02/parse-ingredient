@@ -2,7 +2,7 @@ import type { Ingredient, ParseIngredientOptions } from './types';
 
 export const parseIngredientTests: Record<
   string,
-  [string, Ingredient[]] | [string, Ingredient[], ParseIngredientOptions]
+  [string | string[], Ingredient[]] | [string | string[], Ingredient[], ParseIngredientOptions]
 > = {
   'basic case': [
     '1 cup stuff',
@@ -1244,4 +1244,65 @@ export const parseIngredientTests: Record<
     ],
     { includeMeta: false },
   ],
+
+  // --- Array input ---
+  'array input - single element': [
+    ['1 cup flour'],
+    [
+      {
+        quantity: 1,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cup',
+        description: 'flour',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'array input - multiple elements': [
+    ['1 cup flour', '2 tbsp sugar'],
+    [
+      {
+        quantity: 1,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cup',
+        description: 'flour',
+        isGroupHeader: false,
+      },
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: 'tablespoon',
+        unitOfMeasure: 'tbsp',
+        description: 'sugar',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'array input - with options': [
+    ['1 cup flour', '2 tbsp sugar'],
+    [
+      {
+        quantity: 1,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cup',
+        description: 'flour',
+        isGroupHeader: false,
+        meta: { sourceText: '1 cup flour', sourceIndex: 0 },
+      },
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: 'tablespoon',
+        unitOfMeasure: 'tbsp',
+        description: 'sugar',
+        isGroupHeader: false,
+        meta: { sourceText: '2 tbsp sugar', sourceIndex: 1 },
+      },
+    ],
+    { includeMeta: true },
+  ],
+  'array input - empty array': [[], []],
 };

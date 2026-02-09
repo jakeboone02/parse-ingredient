@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- [#46] `parseIngredient` now accepts `Array<string>` as well as `string`. Each element of the array is treated as a single ingredient line.
 - [#46] Internationalization (i18n) support for parsing keywords
   - `groupHeaderPatterns`: customizable patterns for group headers (supports strings and RegExp)
   - `rangeSeparators`: customizable range separator words (e.g., "bis", "oder", "à")

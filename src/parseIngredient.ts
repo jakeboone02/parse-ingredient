@@ -14,13 +14,13 @@ import type { Ingredient, ParseIngredientOptions } from './types';
 const newLineRegExp = /\r?\n/;
 
 /**
- * Parses a string into an array of recipe ingredient objects
+ * Parses a string or array of strings into an array of recipe ingredient objects
  */
 export const parseIngredient = (
   /**
-   * The ingredient list, as plain text.
+   * The ingredient list, as plain text or an array of strings.
    */
-  ingredientText: string,
+  ingredientText: string | string[],
   /**
    * Configuration options. Defaults to {@link defaultOptions}.
    */
@@ -40,8 +40,9 @@ export const parseIngredient = (
   const trailingContextRegex = buildTrailingContextRegex(opts.trailingQuantityContext);
   const trailingQuantityRegex = buildTrailingQuantityRegex(opts.rangeSeparators);
 
-  const ingredientArray = ingredientText
-    .split(newLineRegExp)
+  const ingredientArray = (
+    Array.isArray(ingredientText) ? ingredientText : ingredientText.split(newLineRegExp)
+  )
     .map((line, index) => ({ line: line.trim(), sourceIndex: index }))
     .filter(({ line }) => Boolean(line));
 

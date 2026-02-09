@@ -80,6 +80,8 @@ In the browser, all exports including the `parseIngredient` function are availab
 
 ## Usage
 
+The `parseIngredient` function accepts a string (with newline-separated ingredients) or an array of strings (one ingredient per element).
+
 ```js
 import { parseIngredient } from 'parse-ingredient';
 
