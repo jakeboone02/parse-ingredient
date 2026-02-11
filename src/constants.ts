@@ -33,11 +33,6 @@ export const rangeSeparatorRegEx: RegExp = new RegExp(`^${rangeSeparatorRegExSou
 
 /**
  * Regex to capture the first word of a description to check if it's a unit of measure.
- * Conservative approach: captures single words with optional trailing punctuation.
- * Multi-word units are handled through fallback logic in parseIngredient.
- * - Matches word characters with optional embedded periods/hyphens (e.g., "gestr.TL", "fl-oz")
- * - Includes optional trailing period or hyphen (e.g., "Tbsp.", "fl-")
- * - Does NOT greedily match across spaces to avoid false positives
  */
 export const firstWordRegEx: RegExp =
   /^(fl(?:uid)?(?:\s+|-)(?:oz|ounces?)|[\p{L}\p{N}_]+(?:[.-][\p{L}\p{N}_]+)*[-.]?)(.+)?/iu;
@@ -46,11 +41,9 @@ const numericRegexAnywhere = numericRegex.source.replace('^', '').replace(/\$$/,
 
 /**
  * Regex to capture trailing quantity and unit of measure.
- * Uses conservative pattern matching for single-word units.
- * Multi-word units in trailing position are handled through fallback logic in parseIngredient.
  */
 export const trailingQuantityRegEx: RegExp = new RegExp(
-  `(,|:|-|\u2013|\u2014|x|\u2a2f)?\\s*((${numericRegexAnywhere})\\s*(${rangeSeparatorRegExSource}))?\\s*(${numericRegexAnywhere})\\s*(fl(?:uid)?(?:\\s+|-)(?:oz|ounces?)|[\\p{L}\\p{N}_]+(?:[.-][\\p{L}\\p{N}_]+)*[-.]?)?$`,
+  `(,|:|-|–|—|x|⨯)?\\s*((${numericRegexAnywhere})\\s*(${rangeSeparatorRegExSource}))?\\s*(${numericRegexAnywhere})\\s*(fl(?:uid)?(?:\\s+|-)(?:oz|ounces?)|[\\p{L}\\p{N}_]+(?:[.-][\\p{L}\\p{N}_]+)*[-.]?)?$`,
   'iu'
 );
 
