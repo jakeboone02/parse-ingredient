@@ -94,11 +94,11 @@ export const parseIngredient = (
         // Trailing unit of measure.
         const uomRaw = trailingQtyResult.at(-1);
         if (uomRaw) {
-          let uomID = identifyUnit(uomRaw, options);
+          let uomID: string | null = null;
           let finalUomRaw = uomRaw;
 
-          // Try multi-word unit: check if description ends with the first word of a two-word unit
-          if (!uomID && oIng.description) {
+          // Greedy: try multi-word unit first (prefer longer match over shorter one)
+          if (oIng.description) {
             const descWords = oIng.description.trim().split(/\s+/);
             if (descWords.length >= 1) {
               const lastDescWord = descWords[descWords.length - 1];
@@ -112,6 +112,12 @@ export const parseIngredient = (
                 oIng.description = descWords.slice(0, -1).join(' ');
               }
             }
+          }
+
+          // Fall back to single-word match
+          if (!uomID) {
+            uomID = identifyUnit(uomRaw, options);
+            finalUomRaw = uomRaw;
           }
 
           if (uomID) {
@@ -172,16 +178,19 @@ export const parseIngredient = (
         let finalDesc = remainingDesc;
 
         // Try multi-word unit combinations (greedy matching: prefer longer matches over shorter ones)
-        const nextWords = remainingDesc.match(/^([\p{L}\p{N}_]+(?:[.-]?[\p{L}\p{N}_]+)*[-.]?)\s+/iu);
+        const nextWords = remainingDesc.match(/^([\p{L}\p{N}_]+(?:[.-]?[\p{L}\p{N}_]+)*[-.]?)(?:\s+|$)/iu);
         if (nextWords) {
           const twoWordCombo = firstWord + ' ' + nextWords[1];
           const twoWordID = identifyUnit(twoWordCombo, options);
 
-          // If multi-word unit exists, prefer it over single-word match
-          if (twoWordID) {
+          // If multi-word unit exists, prefer it over single-word match.
+          // When no quantity is present, require remaining description
+          // (consistent with single-word behavior: "1 cup" → description, not UOM).
+          const multiWordFinalDesc = remainingDesc.substring(nextWords[0].length).trim();
+          if (twoWordID && (oIng.quantity !== null || multiWordFinalDesc)) {
             uomID = twoWordID;
             matchedUnit = twoWordCombo;
-            finalDesc = remainingDesc.substring(nextWords[0].length).trim();
+            finalDesc = multiWordFinalDesc;
           }
         }
 
