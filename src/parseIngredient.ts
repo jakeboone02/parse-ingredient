@@ -109,11 +109,35 @@ export const parseIngredient = (
         // Trailing unit of measure.
         const uomRaw = trailingQtyResult.at(-1);
         if (uomRaw) {
-          const uomID = identifyUnit(uomRaw, options);
+          let uomID: string | null = null;
+          let finalUomRaw = uomRaw;
+
+          // Greedy: try multi-word unit first (prefer longer match over shorter one)
+          if (oIng.description) {
+            const descWords = oIng.description.trim().split(/\s+/);
+            if (descWords.length >= 1) {
+              const lastDescWord = descWords[descWords.length - 1];
+              const twoWordUnit = lastDescWord + ' ' + uomRaw;
+              const twoWordID = identifyUnit(twoWordUnit, options);
+
+              if (twoWordID) {
+                uomID = twoWordID;
+                finalUomRaw = twoWordUnit;
+                // Remove the last word from description
+                oIng.description = descWords.slice(0, -1).join(' ');
+              }
+            }
+          }
+
+          // Fall back to single-word match
+          if (!uomID) {
+            uomID = identifyUnit(uomRaw, options);
+            finalUomRaw = uomRaw;
+          }
 
           if (uomID) {
             oIng.unitOfMeasureID = uomID;
-            oIng.unitOfMeasure = opts.normalizeUOM ? uomID : uomRaw;
+            oIng.unitOfMeasure = opts.normalizeUOM ? uomID : finalUomRaw;
           } else if (oIng.description.match(trailingContextRegex)) {
             oIng.description += ` ${uomRaw}`;
           }
@@ -164,12 +188,31 @@ export const parseIngredient = (
       const firstWord = firstWordREMatches[1].replace(/\s+/g, ' ');
       const remainingDesc = (firstWordREMatches[2] ?? '').trim();
       if (remainingDesc) {
-        const uomID = identifyUnit(firstWord, options);
+        let uomID = identifyUnit(firstWord, options);
+        let matchedUnit = firstWord;
+        let finalDesc = remainingDesc;
+
+        // Try multi-word unit combinations (greedy matching: prefer longer matches over shorter ones)
+        const nextWords = remainingDesc.match(/^([\p{L}\p{N}_]+(?:[.-]?[\p{L}\p{N}_]+)*[-.]?)(?:\s+|$)/iu);
+        if (nextWords) {
+          const twoWordCombo = firstWord + ' ' + nextWords[1];
+          const twoWordID = identifyUnit(twoWordCombo, options);
+
+          // If multi-word unit exists, prefer it over single-word match.
+          // When no quantity is present, require remaining description
+          // (consistent with single-word behavior: "1 cup" → description, not UOM).
+          const multiWordFinalDesc = remainingDesc.substring(nextWords[0].length).trim();
+          if (twoWordID && (oIng.quantity !== null || multiWordFinalDesc)) {
+            uomID = twoWordID;
+            matchedUnit = twoWordCombo;
+            finalDesc = multiWordFinalDesc;
+          }
+        }
 
         if (uomID) {
           oIng.unitOfMeasureID = uomID;
-          oIng.unitOfMeasure = opts.normalizeUOM ? uomID : firstWord;
-          oIng.description = remainingDesc;
+          oIng.unitOfMeasure = opts.normalizeUOM ? uomID : matchedUnit;
+          oIng.description = finalDesc;
         }
       }
     }

@@ -126,10 +126,10 @@ export const rangeSeparatorRegEx: RegExp = buildRangeSeparatorRegex(
 );
 
 /**
- * Regex to capture the first word of a description, to see if it's a unit of measure.
+ * Regex to capture the first word of a description to check if it's a unit of measure.
  */
 export const firstWordRegEx: RegExp =
-  /^(fl(?:uid)?(?:\s+|-)(?:oz|ounces?)|[\p{L}\p{N}_]+[-.]?)(.+)?/iu;
+  /^(fl(?:uid)?(?:\s+|-)(?:oz|ounces?)|[\p{L}\p{N}_]+(?:[.-][\p{L}\p{N}_]+)*[-.]?)(.+)?/iu;
 
 const numericRegexAnywhere = numericRegex.source.replace('^', '').replace(/\$$/, '');
 
@@ -140,7 +140,7 @@ const numericRegexAnywhere = numericRegex.source.replace('^', '').replace(/\$$/,
 export const buildTrailingQuantityRegex = (rangeSeparators: (string | RegExp)[]): RegExp => {
   const rangeSeparatorSource = buildRangeSeparatorSource(rangeSeparators);
   return new RegExp(
-    `(,|:|-|–|—|x|⨯)?\\s*((${numericRegexAnywhere})\\s*(${rangeSeparatorSource}))?\\s*(${numericRegexAnywhere})\\s*(fl(?:uid)?(?:\\s+|-)(?:oz|ounces?)|[\\p{L}\\p{N}_]+)?$`,
+    `(,|:|-|–|—|x|⨯)?\\s*((${numericRegexAnywhere})\\s*(${rangeSeparatorSource}))?\\s*(${numericRegexAnywhere})\\s*(fl(?:uid)?(?:\\s+|-)(?:oz|ounces?)|[\\p{L}\\p{N}_]+(?:[.-][\\p{L}\\p{N}_]+)*[-.]?)?$`,
     'iu'
   );
 };
