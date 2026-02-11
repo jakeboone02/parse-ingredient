@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `trailingQuantityContext`: customizable context words indicating trailing quantities
 - [#46] `includeMeta` option to include source metadata (`sourceText` and `sourceIndex`) on each parsed ingredient
 - [#46] Deprecated legacy exports (`fors`, `forsRegEx`, `rangeSeparatorWords`, `rangeSeparatorRegEx`, `ofs`, `ofRegEx`, `froms`, `fromRegEx`) in favor of new configurable defaults and regex builders
-- `partialUnitMatching` option for CJK and other spaceless languages — when enabled, the parser scans descriptions for known UOM substrings registered via `additionalUOMs`
+- [#48] `partialUnitMatching` option for CJK and other spaceless languages — when enabled, the parser scans descriptions for known UOM substrings registered via `additionalUOMs`
 
 ### Fixed
 
@@ -225,6 +225,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#40]: https://github.com/jakeboone02/parse-ingredient/pull/40
 [#46]: https://github.com/jakeboone02/parse-ingredient/pull/46
 [#47]: https://github.com/jakeboone02/parse-ingredient/pull/47
+[#48]: https://github.com/jakeboone02/parse-ingredient/pull/48
 
 <!-- Release comparison links -->
 
