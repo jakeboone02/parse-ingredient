@@ -878,7 +878,7 @@ export const parseIngredientTests: Record<
         isGroupHeader: true,
       },
     ],
-    { groupHeaderPatterns: ['For', /^Pour\s+l[ea]/iu] },
+    { groupHeaderPatterns: ['For', /^Pour\s/iu] },
   ],
   'i18n: group header - colon still works with custom patterns': [
     'Glasur:',
@@ -982,19 +982,24 @@ export const parseIngredientTests: Record<
   ],
 
   // --- i18n: descriptionStripPrefixes ---
-  'i18n: strip German "von" prefix': [
-    '1 cup von sugar',
+  'i18n: strip Spanish "de" prefix': [
+    '2 tazas de azúcar',
     [
       {
-        quantity: 1,
+        quantity: 2,
         quantity2: null,
-        unitOfMeasureID: 'cup',
-        unitOfMeasure: 'cup',
-        description: 'sugar',
+        unitOfMeasureID: 'taza',
+        unitOfMeasure: 'tazas',
+        description: 'azúcar',
         isGroupHeader: false,
       },
     ],
-    { descriptionStripPrefixes: ['of', 'von'] },
+    {
+      descriptionStripPrefixes: ['of', 'de'],
+      additionalUOMs: {
+        taza: { short: 'tz', plural: 'tazas', alternates: ['taza'] },
+      },
+    },
   ],
   'i18n: strip French "de" prefix': [
     '2 cups de farine',
@@ -1010,6 +1015,63 @@ export const parseIngredientTests: Record<
     ],
     { descriptionStripPrefixes: ['of', 'de'] },
   ],
+  'i18n: strip French "de la" with regex prefix': [
+    '2 tasses de la farine',
+    [
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: 'tasse',
+        unitOfMeasure: 'tasses',
+        description: 'farine',
+        isGroupHeader: false,
+      },
+    ],
+    {
+      descriptionStripPrefixes: [/de\s+la\s+/iu, /de\s+l'/iu, /d'/iu, 'de'],
+      additionalUOMs: {
+        tasse: { short: 't', plural: 'tasses', alternates: ['tasse'] },
+      },
+    },
+  ],
+  "i18n: strip French elision \"de l'\" with regex prefix": [
+    "2 tasses de l'eau",
+    [
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: 'tasse',
+        unitOfMeasure: 'tasses',
+        description: 'eau',
+        isGroupHeader: false,
+      },
+    ],
+    {
+      descriptionStripPrefixes: [/de\s+la\s+/iu, /de\s+l'/iu, /d'/iu, 'de'],
+      additionalUOMs: {
+        tasse: { short: 't', plural: 'tasses', alternates: ['tasse'] },
+      },
+    },
+  ],
+  "i18n: strip French elision \"d'\" with regex prefix": [
+    "2 tasses d'huile",
+    [
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: 'tasse',
+        unitOfMeasure: 'tasses',
+        description: 'huile',
+        isGroupHeader: false,
+      },
+    ],
+    {
+      descriptionStripPrefixes: [/de\s+la\s+/iu, /de\s+l'/iu, /d'/iu, 'de'],
+      additionalUOMs: {
+        tasse: { short: 't', plural: 'tasses', alternates: ['tasse'] },
+      },
+    },
+  ],
   'i18n: custom strip prefix only - "of" not stripped': [
     '1 cup of sugar',
     [
@@ -1022,7 +1084,7 @@ export const parseIngredientTests: Record<
         isGroupHeader: false,
       },
     ],
-    { descriptionStripPrefixes: ['von', 'de'] },
+    { descriptionStripPrefixes: ['de'] },
   ],
 
   // --- i18n: trailingQuantityContext ---
@@ -1057,7 +1119,7 @@ export const parseIngredientTests: Record<
 
   // --- i18n: Combined German example ---
   'i18n: full German example': [
-    'Für den Kuchen:\n2 bis 3 Tassen Mehl\n1 Tasse von Zucker',
+    'Für den Kuchen:\n2 bis 3 Tassen Mehl\n1 Tasse Zucker',
     [
       {
         quantity: null,
@@ -1087,7 +1149,6 @@ export const parseIngredientTests: Record<
     {
       groupHeaderPatterns: ['For', 'Für'],
       rangeSeparators: ['to', 'or', 'bis', 'oder'],
-      descriptionStripPrefixes: ['of', 'von'],
       additionalUOMs: {
         tasse: {
           short: 'T',
@@ -1100,7 +1161,7 @@ export const parseIngredientTests: Record<
 
   // --- i18n: Combined French example ---
   'i18n: full French example': [
-    'Pour la pâte:\n1 à 2 tasses farine\nJus de 3 citrons',
+    "Pour la pâte:\n1 à 2 tasses de la farine\n2 tasses d'huile\nJus de 3 citrons",
     [
       {
         quantity: null,
@@ -1119,6 +1180,14 @@ export const parseIngredientTests: Record<
         isGroupHeader: false,
       },
       {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: 'tasse',
+        unitOfMeasure: 'tasses',
+        description: 'huile',
+        isGroupHeader: false,
+      },
+      {
         quantity: 3,
         quantity2: null,
         unitOfMeasureID: null,
@@ -1128,8 +1197,9 @@ export const parseIngredientTests: Record<
       },
     ],
     {
-      groupHeaderPatterns: ['For', /^Pour\s+l[ea]/iu],
+      groupHeaderPatterns: ['For', /^Pour\s/iu],
       rangeSeparators: ['to', 'or', 'à', 'ou'],
+      descriptionStripPrefixes: [/de\s+la\s+/iu, /de\s+l'/iu, /d'/iu, 'de'],
       trailingQuantityContext: ['from', 'of', 'de'],
       additionalUOMs: {
         tasse: {

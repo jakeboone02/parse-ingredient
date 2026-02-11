@@ -292,9 +292,9 @@ parseIngredient('Für den Teig:\n2 cups flour', {
 //   { quantity: 2, unitOfMeasure: 'cups', description: 'flour', ... }
 // ]
 
-// French with regex pattern
+// French with regex pattern (matches "Pour la", "Pour le", "Pour un", etc.)
 parseIngredient('Pour la pâte:', {
-  groupHeaderPatterns: ['For', /^Pour\s+l[ea]/iu],
+  groupHeaderPatterns: ['For', /^Pour\s/iu],
 });
 ```
 
@@ -317,22 +317,22 @@ parseIngredient('2 à 3 cups sugar', {
 
 ### `descriptionStripPrefixes`
 
-Words to strip from the beginning of ingredient descriptions. Commonly used to remove "of" from phrases like "1 cup of sugar". Defaults to `['of']`.
+Words or patterns to strip from the beginning of ingredient descriptions. Commonly used to remove "of" from phrases like "1 cup of sugar". Strings are matched as whole words followed by whitespace. RegExp patterns are used as-is, which is useful for languages with contractions or elisions. Defaults to `['of']`.
 
 > **Note:** This option is only applied when `allowLeadingOf` is `false` (the default). If `allowLeadingOf` is `true`, prefix stripping is disabled entirely and this option is ignored.
 
 ```js
-// German "von" stripping
-parseIngredient('1 cup von sugar', {
-  descriptionStripPrefixes: ['of', 'von'],
-});
-// [{ description: 'sugar', ... }]
-
-// French "de" stripping
-parseIngredient('2 cups de farine', {
+// Spanish "de" stripping
+parseIngredient('2 tazas de azúcar', {
   descriptionStripPrefixes: ['of', 'de'],
 });
-// [{ description: 'farine', ... }]
+// [{ description: 'azúcar', ... }]
+
+// French with regex patterns for elisions/contractions
+parseIngredient("2 tasses d'huile", {
+  descriptionStripPrefixes: [/de\s+la\s+/iu, /de\s+l'/iu, /d'/iu, 'de'],
+});
+// [{ description: 'huile', ... }]
 ```
 
 ### `trailingQuantityContext`
@@ -353,11 +353,10 @@ parseIngredient('Saft von 3 Zitronen', {
 parseIngredient(
   `Für den Kuchen:
 2 bis 3 Tassen Mehl
-1 Tasse von Zucker`,
+1 Tasse Zucker`,
   {
     groupHeaderPatterns: ['For', 'Für'],
     rangeSeparators: ['to', 'or', 'bis', 'oder'],
-    descriptionStripPrefixes: ['of', 'von'],
     decimalSeparator: ',',
     additionalUOMs: {
       tasse: {

@@ -165,7 +165,7 @@ export interface ParseIngredientOptions {
    * RegExp patterns are used as-is for more complex matching.
    *
    * @default ['For']
-   * @example ['For', 'Für', /^Pour\s+l[ea]/iu]
+   * @example ['For', 'Für', /^Pour\s/iu]
    */
   groupHeaderPatterns?: (string | RegExp)[];
   /**
@@ -178,13 +178,15 @@ export interface ParseIngredientOptions {
    */
   rangeSeparators?: (string | RegExp)[];
   /**
-   * Words to strip from the beginning of ingredient descriptions.
+   * Words or patterns to strip from the beginning of ingredient descriptions.
    * Commonly used to remove "of" from phrases like "1 cup of sugar".
+   * Strings are matched as whole words followed by whitespace.
+   * RegExp patterns are used as-is for more complex matching (e.g., French elisions).
    *
    * @default ['of']
-   * @example ['of', 'von', 'de']
+   * @example ['of', 'de', /d[eu]?\s/iu, new RegExp("de\\s+l[ae']?\\s*", "iu")]
    */
-  descriptionStripPrefixes?: string[];
+  descriptionStripPrefixes?: (string | RegExp)[];
   /**
    * Words that indicate a trailing quantity extraction context.
    * Used to identify patterns like "Juice of 3 lemons" or "Peels from 5 oranges".

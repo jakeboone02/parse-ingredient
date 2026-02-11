@@ -11,10 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - [#46] `parseIngredient` now accepts `Array<string>` as well as `string`. Each element of the array is treated as a single ingredient line.
 - [#46] Internationalization (i18n) support for parsing keywords
-  - `groupHeaderPatterns`: customizable patterns for group headers (supports strings and RegExp)
-  - `rangeSeparators`: customizable range separator words (e.g., "bis", "oder", "à")
-  - `descriptionStripPrefixes`: customizable prefix words to strip from descriptions
-  - `trailingQuantityContext`: customizable context words for trailing quantities
+  - `groupHeaderPatterns`: customizable words/patterns for group headers
+  - `rangeSeparators`: customizable range separator words/patterns (e.g., "bis", "oder", "à")
+  - `descriptionStripPrefixes`: customizable prefix words/patterns to strip from descriptions
+  - `trailingQuantityContext`: customizable context words indicating trailing quantities
 - [#46] `includeMeta` option to include source metadata (`sourceText` and `sourceIndex`) on each parsed ingredient
 - [#46] Deprecated legacy exports (`fors`, `forsRegEx`, `rangeSeparatorWords`, `rangeSeparatorRegEx`, `ofs`, `ofRegEx`, `froms`, `fromRegEx`) in favor of new configurable defaults and regex builders
 

@@ -39,11 +39,16 @@ export const buildRangeSeparatorRegex = (words: (string | RegExp)[]): RegExp =>
   new RegExp(`^${buildRangeSeparatorSource(words)}`, 'iu');
 
 /**
- * Builds a regex that matches any of the given words at the start of a string,
- * followed by whitespace. Used for stripping prefixes like "of".
+ * Builds a regex that matches any of the given words or patterns at the start of a string.
+ * Strings are matched as whole words followed by whitespace.
+ * RegExp patterns are used as-is for more complex matching (e.g., French elisions).
  */
-export const buildStripPrefixRegex = (words: string[]): RegExp =>
-  new RegExp(`^(?:${words.map(escapeRegex).join('|')})\\s+`, 'iu');
+export const buildStripPrefixRegex = (patterns: (string | RegExp)[]): RegExp => {
+  const parts = patterns.map(p =>
+    p instanceof RegExp ? `(?:${p.source})` : `(?:${escapeRegex(p)})\\s+`
+  );
+  return new RegExp(`^(?:${parts.join('|')})`, 'iu');
+};
 
 /**
  * Builds a regex that matches any of the given words at the end of a string,
@@ -85,7 +90,7 @@ export const defaultOptions: Required<ParseIngredientOptions> = {
   decimalSeparator: '.',
   groupHeaderPatterns: defaultGroupHeaderPatterns as unknown as string[],
   rangeSeparators: defaultRangeSeparators as unknown as string[],
-  descriptionStripPrefixes: defaultDescriptionStripPrefixes as unknown as string[],
+  descriptionStripPrefixes: defaultDescriptionStripPrefixes as unknown as (string | RegExp)[],
   trailingQuantityContext: defaultTrailingQuantityContext as unknown as string[],
   includeMeta: false,
 } as const;

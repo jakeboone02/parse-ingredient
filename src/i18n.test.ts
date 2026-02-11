@@ -128,6 +128,21 @@ describe('buildStripPrefixRegex', () => {
     expect(regex.test('of  sugar')).toBe(true); // multiple spaces
     expect(regex.test('often')).toBe(false);
   });
+
+  test('handles RegExp patterns for French elisions', () => {
+    const regex = buildStripPrefixRegex([/d'/iu, /de\s+/iu]);
+    expect(regex.test("d'huile")).toBe(true);
+    expect(regex.test('de farine')).toBe(true);
+    expect(regex.test('du beurre')).toBe(false);
+  });
+
+  test('handles mixed string and RegExp patterns', () => {
+    const regex = buildStripPrefixRegex(['of', /de\s+la\s+/iu, /de\s+l'/iu, /d'/iu]);
+    expect(regex.test('of sugar')).toBe(true);
+    expect(regex.test('de la farine')).toBe(true);
+    expect(regex.test("de l'eau")).toBe(true);
+    expect(regex.test("d'huile")).toBe(true);
+  });
 });
 
 describe('buildTrailingContextRegex', () => {
