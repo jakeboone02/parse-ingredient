@@ -18,6 +18,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#46] `includeMeta` option to include source metadata (`sourceText` and `sourceIndex`) on each parsed ingredient
 - [#46] Deprecated legacy exports (`fors`, `forsRegEx`, `rangeSeparatorWords`, `rangeSeparatorRegEx`, `ofs`, `ofRegEx`, `froms`, `fromRegEx`) in favor of new configurable defaults and regex builders
 
+### Fixed
+
+- [#47] Multi-word units of measure (e.g., German "gestr. TL") are now recognized in both leading and trailing positions via `additionalUOMs`
+
 ## [v2.0.1] - 2026-01-30
 
 ### Fixed
@@ -219,6 +223,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#37]: https://github.com/jakeboone02/parse-ingredient/pull/37
 [#40]: https://github.com/jakeboone02/parse-ingredient/pull/40
 [#46]: https://github.com/jakeboone02/parse-ingredient/pull/46
+[#47]: https://github.com/jakeboone02/parse-ingredient/pull/47
 
 <!-- Release comparison links -->
 
