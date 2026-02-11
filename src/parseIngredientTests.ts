@@ -835,6 +835,99 @@ export const parseIngredientTests: Record<
       },
     },
   ],
+  'multi-word UOM no description (leading)': [
+    '2 gestr. TL',
+    [
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: 'gestr-tl',
+        unitOfMeasure: 'gestr. TL',
+        description: '',
+        isGroupHeader: false,
+      },
+    ],
+    {
+      additionalUOMs: {
+        'gestr-tl': {
+          short: 'gestr. TL',
+          plural: 'gestr. TL',
+          alternates: ['gestr.TL', 'gestr. tl'],
+        },
+      },
+    },
+  ],
+  'multi-word UOM trailing with single-word collision (greedy)': [
+    'butter gestr., 2 TL',
+    [
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: 'gestr-tl',
+        unitOfMeasure: 'gestr. TL',
+        description: 'butter',
+        isGroupHeader: false,
+      },
+    ],
+    {
+      additionalUOMs: {
+        'gestr-tl': {
+          short: 'gestr. TL',
+          plural: 'gestr. TL',
+          alternates: ['gestr.TL', 'gestr. tl'],
+        },
+        'tl': {
+          short: 'tl',
+          plural: 'tl',
+          alternates: ['tsp', 'teaspoon', 'teaspoons'],
+        },
+      },
+    },
+  ],
+  'quantity-less multi-word UOM': [
+    'n. B. Salz',
+    [
+      {
+        quantity: null,
+        quantity2: null,
+        unitOfMeasureID: 'n-b',
+        unitOfMeasure: 'n. B.',
+        description: 'Salz',
+        isGroupHeader: false,
+      },
+    ],
+    {
+      additionalUOMs: {
+        'n-b': {
+          short: 'n. B.',
+          plural: 'n. B.',
+          alternates: ['n.B.'],
+        },
+      },
+    },
+  ],
+  'quantity-less multi-word UOM (no description)': [
+    'n. B.',
+    [
+      {
+        quantity: null,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: 'n. B.',
+        isGroupHeader: false,
+      },
+    ],
+    {
+      additionalUOMs: {
+        'n-b': {
+          short: 'n. B.',
+          plural: 'n. B.',
+          alternates: ['n.B.'],
+        },
+      },
+    },
+  ],
   'repeated separators (invalid)': [
     '1__5 cup stuff',
     [
