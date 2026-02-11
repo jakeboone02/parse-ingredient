@@ -729,7 +729,7 @@ export const parseIngredientTests: Record<
           plural: 'gestr. TL',
           alternates: ['gestr.TL', 'gestr. tl'],
         },
-        'tl': {
+        tl: {
           short: 'tl',
           plural: 'tl',
           alternates: ['tsp', 'teaspoon', 'teaspoons'],
@@ -756,7 +756,7 @@ export const parseIngredientTests: Record<
           plural: 'TL gestr.',
           alternates: ['gestr.TL', 'gestr. tl'],
         },
-        'tl': {
+        tl: {
           short: 'tl',
           plural: 'tl',
           alternates: ['tsp', 'teaspoon', 'teaspoons'],
@@ -783,7 +783,7 @@ export const parseIngredientTests: Record<
           plural: 'gestr. TL',
           alternates: ['gestr.TL', 'gestr. tl'],
         },
-        'tl': {
+        tl: {
           short: 'tl',
           plural: 'tl',
           alternates: ['tsp', 'teaspoon', 'teaspoons'],
@@ -876,7 +876,7 @@ export const parseIngredientTests: Record<
           plural: 'gestr. TL',
           alternates: ['gestr.TL', 'gestr. tl'],
         },
-        'tl': {
+        tl: {
           short: 'tl',
           plural: 'tl',
           alternates: ['tsp', 'teaspoon', 'teaspoons'],
@@ -1253,7 +1253,7 @@ export const parseIngredientTests: Record<
       },
     },
   ],
-  "i18n: strip French elision \"de l'\" with regex prefix": [
+  'i18n: strip French elision "de l\'" with regex prefix': [
     "2 tasses de l'eau",
     [
       {
@@ -1272,7 +1272,7 @@ export const parseIngredientTests: Record<
       },
     },
   ],
-  "i18n: strip French elision \"d'\" with regex prefix": [
+  'i18n: strip French elision "d\'" with regex prefix': [
     "2 tasses d'huile",
     [
       {
@@ -1594,4 +1594,195 @@ export const parseIngredientTests: Record<
     { includeMeta: true },
   ],
   'array input - empty array': [[], []],
+
+  // --- partialUnitMatching (CJK / spaceless text) ---
+  'partialUnitMatching: no additional UOMs': [
+    '2 cupcakes',
+    [
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cup',
+        description: 'cakes',
+        isGroupHeader: false,
+      },
+    ],
+    { partialUnitMatching: true },
+  ],
+  'partialUnitMatching: desc-UOM-qty (砂糖大さじ2)': [
+    '砂糖大さじ2',
+    [
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: '大さじ',
+        unitOfMeasure: '大さじ',
+        description: '砂糖',
+        isGroupHeader: false,
+      },
+    ],
+    {
+      partialUnitMatching: true,
+      additionalUOMs: {
+        大さじ: { short: '大さじ', plural: '大さじ', alternates: [] },
+      },
+    },
+  ],
+  'partialUnitMatching: qty-UOM-desc (2大さじ砂糖)': [
+    '2大さじ砂糖',
+    [
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: '大さじ',
+        unitOfMeasure: '大さじ',
+        description: '砂糖',
+        isGroupHeader: false,
+      },
+    ],
+    {
+      partialUnitMatching: true,
+      additionalUOMs: {
+        大さじ: { short: '大さじ', plural: '大さじ', alternates: [] },
+      },
+    },
+  ],
+  'partialUnitMatching: mixed CJK + Latin': [
+    '砂糖大さじ2\nバター10g\n1 cup flour',
+    [
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: '大さじ',
+        unitOfMeasure: '大さじ',
+        description: '砂糖',
+        isGroupHeader: false,
+      },
+      {
+        quantity: 10,
+        quantity2: null,
+        unitOfMeasureID: 'gram',
+        unitOfMeasure: 'g',
+        description: 'バター',
+        isGroupHeader: false,
+      },
+      {
+        quantity: 1,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cup',
+        description: 'flour',
+        isGroupHeader: false,
+      },
+    ],
+    {
+      partialUnitMatching: true,
+      additionalUOMs: {
+        大さじ: { short: '大さじ', plural: '大さじ', alternates: [] },
+      },
+    },
+  ],
+  'partialUnitMatching: false leaves behavior unchanged': [
+    '砂糖大さじ2',
+    [
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: '砂糖大さじ',
+        isGroupHeader: false,
+      },
+    ],
+    {
+      partialUnitMatching: false,
+      additionalUOMs: {
+        大さじ: { short: '大さじ', plural: '大さじ', alternates: [] },
+      },
+    },
+  ],
+  'partialUnitMatching: UOM-qty no description skipped (大さじ2)': [
+    '大さじ2',
+    [
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: '大さじ',
+        isGroupHeader: false,
+      },
+    ],
+    {
+      partialUnitMatching: true,
+      additionalUOMs: {
+        大さじ: { short: '大さじ', plural: '大さじ', alternates: [] },
+      },
+    },
+  ],
+  'partialUnitMatching: longest match preference': [
+    '砂糖大さじ2',
+    [
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: '大さじ',
+        unitOfMeasure: '大さじ',
+        description: '砂糖',
+        isGroupHeader: false,
+      },
+    ],
+    {
+      partialUnitMatching: true,
+      additionalUOMs: {
+        大: { short: '大', plural: '大', alternates: [] },
+        大さじ: { short: '大さじ', plural: '大さじ', alternates: [] },
+      },
+    },
+  ],
+  'partialUnitMatching: with normalizeUOM': [
+    '砂糖大さじ2',
+    [
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: '大さじ',
+        unitOfMeasure: '大さじ',
+        description: '砂糖',
+        isGroupHeader: false,
+      },
+    ],
+    {
+      partialUnitMatching: true,
+      normalizeUOM: true,
+      additionalUOMs: {
+        大さじ: { short: '大さじ', plural: '大さじ', alternates: [] },
+      },
+    },
+  ],
+  'partialUnitMatching: with includeMeta': [
+    '砂糖大さじ2',
+    [
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: '大さじ',
+        unitOfMeasure: '大さじ',
+        description: '砂糖',
+        isGroupHeader: false,
+        meta: {
+          sourceText: '砂糖大さじ2',
+          sourceIndex: 0,
+        },
+      },
+    ],
+    {
+      partialUnitMatching: true,
+      includeMeta: true,
+      additionalUOMs: {
+        大さじ: { short: '大さじ', plural: '大さじ', alternates: [] },
+      },
+    },
+  ],
 };

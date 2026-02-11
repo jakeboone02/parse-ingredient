@@ -93,6 +93,7 @@ export const defaultOptions: Required<ParseIngredientOptions> = {
   descriptionStripPrefixes: defaultDescriptionStripPrefixes as unknown as (string | RegExp)[],
   trailingQuantityContext: defaultTrailingQuantityContext as unknown as string[],
   includeMeta: false,
+  partialUnitMatching: false,
 } as const;
 
 // --- Legacy Exports (for backward compatibility) ---

@@ -10,6 +10,7 @@ import {
 } from './constants';
 import { identifyUnit } from './convertUnit';
 import type { Ingredient, ParseIngredientOptions } from './types';
+import { buildUnitLookupMaps, collectUOMStrings, getDefaultUnitLookupMaps } from './unitLookup';
 
 const newLineRegExp = /\r?\n/;
 
@@ -39,6 +40,14 @@ export const parseIngredient = (
   const stripPrefixRegex = buildStripPrefixRegex(opts.descriptionStripPrefixes);
   const trailingContextRegex = buildTrailingContextRegex(opts.trailingQuantityContext);
   const trailingQuantityRegex = buildTrailingQuantityRegex(opts.rangeSeparators);
+
+  const uomStrings = opts.partialUnitMatching
+    ? collectUOMStrings(
+        Object.keys(opts.additionalUOMs).length > 0
+          ? buildUnitLookupMaps(opts.additionalUOMs)
+          : getDefaultUnitLookupMaps()
+      )
+    : [];
 
   const ingredientArray = (
     Array.isArray(ingredientText) ? ingredientText : ingredientText.split(newLineRegExp)
@@ -193,7 +202,9 @@ export const parseIngredient = (
         let finalDesc = remainingDesc;
 
         // Try multi-word unit combinations (greedy matching: prefer longer matches over shorter ones)
-        const nextWords = remainingDesc.match(/^([\p{L}\p{N}_]+(?:[.-]?[\p{L}\p{N}_]+)*[-.]?)(?:\s+|$)/iu);
+        const nextWords = remainingDesc.match(
+          /^([\p{L}\p{N}_]+(?:[.-]?[\p{L}\p{N}_]+)*[-.]?)(?:\s+|$)/iu
+        );
         if (nextWords) {
           const twoWordCombo = firstWord + ' ' + nextWords[1];
           const twoWordID = identifyUnit(twoWordCombo, options);
@@ -214,6 +225,32 @@ export const parseIngredient = (
           oIng.unitOfMeasure = opts.normalizeUOM ? uomID : matchedUnit;
           oIng.description = finalDesc;
         }
+      }
+    }
+
+    // Fallback: scan description for known UOM substrings (for CJK/spaceless text)
+    if (!oIng.unitOfMeasureID && opts.partialUnitMatching && oIng.description) {
+      const descLower = oIng.description.toLowerCase();
+      for (const uomStr of uomStrings) {
+        const idx = descLower.indexOf(uomStr.toLowerCase());
+        if (idx === -1) continue;
+
+        const matchedText = oIng.description.substring(idx, idx + uomStr.length);
+        const uomID = identifyUnit(matchedText, options);
+        if (!uomID) continue;
+
+        const before = oIng.description.substring(0, idx).trim();
+        const after = oIng.description.substring(idx + uomStr.length).trim();
+        const newDesc = [before, after].filter(Boolean).join(' ');
+
+        // Don't extract UOM if it would leave description empty
+        // (consistent with "2 cup" keeping "cup" as description, not UOM)
+        if (!newDesc) continue;
+
+        oIng.unitOfMeasureID = uomID;
+        oIng.unitOfMeasure = opts.normalizeUOM ? uomID : matchedText;
+        oIng.description = newDesc;
+        break;
       }
     }
 
