@@ -1,4 +1,19 @@
 /**
+ * Metadata about the parsed ingredient line.
+ */
+export interface IngredientMeta {
+  /**
+   * The source text of the ingredient line before parsing.
+   */
+  sourceText: string;
+  /**
+   * The source index (line number) of the ingredient in the input.
+   * Zero-based index relative to the order of non-empty lines.
+   */
+  sourceIndex: number;
+}
+
+/**
  * Ingredient properties.
  */
 export interface Ingredient {
@@ -26,6 +41,11 @@ export interface Ingredient {
    * Whether the "ingredient" is actually a group header, e.g. "For icing:"
    */
   isGroupHeader: boolean;
+  /**
+   * Metadata about the parsed ingredient line.
+   * Only included when the `includeMeta` option is `true`.
+   */
+  meta?: IngredientMeta;
 }
 
 /**
@@ -136,4 +156,50 @@ export interface ParseIngredientOptions {
    * @default "."
    */
   decimalSeparator?: '.' | ',';
+
+  // --- Internationalization options ---
+
+  /**
+   * Patterns to identify group headers (e.g., "For the icing:").
+   * Strings are treated as prefix patterns (matched at the start of the line followed by whitespace).
+   * RegExp patterns are used as-is for more complex matching.
+   *
+   * @default ['For']
+   * @example ['For', 'Für', /^Pour\s/iu]
+   */
+  groupHeaderPatterns?: (string | RegExp)[];
+  /**
+   * Words or patterns to identify ranges between quantities (e.g., "1 to 2", "1 or 2").
+   * Strings are matched as whole words followed by whitespace.
+   * RegExp patterns are used as-is for more complex matching.
+   *
+   * @default ['to', 'or']
+   * @example ['to', 'or', 'bis', 'oder', 'à']
+   */
+  rangeSeparators?: (string | RegExp)[];
+  /**
+   * Words or patterns to strip from the beginning of ingredient descriptions.
+   * Commonly used to remove "of" from phrases like "1 cup of sugar".
+   * Strings are matched as whole words followed by whitespace.
+   * RegExp patterns are used as-is for more complex matching (e.g., French elisions).
+   *
+   * @default ['of']
+   * @example ['of', 'de', /d[eu]?\s/iu, new RegExp("de\\s+l[ae']?\\s*", "iu")]
+   */
+  descriptionStripPrefixes?: (string | RegExp)[];
+  /**
+   * Words that indicate a trailing quantity extraction context.
+   * Used to identify patterns like "Juice of 3 lemons" or "Peels from 5 oranges".
+   *
+   * @default ['from', 'of']
+   * @example ['from', 'of', 'von', 'de']
+   */
+  trailingQuantityContext?: string[];
+  /**
+   * If `true`, include a `meta` property on each ingredient containing
+   * the original text, original index, and other metadata.
+   *
+   * @default false
+   */
+  includeMeta?: boolean;
 }

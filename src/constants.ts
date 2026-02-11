@@ -1,6 +1,84 @@
 import { numericRegex } from 'numeric-quantity';
 import { ParseIngredientOptions, UnitOfMeasureDefinitions } from './types';
 
+// --- i18n Utilities ---
+
+/**
+ * Escapes special regex characters in a string.
+ */
+export const escapeRegex = (str: string): string => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+/**
+ * Builds a regex that matches any of the given patterns at the start of a string,
+ * followed by whitespace. Strings are escaped and treated as literal prefixes.
+ * RegExp patterns have their source extracted and combined.
+ */
+export const buildPrefixPatternRegex = (patterns: (string | RegExp)[]): RegExp => {
+  const parts = patterns.map(p =>
+    p instanceof RegExp ? `(?:${p.source})` : `(?:${escapeRegex(p)})\\s`
+  );
+  return new RegExp(`^(?:${parts.join('|')})`, 'iu');
+};
+
+/**
+ * Builds a regex source string for range separators (dashes and word separators).
+ * Always includes dash characters (-, –, —), plus any custom word separators.
+ */
+export const buildRangeSeparatorSource = (words: (string | RegExp)[]): string => {
+  const wordParts = words.map(w =>
+    w instanceof RegExp ? `(?:${w.source})` : `(?:${escapeRegex(w)})`
+  );
+  // Always include dashes, then word separators followed by whitespace
+  return `(-|–|—|(?:${wordParts.join('|')})\\s)`;
+};
+
+/**
+ * Builds a regex that matches range separators at the start of a string.
+ */
+export const buildRangeSeparatorRegex = (words: (string | RegExp)[]): RegExp =>
+  new RegExp(`^${buildRangeSeparatorSource(words)}`, 'iu');
+
+/**
+ * Builds a regex that matches any of the given words or patterns at the start of a string.
+ * Strings are matched as whole words followed by whitespace.
+ * RegExp patterns are used as-is for more complex matching (e.g., French elisions).
+ */
+export const buildStripPrefixRegex = (patterns: (string | RegExp)[]): RegExp => {
+  const parts = patterns.map(p =>
+    p instanceof RegExp ? `(?:${p.source})` : `(?:${escapeRegex(p)})\\s+`
+  );
+  return new RegExp(`^(?:${parts.join('|')})`, 'iu');
+};
+
+/**
+ * Builds a regex that matches any of the given words at the end of a string,
+ * preceded by whitespace. Used for trailing quantity context like "from" or "of".
+ */
+export const buildTrailingContextRegex = (words: string[]): RegExp =>
+  new RegExp(`\\s+(?:${words.map(escapeRegex).join('|')})$`, 'iu');
+
+// --- Default i18n Values ---
+
+/**
+ * Default group header prefixes (e.g., "For the icing:").
+ */
+export const defaultGroupHeaderPatterns = ['For'] as const;
+
+/**
+ * Default range separator words (e.g., "1 to 2", "1 or 2").
+ */
+export const defaultRangeSeparators = ['or', 'to'] as const;
+
+/**
+ * Default words to strip from the beginning of descriptions.
+ */
+export const defaultDescriptionStripPrefixes = ['of'] as const;
+
+/**
+ * Default words that indicate trailing quantity context.
+ */
+export const defaultTrailingQuantityContext = ['from', 'of'] as const;
+
 /**
  * Default options for {@link parseIngredient}.
  */
@@ -10,26 +88,42 @@ export const defaultOptions: Required<ParseIngredientOptions> = {
   normalizeUOM: false,
   ignoreUOMs: [],
   decimalSeparator: '.',
+  groupHeaderPatterns: defaultGroupHeaderPatterns as unknown as string[],
+  rangeSeparators: defaultRangeSeparators as unknown as string[],
+  descriptionStripPrefixes: defaultDescriptionStripPrefixes as unknown as (string | RegExp)[],
+  trailingQuantityContext: defaultTrailingQuantityContext as unknown as string[],
+  includeMeta: false,
 } as const;
 
-/**
- * List of "for" equivalents (for upcoming i18n support).
- */
-export const fors = ['For'] as const;
-/**
- * Regex to capture "for" equivalents (for upcoming i18n support).
- */
-export const forsRegEx: RegExp = new RegExp(`^(?:${fors.join('|')})\\s`, 'iu');
+// --- Legacy Exports (for backward compatibility) ---
 
 /**
- * List of range separators (for upcoming i18n support).
+ * List of "for" equivalents.
+ * @deprecated Use `defaultGroupHeaderPatterns` instead.
  */
-export const rangeSeparatorWords = ['or', 'to'] as const;
-const rangeSeparatorRegExSource = `(-|–|—|(?:${rangeSeparatorWords.join('|')})\\s)`;
+export const fors: typeof defaultGroupHeaderPatterns = defaultGroupHeaderPatterns;
+
 /**
- * Regex to capture range separators (for upcoming i18n support).
+ * Regex to capture "for" equivalents.
+ * @deprecated Build dynamically using `buildPrefixPatternRegex(options.groupHeaderPatterns)`.
  */
-export const rangeSeparatorRegEx: RegExp = new RegExp(`^${rangeSeparatorRegExSource}`, 'iu');
+export const forsRegEx: RegExp = buildPrefixPatternRegex(
+  defaultGroupHeaderPatterns as unknown as string[]
+);
+
+/**
+ * List of range separators.
+ * @deprecated Use `defaultRangeSeparators` instead.
+ */
+export const rangeSeparatorWords: typeof defaultRangeSeparators = defaultRangeSeparators;
+
+/**
+ * Regex to capture range separators.
+ * @deprecated Build dynamically using `buildRangeSeparatorRegex(options.rangeSeparators)`.
+ */
+export const rangeSeparatorRegEx: RegExp = buildRangeSeparatorRegex(
+  defaultRangeSeparators as unknown as string[]
+);
 
 /**
  * Regex to capture the first word of a description, to see if it's a unit of measure.
@@ -40,30 +134,52 @@ export const firstWordRegEx: RegExp =
 const numericRegexAnywhere = numericRegex.source.replace('^', '').replace(/\$$/, '');
 
 /**
- * Regex to capture trailing quantity and unit of measure.
+ * Builds a regex to capture trailing quantity and unit of measure,
+ * using the provided range separator words.
  */
-export const trailingQuantityRegEx: RegExp = new RegExp(
-  `(,|:|-|–|—|x|⨯)?\\s*((${numericRegexAnywhere})\\s*(${rangeSeparatorRegExSource}))?\\s*(${numericRegexAnywhere})\\s*(fl(?:uid)?(?:\\s+|-)(?:oz|ounces?)|[\\p{L}\\p{N}_]+)?$`,
-  'iu'
+export const buildTrailingQuantityRegex = (rangeSeparators: (string | RegExp)[]): RegExp => {
+  const rangeSeparatorSource = buildRangeSeparatorSource(rangeSeparators);
+  return new RegExp(
+    `(,|:|-|–|—|x|⨯)?\\s*((${numericRegexAnywhere})\\s*(${rangeSeparatorSource}))?\\s*(${numericRegexAnywhere})\\s*(fl(?:uid)?(?:\\s+|-)(?:oz|ounces?)|[\\p{L}\\p{N}_]+)?$`,
+    'iu'
+  );
+};
+
+/**
+ * Regex to capture trailing quantity and unit of measure.
+ * @deprecated Build dynamically using `buildTrailingQuantityRegex(options.rangeSeparators)`.
+ */
+export const trailingQuantityRegEx: RegExp = buildTrailingQuantityRegex(
+  defaultRangeSeparators as unknown as string[]
 );
 
 /**
- * List of "of" equivalents (for upcoming i18n support).
+ * List of "of" equivalents.
+ * @deprecated Use `defaultDescriptionStripPrefixes` instead.
  */
-export const ofs = ['of'] as const;
-/**
- * Regex to capture "of" equivalents at the beginning of a string (for upcoming i18n support).
- */
-export const ofRegEx: RegExp = new RegExp(`^(?:${ofs.join('|')})\\s+`, 'iu');
+export const ofs: typeof defaultDescriptionStripPrefixes = defaultDescriptionStripPrefixes;
 
 /**
- * List of "from" equivalents (for upcoming i18n support).
+ * Regex to capture "of" equivalents at the beginning of a string.
+ * @deprecated Build dynamically using `buildStripPrefixRegex(options.descriptionStripPrefixes)`.
  */
-export const froms = ['from', 'of'] as const;
+export const ofRegEx: RegExp = buildStripPrefixRegex(
+  defaultDescriptionStripPrefixes as unknown as string[]
+);
+
 /**
- * Regex to capture "from" equivalents at the end of a string (for upcoming i18n support).
+ * List of "from" equivalents.
+ * @deprecated Use `defaultTrailingQuantityContext` instead.
  */
-export const fromRegEx: RegExp = new RegExp(`\\s+(?:${froms.join('|')})$`, 'iu');
+export const froms: typeof defaultTrailingQuantityContext = defaultTrailingQuantityContext;
+
+/**
+ * Regex to capture "from" equivalents at the end of a string.
+ * @deprecated Build dynamically using `buildTrailingContextRegex(options.trailingQuantityContext)`.
+ */
+export const fromRegEx: RegExp = buildTrailingContextRegex(
+  defaultTrailingQuantityContext as unknown as string[]
+);
 
 /**
  * Default unit of measure specifications.

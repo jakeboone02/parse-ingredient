@@ -80,6 +80,8 @@ In the browser, all exports including the `parseIngredient` function are availab
 
 ## Usage
 
+The `parseIngredient` function accepts a string (with newline-separated ingredients) or an array of strings (one ingredient per element).
+
 ```js
 import { parseIngredient } from 'parse-ingredient';
 
@@ -223,6 +225,41 @@ parseIngredient('2 large eggs', { ignoreUOMs: ['large'] });
 // ]
 ```
 
+### `includeMeta`
+
+When `true`, each ingredient object will include a `meta` property containing source metadata:
+
+- `sourceText`: The original text of the ingredient line before parsing.
+- `sourceIndex`: The zero-based line number in the original input (accounts for empty lines).
+
+```js
+parseIngredient('1 cup flour\n\n2 tbsp sugar', { includeMeta: true });
+// [
+//   {
+//     quantity: 1,
+//     quantity2: null,
+//     unitOfMeasure: 'cup',
+//     unitOfMeasureID: 'cup',
+//     description: 'flour',
+//     isGroupHeader: false,
+//     meta: { sourceText: '1 cup flour', sourceIndex: 0 },
+//   },
+//   {
+//     quantity: 2,
+//     quantity2: null,
+//     unitOfMeasure: 'tbsp',
+//     unitOfMeasureID: 'tablespoon',
+//     description: 'sugar',
+//     isGroupHeader: false,
+//     meta: { sourceText: '2 tbsp sugar', sourceIndex: 2 },
+//   },
+// ]
+```
+
+## Internationalization (i18n)
+
+The library supports parsing ingredients in multiple languages through configurable keyword options. While unit names can be localized using `additionalUOMs`, the following options allow localization of parsing keywords and quantities.
+
 ### `decimalSeparator`
 
 The character used as a decimal separator in numeric quantities. Use `','` for European-style decimal commas (e.g., `'1,5'` for 1.5). Defaults to `'.'`.
@@ -238,6 +275,102 @@ parseIngredient('1,5 cups sugar', { decimalSeparator: ',' });
 //     description: 'sugar',
 //     isGroupHeader: false,
 //   }
+// ]
+```
+
+### `groupHeaderPatterns`
+
+Patterns to identify group headers (e.g., "For the icing:"). Strings are treated as prefix patterns matched at the start of the line followed by whitespace. RegExp patterns are used as-is for more complex matching. Defaults to `['For']`.
+
+```js
+// German group headers
+parseIngredient('Für den Teig:\n2 cups flour', {
+  groupHeaderPatterns: ['For', 'Für'],
+});
+// [
+//   { description: 'Für den Teig:', isGroupHeader: true, ... },
+//   { quantity: 2, unitOfMeasure: 'cups', description: 'flour', ... }
+// ]
+
+// French with regex pattern (matches "Pour la", "Pour le", "Pour un", etc.)
+parseIngredient('Pour la pâte:', {
+  groupHeaderPatterns: ['For', /^Pour\s/iu],
+});
+```
+
+### `rangeSeparators`
+
+Words or patterns to identify ranges between quantities (e.g., "1 to 2", "1 or 2"). Dash characters (-, –, —) are always recognized. Defaults to `['to', 'or']`.
+
+```js
+// German range separators
+parseIngredient('1 bis 2 cups flour', {
+  rangeSeparators: ['to', 'or', 'bis', 'oder'],
+});
+// [{ quantity: 1, quantity2: 2, ... }]
+
+// French range separator
+parseIngredient('2 à 3 cups sugar', {
+  rangeSeparators: ['to', 'or', 'à', 'ou'],
+});
+```
+
+### `descriptionStripPrefixes`
+
+Words or patterns to strip from the beginning of ingredient descriptions. Commonly used to remove "of" from phrases like "1 cup of sugar". Strings are matched as whole words followed by whitespace. RegExp patterns are used as-is, which is useful for languages with contractions or elisions. Defaults to `['of']`.
+
+> **Note:** This option is only applied when `allowLeadingOf` is `false` (the default). If `allowLeadingOf` is `true`, prefix stripping is disabled entirely and this option is ignored.
+
+```js
+// Spanish "de" stripping
+parseIngredient('2 tazas de azúcar', {
+  descriptionStripPrefixes: ['of', 'de'],
+});
+// [{ description: 'azúcar', ... }]
+
+// French with regex patterns for elisions/contractions
+parseIngredient("2 tasses d'huile", {
+  descriptionStripPrefixes: [/de\s+la\s+/iu, /de\s+l'/iu, /d'/iu, 'de'],
+});
+// [{ description: 'huile', ... }]
+```
+
+### `trailingQuantityContext`
+
+Words that indicate a trailing quantity extraction context, used to identify patterns like "Juice of 3 lemons". Defaults to `['from', 'of']`.
+
+```js
+// German context word
+parseIngredient('Saft von 3 Zitronen', {
+  trailingQuantityContext: ['from', 'of', 'von'],
+});
+// [{ quantity: 3, description: 'Saft von Zitronen', ... }]
+```
+
+### Full i18n Example (German)
+
+```js
+parseIngredient(
+  `Für den Kuchen:
+2 bis 3 Tassen Mehl
+1 Tasse Zucker`,
+  {
+    groupHeaderPatterns: ['For', 'Für'],
+    rangeSeparators: ['to', 'or', 'bis', 'oder'],
+    decimalSeparator: ',',
+    additionalUOMs: {
+      tasse: {
+        short: 'T',
+        plural: 'Tassen',
+        alternates: ['Tasse'],
+      },
+    },
+  }
+);
+// [
+//   { description: 'Für den Kuchen:', isGroupHeader: true, ... },
+//   { quantity: 2, quantity2: 3, unitOfMeasure: 'Tassen', description: 'Mehl', ... },
+//   { quantity: 1, unitOfMeasure: 'Tasse', description: 'Zucker', ... }
 // ]
 ```
 
