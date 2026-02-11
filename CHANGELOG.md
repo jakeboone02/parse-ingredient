@@ -9,15 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Extensive internationalization (i18n) support:
+  - [#46] `groupHeaderPatterns`: customizable words/patterns for group headers
+  - [#46] `rangeSeparators`: customizable range separator words/patterns (e.g., "bis", "oder", "à")
+  - [#46] `descriptionStripPrefixes`: customizable prefix words/patterns to strip from descriptions
+  - [#46] `trailingQuantityContext`: customizable context words indicating trailing quantities
+  - [#48] `partialUnitMatching` option for CJK and other spaceless languages — when enabled, the parser scans descriptions for known UOM substrings registered via `additionalUOMs`
+  - [#48] Updated `numeric-quantity` to v3.1.0, which adds support for non-ASCII decimal numeral systems (Arabic-Indic, Devanagari, Bengali, Thai, Fullwidth, and 70+ other Unicode `\p{Nd}` digit blocks).
 - [#46] `parseIngredient` now accepts `Array<string>` as well as `string`. Each element of the array is treated as a single ingredient line.
-- [#46] Internationalization (i18n) support for parsing keywords
-  - `groupHeaderPatterns`: customizable words/patterns for group headers
-  - `rangeSeparators`: customizable range separator words/patterns (e.g., "bis", "oder", "à")
-  - `descriptionStripPrefixes`: customizable prefix words/patterns to strip from descriptions
-  - `trailingQuantityContext`: customizable context words indicating trailing quantities
 - [#46] `includeMeta` option to include source metadata (`sourceText` and `sourceIndex`) on each parsed ingredient
 - [#46] Deprecated legacy exports (`fors`, `forsRegEx`, `rangeSeparatorWords`, `rangeSeparatorRegEx`, `ofs`, `ofRegEx`, `froms`, `fromRegEx`) in favor of new configurable defaults and regex builders
-- [#48] `partialUnitMatching` option for CJK and other spaceless languages — when enabled, the parser scans descriptions for known UOM substrings registered via `additionalUOMs`
 
 ### Fixed
 
