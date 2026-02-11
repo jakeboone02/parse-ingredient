@@ -1,12 +1,12 @@
 import { numericQuantity, NumericQuantityOptions } from 'numeric-quantity';
 import {
+  buildPrefixPatternRegex,
+  buildRangeSeparatorRegex,
+  buildStripPrefixRegex,
+  buildTrailingContextRegex,
+  buildTrailingQuantityRegex,
   defaultOptions,
   firstWordRegEx,
-  forsRegEx,
-  fromRegEx,
-  ofRegEx,
-  rangeSeparatorRegEx,
-  trailingQuantityRegEx,
 } from './constants';
 import { identifyUnit } from './convertUnit';
 import type { Ingredient, ParseIngredientOptions } from './types';
@@ -14,13 +14,13 @@ import type { Ingredient, ParseIngredientOptions } from './types';
 const newLineRegExp = /\r?\n/;
 
 /**
- * Parses a string into an array of recipe ingredient objects
+ * Parses a string or array of strings into an array of recipe ingredient objects
  */
 export const parseIngredient = (
   /**
-   * The ingredient list, as plain text.
+   * The ingredient list, as plain text or an array of strings.
    */
-  ingredientText: string,
+  ingredientText: string | string[],
   /**
    * Configuration options. Defaults to {@link defaultOptions}.
    */
@@ -33,12 +33,20 @@ export const parseIngredient = (
   // Pre-compute lowercase ignored UOMs for the trailing quantity bail-out check
   const ignoredUOMsLC = opts.ignoreUOMs.map(u => u.toLowerCase());
 
-  const ingredientArray = ingredientText
-    .split(newLineRegExp)
-    .map(line => line.trim())
-    .filter(Boolean);
+  // Build dynamic regexes from i18n options
+  const groupHeaderRegex = buildPrefixPatternRegex(opts.groupHeaderPatterns);
+  const rangeSeparatorRegex = buildRangeSeparatorRegex(opts.rangeSeparators);
+  const stripPrefixRegex = buildStripPrefixRegex(opts.descriptionStripPrefixes);
+  const trailingContextRegex = buildTrailingContextRegex(opts.trailingQuantityContext);
+  const trailingQuantityRegex = buildTrailingQuantityRegex(opts.rangeSeparators);
 
-  return ingredientArray.map(line => {
+  const ingredientArray = (
+    Array.isArray(ingredientText) ? ingredientText : ingredientText.split(newLineRegExp)
+  )
+    .map((line, index) => ({ line: line.trim(), sourceIndex: index }))
+    .filter(({ line }) => Boolean(line));
+
+  return ingredientArray.map(({ line, sourceIndex }) => {
     const oIng: Ingredient = {
       quantity: null,
       quantity2: null,
@@ -47,6 +55,13 @@ export const parseIngredient = (
       description: '',
       isGroupHeader: false,
     };
+
+    if (opts.includeMeta) {
+      oIng.meta = {
+        sourceText: line,
+        sourceIndex,
+      };
+    }
 
     // Check if the line begins with either (1) at least one numeric character, or
     // (2) a decimal separator followed by at least one numeric character.
@@ -70,7 +85,7 @@ export const parseIngredient = (
       }
     } else {
       // The first character is not numeric. First check for trailing quantity/uom.
-      const trailingQtyResult = trailingQuantityRegEx.exec(line);
+      const trailingQtyResult = trailingQuantityRegex.exec(line);
       const trailingQtyMaybeUom = trailingQtyResult?.at(-1)?.toLowerCase();
 
       if (trailingQtyMaybeUom && ignoredUOMsLC.includes(trailingQtyMaybeUom)) {
@@ -79,7 +94,7 @@ export const parseIngredient = (
       } else if (trailingQtyResult) {
         // Trailing quantity detected with missing or non-ignored UOM.
         // Remove the quantity and unit of measure from the description.
-        oIng.description = line.replace(trailingQuantityRegEx, '').trim();
+        oIng.description = line.replace(trailingQuantityRegex, '').trim();
 
         // Trailing quantity/range.
         const firstQty = trailingQtyResult[3];
@@ -123,7 +138,7 @@ export const parseIngredient = (
           if (uomID) {
             oIng.unitOfMeasureID = uomID;
             oIng.unitOfMeasure = opts.normalizeUOM ? uomID : finalUomRaw;
-          } else if (oIng.description.match(fromRegEx)) {
+          } else if (oIng.description.match(trailingContextRegex)) {
             oIng.description += ` ${uomRaw}`;
           }
         }
@@ -132,18 +147,18 @@ export const parseIngredient = (
         // so the entire line is the description.
         oIng.description = line;
 
-        // If the line ends with ":" or starts with "For ", then it is assumed to be a group header.
-        if (oIng.description.endsWith(':') || forsRegEx.test(oIng.description)) {
+        // If the line ends with ":" or matches a group header pattern, it is assumed to be a group header.
+        if (oIng.description.endsWith(':') || groupHeaderRegex.test(oIng.description)) {
           oIng.isGroupHeader = true;
         }
       }
     }
 
     // Now check the description for a `quantity2` at the beginning.
-    // First we look for a dash, emdash, endash, "to ", or "or " to
+    // First we look for a dash, emdash, endash, or word separator to
     // indicate a range, then process the next seven characters just
     // like we did for `quantity`.
-    const q2reMatch = rangeSeparatorRegEx.exec(oIng.description);
+    const q2reMatch = rangeSeparatorRegex.exec(oIng.description);
     if (q2reMatch) {
       const q2reMatchLen = q2reMatch[1].length;
       const nqResultFirstChar = numericQuantity(
@@ -202,8 +217,8 @@ export const parseIngredient = (
       }
     }
 
-    if (!opts.allowLeadingOf && oIng.description.match(ofRegEx)) {
-      oIng.description = oIng.description.replace(ofRegEx, '');
+    if (!opts.allowLeadingOf && oIng.description.match(stripPrefixRegex)) {
+      oIng.description = oIng.description.replace(stripPrefixRegex, '');
     }
 
     return oIng;
