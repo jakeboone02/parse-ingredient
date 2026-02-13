@@ -60,14 +60,14 @@
     "@typescript/native-preview": "^7.0.0-dev.20260213.1",
     "np": "^11.0.2",
     "oxlint": "^1.47.0",
-    "oxlint-tsgolint": "^0.12.1",
+    "oxlint-tsgolint": "^0.12.2",
     "prettier": "3.8.1",
     "prettier-plugin-organize-imports": "4.3.0",
     "tsdown": "^0.20.3",
-    "typedoc": "^0.28.16",
+    "typedoc": "^0.28.17",
     "typescript": "^5.9.3"
   },
   "dependencies": {
-    "numeric-quantity": "^3.2.0"
+    "numeric-quantity": "^3.2.1"
   }
 }
