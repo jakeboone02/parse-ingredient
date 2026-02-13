@@ -13,6 +13,7 @@ import type { Ingredient, ParseIngredientOptions } from './types';
 import { buildUnitLookupMaps, collectUOMStrings, getDefaultUnitLookupMaps } from './unitLookup';
 
 const newLineRegExp = /\r?\n/;
+const nextWordRegExp = /^([\p{L}\p{N}_]+(?:[.-]?[\p{L}\p{N}_]+)*[-.]?)(?:\s+|$)/iu;
 
 /**
  * Parses a string or array of strings into an array of recipe ingredient objects
@@ -202,9 +203,7 @@ export const parseIngredient = (
         let finalDesc = remainingDesc;
 
         // Try multi-word unit combinations (greedy matching: prefer longer matches over shorter ones)
-        const nextWords = remainingDesc.match(
-          /^([\p{L}\p{N}_]+(?:[.-]?[\p{L}\p{N}_]+)*[-.]?)(?:\s+|$)/iu
-        );
+        const nextWords = remainingDesc.match(nextWordRegExp);
         if (nextWords) {
           const twoWordCombo = firstWord + ' ' + nextWords[1];
           const twoWordID = identifyUnit(twoWordCombo, options);
