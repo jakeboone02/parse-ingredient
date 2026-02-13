@@ -63,3 +63,12 @@ let defaultLookupMaps: UnitLookupMaps | null = null;
  */
 export const getDefaultUnitLookupMaps = (): UnitLookupMaps =>
   defaultLookupMaps ?? (defaultLookupMaps = buildUnitLookupMaps());
+
+/**
+ * Collects all known UOM strings from the lookup maps, sorted longest-first.
+ */
+export const collectUOMStrings = (maps: UnitLookupMaps): string[] => {
+  const keys = [...maps.caseSensitive.keys()];
+  keys.sort((a, b) => b.length - a.length);
+  return keys;
+};

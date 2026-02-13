@@ -202,4 +202,13 @@ export interface ParseIngredientOptions {
    * @default false
    */
   includeMeta?: boolean;
+  /**
+   * When `true`, if normal whitespace-based parsing fails to identify a unit
+   * of measure, the parser scans the description for known UOM strings
+   * registered via `additionalUOMs`. Useful for CJK languages where words
+   * are not separated by spaces.
+   *
+   * @default false
+   */
+  partialUnitMatching?: boolean;
 }

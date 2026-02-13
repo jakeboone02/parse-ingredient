@@ -374,6 +374,47 @@ parseIngredient(
 // ]
 ```
 
+### `partialUnitMatching`
+
+When `true`, if normal whitespace-based parsing fails to identify a unit of measure, the parser scans the description for known UOM strings registered via `additionalUOMs`. This is useful for CJK languages (Japanese, Chinese, Korean) where words are not separated by spaces.
+
+```js
+parseIngredient('砂糖大さじ2', {
+  partialUnitMatching: true,
+  additionalUOMs: {
+    '大さじ': { short: '大さじ', plural: '大さじ', alternates: [] },
+  },
+});
+// [
+//   {
+//     quantity: 2,
+//     quantity2: null,
+//     unitOfMeasure: '大さじ',
+//     unitOfMeasureID: '大さじ',
+//     description: '砂糖',
+//     isGroupHeader: false,
+//   }
+// ]
+```
+
+The scan also works with Latin UOMs already known to the library (e.g., `g`, `ml`) and mixed-language ingredient lists:
+
+```js
+parseIngredient('砂糖大さじ2\nバター10g\n1 cup flour', {
+  partialUnitMatching: true,
+  additionalUOMs: {
+    '大さじ': { short: '大さじ', plural: '大さじ', alternates: [] },
+  },
+});
+// [
+//   { quantity: 2, unitOfMeasure: '大さじ', description: '砂糖', ... },
+//   { quantity: 10, unitOfMeasure: 'g', description: 'バター', ... },
+//   { quantity: 1, unitOfMeasure: 'cup', description: 'flour', ... },
+// ]
+```
+
+When multiple UOM strings could match, the longest match wins (e.g., `大さじ` is preferred over `大`).
+
 ## Unit Conversion
 
 ### `convertUnit`
