@@ -630,6 +630,98 @@ export const parseIngredientTests: Record<
       },
     },
   ],
+  'additional UOM with slash plural marker (leading)': [
+    '1 Scheibe/n Toast',
+    [
+      {
+        quantity: 1,
+        quantity2: null,
+        unitOfMeasureID: 'slice',
+        unitOfMeasure: 'Scheibe/n',
+        description: 'Toast',
+        isGroupHeader: false,
+      },
+    ],
+    {
+      additionalUOMs: {
+        slice: {
+          short: 'Scheibe',
+          plural: 'Scheiben',
+          alternates: ['scheibe/n'],
+          type: 'count',
+        },
+      },
+    },
+  ],
+  'additional UOM with slash plural marker (trailing)': [
+    'Toast 1 Scheibe/n',
+    [
+      {
+        quantity: 1,
+        quantity2: null,
+        unitOfMeasureID: 'slice',
+        unitOfMeasure: 'Scheibe/n',
+        description: 'Toast',
+        isGroupHeader: false,
+      },
+    ],
+    {
+      additionalUOMs: {
+        slice: {
+          short: 'Scheibe',
+          plural: 'Scheiben',
+          alternates: ['scheibe/n'],
+          type: 'count',
+        },
+      },
+    },
+  ],
+  'additional UOM with parenthetical plural marker (leading)': [
+    '1 Scheibe(n) Toast',
+    [
+      {
+        quantity: 1,
+        quantity2: null,
+        unitOfMeasureID: 'slice',
+        unitOfMeasure: 'Scheibe(n)',
+        description: 'Toast',
+        isGroupHeader: false,
+      },
+    ],
+    {
+      additionalUOMs: {
+        slice: {
+          short: 'Scheibe',
+          plural: 'Scheiben',
+          alternates: ['scheibe(n)'],
+          type: 'count',
+        },
+      },
+    },
+  ],
+  'additional UOM with parenthetical plural marker (trailing)': [
+    'Toast 1 Scheibe(n)',
+    [
+      {
+        quantity: 1,
+        quantity2: null,
+        unitOfMeasureID: 'slice',
+        unitOfMeasure: 'Scheibe(n)',
+        description: 'Toast',
+        isGroupHeader: false,
+      },
+    ],
+    {
+      additionalUOMs: {
+        slice: {
+          short: 'Scheibe',
+          plural: 'Scheiben',
+          alternates: ['scheibe(n)'],
+          type: 'count',
+        },
+      },
+    },
+  ],
   'trailing range with umlaut': [
     'Backpulver 1-2 Päckchen',
     [
