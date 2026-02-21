@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'bun:test';
 import {
+  buildLeadingQuantityPrefixRegex,
   buildPrefixPatternRegex,
   buildRangeSeparatorRegex,
   buildRangeSeparatorSource,
@@ -142,6 +143,23 @@ describe('buildStripPrefixRegex', () => {
     expect(regex.test('de la farine')).toBe(true);
     expect(regex.test("de l'eau")).toBe(true);
     expect(regex.test("d'huile")).toBe(true);
+  });
+});
+
+describe('buildLeadingQuantityPrefixRegex', () => {
+  test('matches words at start with optional whitespace', () => {
+    const regex = buildLeadingQuantityPrefixRegex(['about', 'ca.']);
+    expect(regex.test('about 2 cups')).toBe(true);
+    expect(regex.test('ca. 200 g')).toBe(true);
+    expect(regex.test('ca.200 g')).toBe(true);
+    expect(regex.test('around 2 cups')).toBe(false);
+  });
+
+  test('handles RegExp patterns', () => {
+    const regex = buildLeadingQuantityPrefixRegex([/bis\s+zu/iu, /ca\.?/iu]);
+    expect(regex.test('bis zu 3 EL')).toBe(true);
+    expect(regex.test('ca. 3 EL')).toBe(true);
+    expect(regex.test('zu 3 EL')).toBe(false);
   });
 });
 
