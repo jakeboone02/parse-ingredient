@@ -347,6 +347,33 @@ parseIngredient('Saft von 3 Zitronen', {
 // [{ quantity: 3, description: 'Saft von Zitronen', ... }]
 ```
 
+### `leadingQuantityPrefixes`
+
+Words or patterns to strip from the beginning of quantity expressions. Useful for approximation prefixes and modifiers like `'about'`, `'ca.'`, or `'bis zu'`. Defaults to `[]`.
+
+```js
+// English approximation prefix
+parseIngredient('about 2 cups sugar', {
+  leadingQuantityPrefixes: ['about'],
+});
+// [{ quantity: 2, unitOfMeasure: 'cups', description: 'sugar', ... }]
+
+// German prefixes
+parseIngredient('ca. 200 g Mehl', {
+  leadingQuantityPrefixes: ['ca.'],
+});
+// [{ quantity: 200, unitOfMeasure: 'g', description: 'Mehl', ... }]
+
+parseIngredient('bis zu 3 EL Zucker', {
+  rangeSeparators: ['to', 'or', 'bis'],
+  leadingQuantityPrefixes: ['bis zu'],
+  additionalUOMs: {
+    tablespoon_de: { short: 'EL', plural: 'EL', alternates: [] },
+  },
+});
+// [{ quantity: 3, unitOfMeasure: 'EL', description: 'Zucker', ... }]
+```
+
 ### Full i18n Example (German)
 
 ```js
