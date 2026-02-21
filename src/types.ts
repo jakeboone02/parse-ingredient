@@ -196,6 +196,15 @@ export interface ParseIngredientOptions {
    */
   trailingQuantityContext?: string[];
   /**
+   * Words or patterns to strip from the beginning of a quantity expression.
+   * Useful for approximation prefixes like "about 2 cups", "ca. 200 g", or
+   * range modifiers like "bis zu 3 EL".
+   *
+   * @default []
+   * @example ['about', 'approx.', 'ca.', 'etwa', 'bis zu']
+   */
+  leadingQuantityPrefixes?: (string | RegExp)[];
+  /**
    * If `true`, include a `meta` property on each ingredient containing
    * the original text, original index, and other metadata.
    *

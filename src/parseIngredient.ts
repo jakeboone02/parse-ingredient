@@ -1,5 +1,6 @@
 import { numericQuantity, NumericQuantityOptions } from 'numeric-quantity';
 import {
+  buildLeadingQuantityPrefixRegex,
   buildPrefixPatternRegex,
   buildRangeSeparatorRegex,
   buildStripPrefixRegex,
@@ -14,6 +15,20 @@ import { buildUnitLookupMaps, collectUOMStrings, getDefaultUnitLookupMaps } from
 
 const newLineRegExp = /\r?\n/;
 const nextWordRegExp = /^([\p{L}\p{N}_]+(?:[.-]?[\p{L}\p{N}_]+)*[-.]?)(?:\s+|$)/iu;
+
+/**
+ * Repeatedly strips configured quantity prefixes from the start of a string.
+ */
+const stripLeadingQuantityPrefixes = (text: string, prefixRegex: RegExp): string => {
+  if (!text) return text;
+  let out = text.trimStart();
+  while (out) {
+    const match = prefixRegex.exec(out);
+    if (!match || !match[0]) break;
+    out = out.slice(match[0].length).trimStart();
+  }
+  return out;
+};
 
 /**
  * Parses a string or array of strings into an array of recipe ingredient objects
@@ -41,6 +56,7 @@ export const parseIngredient = (
   const stripPrefixRegex = buildStripPrefixRegex(opts.descriptionStripPrefixes);
   const trailingContextRegex = buildTrailingContextRegex(opts.trailingQuantityContext);
   const trailingQuantityRegex = buildTrailingQuantityRegex(opts.rangeSeparators);
+  const leadingQuantityPrefixRegex = buildLeadingQuantityPrefixRegex(opts.leadingQuantityPrefixes);
 
   const uomStrings = opts.partialUnitMatching
     ? collectUOMStrings(
@@ -57,6 +73,7 @@ export const parseIngredient = (
     .filter(({ line }) => Boolean(line));
 
   return ingredientArray.map(({ line, sourceIndex }) => {
+    const lineToParse = stripLeadingQuantityPrefixes(line, leadingQuantityPrefixRegex);
     const oIng: Ingredient = {
       quantity: null,
       quantity2: null,
@@ -76,35 +93,37 @@ export const parseIngredient = (
     // Check if the line begins with either (1) at least one numeric character, or
     // (2) a decimal separator followed by at least one numeric character.
     if (
-      !isNaN(numericQuantity(line[0], nqOpts)) ||
-      (line[0] === opts.decimalSeparator && !isNaN(numericQuantity(line.slice(0, 2), nqOpts)))
+      lineToParse &&
+      (!isNaN(numericQuantity(lineToParse[0], nqOpts)) ||
+        (lineToParse[0] === opts.decimalSeparator &&
+          !isNaN(numericQuantity(lineToParse.slice(0, 2), nqOpts))))
     ) {
       // See how many of the first seven characters constitute a single value. This will be `quantity`.
       let lenNum = 6;
       let nqResult = NaN;
 
       while (lenNum > 0 && isNaN(nqResult)) {
-        nqResult = numericQuantity(line.substring(0, lenNum).trim(), nqOpts);
+        nqResult = numericQuantity(lineToParse.substring(0, lenNum).trim(), nqOpts);
 
         if (nqResult > -1) {
           oIng.quantity = nqResult;
-          oIng.description = line.substring(lenNum).trim();
+          oIng.description = lineToParse.substring(lenNum).trim();
         }
 
         lenNum--;
       }
     } else {
       // The first character is not numeric. First check for trailing quantity/uom.
-      const trailingQtyResult = trailingQuantityRegex.exec(line);
+      const trailingQtyResult = trailingQuantityRegex.exec(lineToParse);
       const trailingQtyMaybeUom = trailingQtyResult?.at(-1)?.toLowerCase();
 
       if (trailingQtyMaybeUom && ignoredUOMsLC.includes(trailingQtyMaybeUom)) {
         // Trailing quantity detected, but bailing out since the UOM should be ignored.
-        oIng.description = line;
+        oIng.description = lineToParse;
       } else if (trailingQtyResult) {
         // Trailing quantity detected with missing or non-ignored UOM.
         // Remove the quantity and unit of measure from the description.
-        oIng.description = line.replace(trailingQuantityRegex, '').trim();
+        oIng.description = lineToParse.replace(trailingQuantityRegex, '').trim();
 
         // Trailing quantity/range.
         const firstQty = trailingQtyResult[3];
@@ -155,7 +174,7 @@ export const parseIngredient = (
       } else {
         // The first character is not numeric, and no trailing quantity was detected,
         // so the entire line is the description.
-        oIng.description = line;
+        oIng.description = lineToParse;
 
         // If the line ends with ":" or matches a group header pattern, it is assumed to be a group header.
         if (oIng.description.endsWith(':') || groupHeaderRegex.test(oIng.description)) {
@@ -171,8 +190,12 @@ export const parseIngredient = (
     const q2reMatch = rangeSeparatorRegex.exec(oIng.description);
     if (q2reMatch) {
       const q2reMatchLen = q2reMatch[1].length;
+      const q2Portion = stripLeadingQuantityPrefixes(
+        oIng.description.substring(q2reMatchLen).trim(),
+        leadingQuantityPrefixRegex
+      );
       const nqResultFirstChar = numericQuantity(
-        oIng.description.substring(q2reMatchLen).trim()[0],
+        q2Portion[0],
         nqOpts
       );
 
@@ -181,11 +204,11 @@ export const parseIngredient = (
         let nqResult = NaN;
 
         while (--lenNum > 0 && isNaN(nqResult)) {
-          nqResult = numericQuantity(oIng.description.substring(q2reMatchLen, lenNum), nqOpts);
+          nqResult = numericQuantity(q2Portion.substring(0, lenNum), nqOpts);
 
           if (!isNaN(nqResult)) {
             oIng.quantity2 = nqResult;
-            oIng.description = oIng.description.substring(lenNum).trim();
+            oIng.description = q2Portion.substring(lenNum).trim();
           }
         }
       }

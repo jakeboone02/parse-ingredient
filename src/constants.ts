@@ -51,6 +51,20 @@ export const buildStripPrefixRegex = (patterns: (string | RegExp)[]): RegExp => 
 };
 
 /**
+ * Builds a regex that matches approximation/modifier prefixes at the start of
+ * quantity expressions (e.g., "about", "ca.", "bis zu"), followed by optional whitespace.
+ */
+export const buildLeadingQuantityPrefixRegex = (patterns: (string | RegExp)[]): RegExp => {
+  if (patterns.length === 0) {
+    return /$^/u;
+  }
+  const parts = patterns.map(p =>
+    p instanceof RegExp ? `(?:${p.source})\\s*` : `(?:${escapeRegex(p)})\\s*`
+  );
+  return new RegExp(`^(?:${parts.join('|')})`, 'iu');
+};
+
+/**
  * Builds a regex that matches any of the given words at the end of a string,
  * preceded by whitespace. Used for trailing quantity context like "from" or "of".
  */
@@ -78,6 +92,10 @@ export const defaultDescriptionStripPrefixes = ['of'] as const;
  * Default words that indicate trailing quantity context.
  */
 export const defaultTrailingQuantityContext = ['from', 'of'] as const;
+/**
+ * Default words/patterns that are stripped from the beginning of quantity expressions.
+ */
+export const defaultLeadingQuantityPrefixes = [] as const;
 
 /**
  * Default options for {@link parseIngredient}.
@@ -92,6 +110,7 @@ export const defaultOptions: Required<ParseIngredientOptions> = {
   rangeSeparators: defaultRangeSeparators as unknown as string[],
   descriptionStripPrefixes: defaultDescriptionStripPrefixes as unknown as (string | RegExp)[],
   trailingQuantityContext: defaultTrailingQuantityContext as unknown as string[],
+  leadingQuantityPrefixes: defaultLeadingQuantityPrefixes as unknown as (string | RegExp)[],
   includeMeta: false,
   partialUnitMatching: false,
 } as const;
