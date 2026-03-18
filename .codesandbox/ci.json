@@ -1,6 +1,0 @@
-{
-  "installCommand": "codesandbox-ci",
-  "buildCommand": "build",
-  "sandboxes": ["/ci"],
-  "node": "18"
-}
