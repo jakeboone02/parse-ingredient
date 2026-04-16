@@ -48,23 +48,22 @@
     "docs": "typedoc",
     "test": "bun test",
     "watch": "bun test --watch",
-    "lint": "bunx oxlint --type-aware --report-unused-disable-directives --type-check",
-    "pretty-print": "prettier --write '*.{html,json,ts}' './src/*.*'",
+    "lint": "bunx oxlint",
+    "fmt": "oxfmt",
     "publish:npm": "np"
   },
   "devDependencies": {
-    "@types/bun": "^1.3.9",
-    "@types/node": "^25.2.3",
-    "@types/web": "^0.0.333",
-    "@typescript/native-preview": "^7.0.0-dev.20260213.1",
-    "np": "^11.0.2",
-    "oxlint": "^1.47.0",
-    "oxlint-tsgolint": "^0.12.2",
-    "prettier": "3.8.1",
-    "prettier-plugin-organize-imports": "4.3.0",
-    "tsdown": "^0.20.3",
-    "typedoc": "^0.28.17",
-    "typescript": "^5.9.3"
+    "@types/bun": "^1.3.12",
+    "@types/node": "^25.6.0",
+    "@types/web": "^0.0.345",
+    "@typescript/native-preview": "^7.0.0-dev.20260416.2",
+    "np": "^11.0.3",
+    "oxfmt": "^0.45.0",
+    "oxlint": "^1.60.0",
+    "oxlint-tsgolint": "^0.21.1",
+    "tsdown": "^0.21.9",
+    "typedoc": "^0.28.19",
+    "typescript": "^6.0.2"
   },
   "dependencies": {
     "numeric-quantity": "^3.2.1"
