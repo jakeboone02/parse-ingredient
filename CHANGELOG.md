@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+N/A
+
+## [v2.2.0] - 2026-04-20
+
 ### Added
 
 - [#49] `leadingQuantityPrefixes` option to handle leading quantity prefixes (e.g., "~2 cups" → quantity recognized with prefix stripped)
@@ -238,7 +242,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- Release comparison links -->
 
-[unreleased]: https://github.com/jakeboone02/parse-ingredient/compare/v2.1.0...HEAD
+[unreleased]: https://github.com/jakeboone02/parse-ingredient/compare/v2.2.0...HEAD
+[v2.2.0]: https://github.com/jakeboone02/parse-ingredient/compare/v2.1.0...v2.2.0
 [v2.1.0]: https://github.com/jakeboone02/parse-ingredient/compare/v2.0.1...v2.1.0
 [v2.0.1]: https://github.com/jakeboone02/parse-ingredient/compare/v2.0.0...v2.0.1
 [v2.0.0]: https://github.com/jakeboone02/parse-ingredient/compare/v1.3.3...v2.0.0
