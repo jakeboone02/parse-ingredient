@@ -200,6 +200,9 @@ export interface ParseIngredientOptions {
    * Useful for approximation prefixes like "about 2 cups", "ca. 200 g", or
    * range modifiers like "bis zu 3 EL".
    *
+   * List longer/more-specific patterns before shorter ones (e.g., `['ca.', 'ca']`
+   * instead of `['ca', 'ca.']`) since regex alternation matches left-to-right.
+   *
    * @default []
    * @example ['about', 'approx.', 'ca.', 'etwa', 'bis zu']
    */

@@ -351,6 +351,10 @@ parseIngredient('Saft von 3 Zitronen', {
 
 Words or patterns to strip from the beginning of quantity expressions. Useful for approximation prefixes and modifiers like `'about'`, `'ca.'`, or `'bis zu'`. Defaults to `[]`.
 
+> **Note:** When providing multiple patterns, list longer/more-specific patterns before shorter ones. Standard regex alternation matches left-to-right, so `['ca', 'ca.']` would match `"ca"` first in `"ca. 200g"`, leaving `". 200g"`. Use `['ca.', 'ca']` instead.
+
+> **Note:** Be mindful of overlap between `rangeSeparators` and `leadingQuantityPrefixes`. For example, with `rangeSeparators: ['bis']` and `leadingQuantityPrefixes: ['bis zu']`, input like `"3 bis zu 5 EL"` will match `"bis"` as a range separator first during range extraction, leaving `"zu 5 EL"`. The prefix regex won't strip the leftover `"zu"` on its own. If you need both, ensure the range separator and prefix don't share a common leading word, or accept the range interpretation taking priority.
+
 ```js
 // English approximation prefix
 parseIngredient('about 2 cups sugar', {
