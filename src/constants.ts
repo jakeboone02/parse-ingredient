@@ -54,10 +54,13 @@ export const buildStripPrefixRegex = (patterns: (string | RegExp)[]): RegExp => 
  * Builds a regex that matches approximation/modifier prefixes at the start of
  * quantity expressions (e.g., "about", "ca.", "bis zu"), followed by optional whitespace.
  */
-export const buildLeadingQuantityPrefixRegex = (patterns: (string | RegExp)[]): RegExp => {
-  if (patterns.length === 0) {
-    return /$^/u;
-  }
+export const buildLeadingQuantityPrefixRegex = (
+  patterns: (string | RegExp)[]
+): RegExp | null => {
+  if (patterns.length === 0) return null;
+  // Uses `\s*` (optional whitespace) instead of `\s+` (required whitespace, as in
+  // buildStripPrefixRegex) because quantity prefixes like "ca." may appear directly
+  // adjacent to the number (e.g., "ca.200g").
   const parts = patterns.map(p =>
     p instanceof RegExp ? `(?:${p.source})\\s*` : `(?:${escapeRegex(p)})\\s*`
   );

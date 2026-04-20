@@ -19,11 +19,13 @@ const nextWordRegExp = /^([\p{L}\p{N}_]+(?:[.-]?[\p{L}\p{N}_]+)*[-.]?)(?:\s+|$)/
 /**
  * Repeatedly strips configured quantity prefixes from the start of a string.
  */
-const stripLeadingQuantityPrefixes = (text: string, prefixRegex: RegExp): string => {
-  if (!text) return text;
+const stripLeadingQuantityPrefixes = (text: string, prefixRegex: RegExp | null): string => {
+  if (!text || !prefixRegex) return text;
   let out = text.trimStart();
   while (out) {
     const match = prefixRegex.exec(out);
+    // Break if no match or if the match is zero-length to prevent infinite loops
+    // (empty string is falsy, so `!match[0]` catches both null/undefined and "")
     if (!match || !match[0]) break;
     out = out.slice(match[0].length).trimStart();
   }
@@ -194,21 +196,26 @@ export const parseIngredient = (
         oIng.description.substring(q2reMatchLen).trim(),
         leadingQuantityPrefixRegex
       );
-      const nqResultFirstChar = numericQuantity(
-        q2Portion[0],
-        nqOpts
-      );
 
-      if (!isNaN(nqResultFirstChar)) {
-        let lenNum = 7;
-        let nqResult = NaN;
+      // Guard against empty string after prefix stripping (e.g., aggressive
+      // prefixes could strip content down to nothing)
+      if (q2Portion) {
+        const nqResultFirstChar = numericQuantity(
+          q2Portion[0],
+          nqOpts
+        );
 
-        while (--lenNum > 0 && isNaN(nqResult)) {
-          nqResult = numericQuantity(q2Portion.substring(0, lenNum), nqOpts);
+        if (!isNaN(nqResultFirstChar)) {
+          let lenNum = 7;
+          let nqResult = NaN;
 
-          if (!isNaN(nqResult)) {
-            oIng.quantity2 = nqResult;
-            oIng.description = q2Portion.substring(lenNum).trim();
+          while (--lenNum > 0 && isNaN(nqResult)) {
+            nqResult = numericQuantity(q2Portion.substring(0, lenNum), nqOpts);
+
+            if (!isNaN(nqResult)) {
+              oIng.quantity2 = nqResult;
+              oIng.description = q2Portion.substring(lenNum).trim();
+            }
           }
         }
       }
