@@ -200,10 +200,7 @@ export const parseIngredient = (
       // Guard against empty string after prefix stripping (e.g., aggressive
       // prefixes could strip content down to nothing)
       if (q2Portion) {
-        const nqResultFirstChar = numericQuantity(
-          q2Portion[0],
-          nqOpts
-        );
+        const nqResultFirstChar = numericQuantity(q2Portion[0], nqOpts);
 
         if (!isNaN(nqResultFirstChar)) {
           let lenNum = 7;
