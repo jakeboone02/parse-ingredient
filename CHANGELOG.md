@@ -7,7 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-N/A
+### Added
+
+- [#49] `leadingQuantityPrefixes` option to handle leading quantity prefixes (e.g., "~2 cups" → quantity recognized with prefix stripped)
+- [#49] Enhanced regex parsing patterns for units of measure containing special characters (e.g., periods, hyphens)
 
 ## [v2.1.0] - 2026-02-13
 
@@ -231,6 +234,7 @@ N/A
 [#46]: https://github.com/jakeboone02/parse-ingredient/pull/46
 [#47]: https://github.com/jakeboone02/parse-ingredient/pull/47
 [#48]: https://github.com/jakeboone02/parse-ingredient/pull/48
+[#49]: https://github.com/jakeboone02/parse-ingredient/pull/49
 
 <!-- Release comparison links -->
 
