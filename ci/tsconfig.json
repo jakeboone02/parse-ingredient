@@ -7,6 +7,6 @@
     "sourceMap": true,
     "allowJs": true,
     "lib": ["ES6", "DOM"],
-    "moduleResolution": "node"
+    "moduleResolution": "bundler"
   }
 }

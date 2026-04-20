@@ -409,7 +409,7 @@ When `true`, if normal whitespace-based parsing fails to identify a unit of meas
 parseIngredient('砂糖大さじ2', {
   partialUnitMatching: true,
   additionalUOMs: {
-    '大さじ': { short: '大さじ', plural: '大さじ', alternates: [] },
+    大さじ: { short: '大さじ', plural: '大さじ', alternates: [] },
   },
 });
 // [
@@ -430,7 +430,7 @@ The scan also works with Latin UOMs already known to the library (e.g., `g`, `ml
 parseIngredient('砂糖大さじ2\nバター10g\n1 cup flour', {
   partialUnitMatching: true,
   additionalUOMs: {
-    '大さじ': { short: '大さじ', plural: '大さじ', alternates: [] },
+    大さじ: { short: '大さじ', plural: '大さじ', alternates: [] },
   },
 });
 // [
