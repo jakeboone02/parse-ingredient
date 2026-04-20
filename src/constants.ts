@@ -13,7 +13,8 @@ export const escapeRegex = (str: string): string => str.replace(/[.*+?^${}()|[\]
  * followed by whitespace. Strings are escaped and treated as literal prefixes.
  * RegExp patterns have their source extracted and combined.
  */
-export const buildPrefixPatternRegex = (patterns: (string | RegExp)[]): RegExp => {
+export const buildPrefixPatternRegex = (patterns: (string | RegExp)[]): RegExp | null => {
+  if (patterns.length === 0) return null;
   const parts = patterns.map(p =>
     p instanceof RegExp ? `(?:${p.source})` : `(?:${escapeRegex(p)})\\s`
   );
@@ -43,9 +44,25 @@ export const buildRangeSeparatorRegex = (words: (string | RegExp)[]): RegExp =>
  * Strings are matched as whole words followed by whitespace.
  * RegExp patterns are used as-is for more complex matching (e.g., French elisions).
  */
-export const buildStripPrefixRegex = (patterns: (string | RegExp)[]): RegExp => {
+export const buildStripPrefixRegex = (patterns: (string | RegExp)[]): RegExp | null => {
+  if (patterns.length === 0) return null;
   const parts = patterns.map(p =>
     p instanceof RegExp ? `(?:${p.source})` : `(?:${escapeRegex(p)})\\s+`
+  );
+  return new RegExp(`^(?:${parts.join('|')})`, 'iu');
+};
+
+/**
+ * Builds a regex that matches approximation/modifier prefixes at the start of
+ * quantity expressions (e.g., "about", "ca.", "bis zu"), followed by optional whitespace.
+ */
+export const buildLeadingQuantityPrefixRegex = (patterns: (string | RegExp)[]): RegExp | null => {
+  if (patterns.length === 0) return null;
+  // Uses `\s*` (optional whitespace) instead of `\s+` (required whitespace, as in
+  // buildStripPrefixRegex) because quantity prefixes like "ca." may appear directly
+  // adjacent to the number (e.g., "ca.200g").
+  const parts = patterns.map(p =>
+    p instanceof RegExp ? `(?:${p.source})\\s*` : `(?:${escapeRegex(p)})\\s*`
   );
   return new RegExp(`^(?:${parts.join('|')})`, 'iu');
 };
@@ -78,6 +95,10 @@ export const defaultDescriptionStripPrefixes = ['of'] as const;
  * Default words that indicate trailing quantity context.
  */
 export const defaultTrailingQuantityContext = ['from', 'of'] as const;
+/**
+ * Default words/patterns that are stripped from the beginning of quantity expressions.
+ */
+export const defaultLeadingQuantityPrefixes = [] as const;
 
 /**
  * Default options for {@link parseIngredient}.
@@ -92,6 +113,7 @@ export const defaultOptions: Required<ParseIngredientOptions> = {
   rangeSeparators: defaultRangeSeparators as unknown as string[],
   descriptionStripPrefixes: defaultDescriptionStripPrefixes as unknown as (string | RegExp)[],
   trailingQuantityContext: defaultTrailingQuantityContext as unknown as string[],
+  leadingQuantityPrefixes: defaultLeadingQuantityPrefixes as unknown as (string | RegExp)[],
   includeMeta: false,
   partialUnitMatching: false,
 } as const;
@@ -110,7 +132,7 @@ export const fors: typeof defaultGroupHeaderPatterns = defaultGroupHeaderPattern
  */
 export const forsRegEx: RegExp = buildPrefixPatternRegex(
   defaultGroupHeaderPatterns as unknown as string[]
-);
+)!;
 
 /**
  * List of range separators.
@@ -130,7 +152,7 @@ export const rangeSeparatorRegEx: RegExp = buildRangeSeparatorRegex(
  * Regex to capture the first word of a description to check if it's a unit of measure.
  */
 export const firstWordRegEx: RegExp =
-  /^(fl(?:uid)?(?:\s+|-)(?:oz|ounces?)|[\p{L}\p{N}_]+(?:[.-][\p{L}\p{N}_]+)*[-.]?)(.+)?/iu;
+  /^(fl(?:uid)?(?:\s+|-)(?:oz|ounces?)|[\p{L}\p{N}_]+(?:[./-][\p{L}\p{N}_]+|\([\p{L}\p{N}_]+\))*[-.]?)(.+)?/iu;
 
 const numericRegexAnywhere = numericRegex.source.replace('^', '').replace(/\$$/, '');
 
@@ -141,7 +163,7 @@ const numericRegexAnywhere = numericRegex.source.replace('^', '').replace(/\$$/,
 export const buildTrailingQuantityRegex = (rangeSeparators: (string | RegExp)[]): RegExp => {
   const rangeSeparatorSource = buildRangeSeparatorSource(rangeSeparators);
   return new RegExp(
-    `(,|:|-|–|—|x|⨯)?\\s*((${numericRegexAnywhere})\\s*(${rangeSeparatorSource}))?\\s*(${numericRegexAnywhere})\\s*(fl(?:uid)?(?:\\s+|-)(?:oz|ounces?)|[\\p{L}\\p{N}_]+(?:[.-][\\p{L}\\p{N}_]+)*[-.]?)?$`,
+    `(,|:|-|–|—|x|⨯)?\\s*((${numericRegexAnywhere})\\s*(${rangeSeparatorSource}))?\\s*(${numericRegexAnywhere})\\s*(fl(?:uid)?(?:\\s+|-)(?:oz|ounces?)|[\\p{L}\\p{N}_]+(?:[./-][\\p{L}\\p{N}_]+|\\([\\p{L}\\p{N}_]+\\))*[-.]?)?$`,
     'iu'
   );
 };
@@ -166,7 +188,7 @@ export const ofs: typeof defaultDescriptionStripPrefixes = defaultDescriptionStr
  */
 export const ofRegEx: RegExp = buildStripPrefixRegex(
   defaultDescriptionStripPrefixes as unknown as string[]
-);
+)!;
 
 /**
  * List of "from" equivalents.

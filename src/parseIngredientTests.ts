@@ -630,6 +630,98 @@ export const parseIngredientTests: Record<
       },
     },
   ],
+  'additional UOM with slash plural marker (leading)': [
+    '1 Scheibe/n Toast',
+    [
+      {
+        quantity: 1,
+        quantity2: null,
+        unitOfMeasureID: 'slice',
+        unitOfMeasure: 'Scheibe/n',
+        description: 'Toast',
+        isGroupHeader: false,
+      },
+    ],
+    {
+      additionalUOMs: {
+        slice: {
+          short: 'Scheibe',
+          plural: 'Scheiben',
+          alternates: ['scheibe/n'],
+          type: 'count',
+        },
+      },
+    },
+  ],
+  'additional UOM with slash plural marker (trailing)': [
+    'Toast 1 Scheibe/n',
+    [
+      {
+        quantity: 1,
+        quantity2: null,
+        unitOfMeasureID: 'slice',
+        unitOfMeasure: 'Scheibe/n',
+        description: 'Toast',
+        isGroupHeader: false,
+      },
+    ],
+    {
+      additionalUOMs: {
+        slice: {
+          short: 'Scheibe',
+          plural: 'Scheiben',
+          alternates: ['scheibe/n'],
+          type: 'count',
+        },
+      },
+    },
+  ],
+  'additional UOM with parenthetical plural marker (leading)': [
+    '1 Scheibe(n) Toast',
+    [
+      {
+        quantity: 1,
+        quantity2: null,
+        unitOfMeasureID: 'slice',
+        unitOfMeasure: 'Scheibe(n)',
+        description: 'Toast',
+        isGroupHeader: false,
+      },
+    ],
+    {
+      additionalUOMs: {
+        slice: {
+          short: 'Scheibe',
+          plural: 'Scheiben',
+          alternates: ['scheibe(n)'],
+          type: 'count',
+        },
+      },
+    },
+  ],
+  'additional UOM with parenthetical plural marker (trailing)': [
+    'Toast 1 Scheibe(n)',
+    [
+      {
+        quantity: 1,
+        quantity2: null,
+        unitOfMeasureID: 'slice',
+        unitOfMeasure: 'Scheibe(n)',
+        description: 'Toast',
+        isGroupHeader: false,
+      },
+    ],
+    {
+      additionalUOMs: {
+        slice: {
+          short: 'Scheibe',
+          plural: 'Scheiben',
+          alternates: ['scheibe(n)'],
+          type: 'count',
+        },
+      },
+    },
+  ],
   'trailing range with umlaut': [
     'Backpulver 1-2 Päckchen',
     [
@@ -1334,6 +1426,127 @@ export const parseIngredientTests: Record<
       },
     ],
     { trailingQuantityContext: ['from', 'of', 'de'] },
+  ],
+  // --- i18n: leadingQuantityPrefixes ---
+  'i18n: leading quantity prefix with English "about"': [
+    'about 2 cups sugar',
+    [
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cups',
+        description: 'sugar',
+        isGroupHeader: false,
+      },
+    ],
+    { leadingQuantityPrefixes: ['about'] },
+  ],
+  'i18n: leading quantity prefix with German "ca."': [
+    'ca. 200 g Mehl',
+    [
+      {
+        quantity: 200,
+        quantity2: null,
+        unitOfMeasureID: 'gram',
+        unitOfMeasure: 'g',
+        description: 'Mehl',
+        isGroupHeader: false,
+      },
+    ],
+    { leadingQuantityPrefixes: ['ca.'] },
+  ],
+  'i18n: leading quantity prefix in range second quantity': [
+    '2 bis ca. 3 cups sugar',
+    [
+      {
+        quantity: 2,
+        quantity2: 3,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cups',
+        description: 'sugar',
+        isGroupHeader: false,
+      },
+    ],
+    {
+      rangeSeparators: ['to', 'or', 'bis'],
+      leadingQuantityPrefixes: ['ca.'],
+    },
+  ],
+  'i18n: leading quantity prefix phrase "bis zu"': [
+    'bis zu 3 cups sugar',
+    [
+      {
+        quantity: 3,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cups',
+        description: 'sugar',
+        isGroupHeader: false,
+      },
+    ],
+    { leadingQuantityPrefixes: ['bis zu'] },
+  ],
+  'i18n: leading quantity prefix with German "etwa" and custom UOM': [
+    'etwa 1 EL Öl',
+    [
+      {
+        quantity: 1,
+        quantity2: null,
+        unitOfMeasureID: 'tablespoon_de',
+        unitOfMeasure: 'EL',
+        description: 'Öl',
+        isGroupHeader: false,
+      },
+    ],
+    {
+      leadingQuantityPrefixes: ['etwa'],
+      additionalUOMs: {
+        tablespoon_de: {
+          short: 'EL',
+          plural: 'EL',
+          alternates: ['EL.'],
+        },
+      },
+    },
+  ],
+  'i18n: leading quantity prefix with regex phrase "bis zu"': [
+    'bis zu 3 EL Zucker',
+    [
+      {
+        quantity: 3,
+        quantity2: null,
+        unitOfMeasureID: 'tablespoon_de',
+        unitOfMeasure: 'EL',
+        description: 'Zucker',
+        isGroupHeader: false,
+      },
+    ],
+    {
+      rangeSeparators: ['to', 'or', 'bis'],
+      leadingQuantityPrefixes: [/bis\s+zu/iu],
+      additionalUOMs: {
+        tablespoon_de: {
+          short: 'EL',
+          plural: 'EL',
+          alternates: ['EL.'],
+        },
+      },
+    },
+  ],
+  'i18n: leading quantity prefixes can be chained': [
+    'ca. etwa 2 cups sugar',
+    [
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cups',
+        description: 'sugar',
+        isGroupHeader: false,
+      },
+    ],
+    { leadingQuantityPrefixes: ['ca.', 'etwa'] },
   ],
 
   // --- i18n: Combined German example ---
