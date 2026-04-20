@@ -13,7 +13,8 @@ export const escapeRegex = (str: string): string => str.replace(/[.*+?^${}()|[\]
  * followed by whitespace. Strings are escaped and treated as literal prefixes.
  * RegExp patterns have their source extracted and combined.
  */
-export const buildPrefixPatternRegex = (patterns: (string | RegExp)[]): RegExp => {
+export const buildPrefixPatternRegex = (patterns: (string | RegExp)[]): RegExp | null => {
+  if (patterns.length === 0) return null;
   const parts = patterns.map(p =>
     p instanceof RegExp ? `(?:${p.source})` : `(?:${escapeRegex(p)})\\s`
   );
@@ -43,7 +44,8 @@ export const buildRangeSeparatorRegex = (words: (string | RegExp)[]): RegExp =>
  * Strings are matched as whole words followed by whitespace.
  * RegExp patterns are used as-is for more complex matching (e.g., French elisions).
  */
-export const buildStripPrefixRegex = (patterns: (string | RegExp)[]): RegExp => {
+export const buildStripPrefixRegex = (patterns: (string | RegExp)[]): RegExp | null => {
+  if (patterns.length === 0) return null;
   const parts = patterns.map(p =>
     p instanceof RegExp ? `(?:${p.source})` : `(?:${escapeRegex(p)})\\s+`
   );
@@ -132,7 +134,7 @@ export const fors: typeof defaultGroupHeaderPatterns = defaultGroupHeaderPattern
  */
 export const forsRegEx: RegExp = buildPrefixPatternRegex(
   defaultGroupHeaderPatterns as unknown as string[]
-);
+)!;
 
 /**
  * List of range separators.
@@ -188,7 +190,7 @@ export const ofs: typeof defaultDescriptionStripPrefixes = defaultDescriptionStr
  */
 export const ofRegEx: RegExp = buildStripPrefixRegex(
   defaultDescriptionStripPrefixes as unknown as string[]
-);
+)!;
 
 /**
  * List of "from" equivalents.

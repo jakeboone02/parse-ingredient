@@ -179,7 +179,7 @@ export const parseIngredient = (
         oIng.description = lineToParse;
 
         // If the line ends with ":" or matches a group header pattern, it is assumed to be a group header.
-        if (oIng.description.endsWith(':') || groupHeaderRegex.test(oIng.description)) {
+        if (oIng.description.endsWith(':') || groupHeaderRegex?.test(oIng.description)) {
           oIng.isGroupHeader = true;
         }
       }
@@ -283,7 +283,7 @@ export const parseIngredient = (
       }
     }
 
-    if (!opts.allowLeadingOf && oIng.description.match(stripPrefixRegex)) {
+    if (!opts.allowLeadingOf && stripPrefixRegex && oIng.description.match(stripPrefixRegex)) {
       oIng.description = oIng.description.replace(stripPrefixRegex, '');
     }
 
