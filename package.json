@@ -2,6 +2,7 @@
   "name": "parse-ingredient",
   "author": "Jake Boone",
   "version": "2.2.0",
+  "type": "commonjs",
   "license": "MIT",
   "description": "Recipe ingredient parser with support for mixed numbers and vulgar fractions",
   "files": [
