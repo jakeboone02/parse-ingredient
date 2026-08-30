@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-N/A
+### Added
+
+- [#44] Opt-in `extractDescriptionMeasurements` parsing for quantities and known units embedded in ingredient descriptions
 
 ## [v2.2.0] - 2026-04-20
 

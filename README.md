@@ -256,6 +256,43 @@ parseIngredient('1 cup flour\n\n2 tbsp sugar', { includeMeta: true });
 // ]
 ```
 
+### `extractDescriptionMeasurements`
+
+When `true`, each ingredient object includes a `descriptionMeasurements` array containing
+numeric quantities paired with known units inside the parsed description. The description is
+left unchanged. Each match includes `startIndex` and end-exclusive `endIndex` values relative
+to that description, so callers can safely replace converted measurements.
+
+```js
+parseIngredient('3 tomatoes (about 1 pound), chopped', {
+  extractDescriptionMeasurements: true,
+});
+// [
+//   {
+//     quantity: 3,
+//     quantity2: null,
+//     unitOfMeasure: null,
+//     unitOfMeasureID: null,
+//     description: 'tomatoes (about 1 pound), chopped',
+//     isGroupHeader: false,
+//     descriptionMeasurements: [
+//       {
+//         quantity: 1,
+//         quantity2: null,
+//         unitOfMeasure: 'pound',
+//         unitOfMeasureID: 'pound',
+//         sourceText: '1 pound',
+//         startIndex: 16,
+//         endIndex: 23,
+//       },
+//     ],
+//   },
+// ]
+```
+
+Only recognized units are extracted. `additionalUOMs`, `ignoreUOMs`, `normalizeUOM`,
+`decimalSeparator`, and `rangeSeparators` apply to description measurements as well.
+
 ## Internationalization (i18n)
 
 The library supports parsing ingredients in multiple languages through configurable keyword options. While unit names can be localized using `additionalUOMs`, the following options allow localization of parsing keywords and quantities.
