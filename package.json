@@ -22,6 +22,7 @@
       }
     }
   },
+  "sideEffects": false,
   "types": "./dist/parse-ingredient.legacy-esm.d.ts",
   "unpkg": "./dist/parse-ingredient.umd.min.js",
   "keywords": [
