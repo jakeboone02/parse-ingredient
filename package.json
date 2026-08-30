@@ -39,7 +39,7 @@
   "homepage": "https://github.com/jakeboone02/parse-ingredient",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jakeboone02/parse-ingredient"
+    "url": "git+https://github.com/jakeboone02/parse-ingredient.git"
   },
   "engines": {
     "node": ">=10"
