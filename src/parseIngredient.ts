@@ -46,8 +46,12 @@ export const parseIngredient = (
   options: ParseIngredientOptions = defaultOptions
 ): Ingredient[] => {
   const opts = { ...defaultOptions, ...options };
-  const nqOpts: NumericQuantityOptions | undefined =
-    opts.decimalSeparator === ',' ? { decimalSeparator: ',' } : undefined;
+  const nqOpts:
+    | (NumericQuantityOptions & { decimalSeparator: ','; bigIntOnOverflow: false; verbose: false })
+    | undefined =
+    opts.decimalSeparator === ','
+      ? { decimalSeparator: ',', bigIntOnOverflow: false, verbose: false }
+      : undefined;
 
   // Pre-compute lowercase ignored UOMs for the trailing quantity bail-out check
   const ignoredUOMsLC = opts.ignoreUOMs.map(u => u.toLowerCase());
