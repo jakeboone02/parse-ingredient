@@ -8,11 +8,6 @@ const config: ReturnType<typeof defineConfig> = defineConfig(options => {
       'parse-ingredient': 'src/index.ts',
     },
     dts: { tsgo: true },
-    outputOptions: {
-      globals: {
-        'numeric-quantity': 'NumericQuantity',
-      },
-    },
     platform: 'neutral',
     sourcemap: true,
     ...options,
@@ -89,14 +84,25 @@ if (process.env.NODE_ENV === 'production') {
         ]);
       },
     },
-    // UMD (ish)
+    // UMD (browser global `ParseIngredient`, plus CJS/AMD interop)
     {
       ...commonOptions,
       ...productionOptions,
       dts: false,
-      format: 'iife',
+      format: 'umd',
       globalName: 'ParseIngredient',
-      outExtensions: () => ({ js: '.umd.min.js' }),
+      deps: { alwaysBundle: ['numeric-quantity'] },
+      outExtensions: () => ({ js: '.min.js' }),
+      // `numeric-quantity`'s overflow path uses bigint literals, which are left as-is
+      suppressWarnings: [
+        'Big integer literals are not available in the configured target environment.',
+      ],
+      // Bundlers that treat classic <script> tags as CJS modules (e.g. Bun's HTML entrypoint
+      // support) hit the UMD `exports` branch, so the browser global never gets defined.
+      // Re-expose it explicitly when running in a browser.
+      footer: {
+        js: `typeof window<"u"&&typeof exports=="object"&&(window.ParseIngredient=exports);`,
+      },
     },
   ];
 

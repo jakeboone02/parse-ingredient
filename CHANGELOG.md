@@ -7,7 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-N/A
+### Fixed
+
+- UMD build is emitted as `dist/parse-ingredient.umd.min.js`, matching the `unpkg` field in `package.json`. The path advertised to CDNs previously 404'd.
+- UMD build bundles `numeric-quantity` instead of expecting a `NumericQuantity` global, so it no longer throws `ReferenceError` when loaded on its own.
+- UMD build sets the `ParseIngredient` global variable when run in a browser (`window` is defined).
 
 ## [v2.2.0] - 2026-04-20
 
