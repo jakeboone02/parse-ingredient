@@ -14,6 +14,41 @@ export interface IngredientMeta {
 }
 
 /**
+ * A numeric quantity and known unit found inside an ingredient description.
+ */
+export interface IngredientMeasurement {
+  /**
+   * The primary quantity (the lower quantity in a range, if applicable)
+   */
+  quantity: number;
+  /**
+   * The upper quantity in a range, or `null` if not applicable
+   */
+  quantity2: number | null;
+  /**
+   * The canonical unit of measure identifier
+   */
+  unitOfMeasureID: string;
+  /**
+   * The unit text as written, or its normalized identifier when `normalizeUOM`
+   * is enabled
+   */
+  unitOfMeasure: string;
+  /**
+   * The exact matched text from the description
+   */
+  sourceText: string;
+  /**
+   * The zero-based start index in the final ingredient description
+   */
+  startIndex: number;
+  /**
+   * The end-exclusive index in the final ingredient description
+   */
+  endIndex: number;
+}
+
+/**
  * Ingredient properties.
  */
 export interface Ingredient {
@@ -46,6 +81,11 @@ export interface Ingredient {
    * Only included when the `includeMeta` option is `true`.
    */
   meta?: IngredientMeta;
+  /**
+   * Numeric quantities paired with known units inside the description.
+   * Only included when `extractDescriptionMeasurements` is `true`.
+   */
+  descriptionMeasurements?: IngredientMeasurement[];
 }
 
 /**
@@ -214,6 +254,14 @@ export interface ParseIngredientOptions {
    * @default false
    */
   includeMeta?: boolean;
+  /**
+   * When `true`, finds numeric quantities paired with known units inside the
+   * parsed description. The description remains unchanged and each match
+   * includes end-exclusive indices relative to it.
+   *
+   * @default false
+   */
+  extractDescriptionMeasurements?: boolean;
   /**
    * When `true`, if normal whitespace-based parsing fails to identify a unit
    * of measure, the parser scans the description for known UOM strings

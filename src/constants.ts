@@ -115,6 +115,7 @@ export const defaultOptions: Required<ParseIngredientOptions> = {
   trailingQuantityContext: defaultTrailingQuantityContext as unknown as string[],
   leadingQuantityPrefixes: defaultLeadingQuantityPrefixes as unknown as (string | RegExp)[],
   includeMeta: false,
+  extractDescriptionMeasurements: false,
   partialUnitMatching: false,
 } as const;
 

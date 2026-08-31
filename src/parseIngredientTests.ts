@@ -1998,4 +1998,177 @@ export const parseIngredientTests: Record<
       },
     },
   ],
+
+  // --- extractDescriptionMeasurements ---
+  'description measurements: hyphenated measurement in preparation text': [
+    '1 1⁄2 pounds potatoes (any variety), scrubbed and cut into 1 1/2-inch pieces',
+    [
+      {
+        quantity: 1.5,
+        quantity2: null,
+        unitOfMeasureID: 'pound',
+        unitOfMeasure: 'pounds',
+        description: 'potatoes (any variety), scrubbed and cut into 1 1/2-inch pieces',
+        isGroupHeader: false,
+        descriptionMeasurements: [
+          {
+            quantity: 1.5,
+            quantity2: null,
+            unitOfMeasureID: 'inch',
+            unitOfMeasure: 'inch',
+            sourceText: '1 1/2-inch',
+            startIndex: 46,
+            endIndex: 56,
+          },
+        ],
+      },
+    ],
+    { extractDescriptionMeasurements: true },
+  ],
+  'description measurements: parenthetical approximate measurement': [
+    '3 tomatoes (about 1 pound), chopped',
+    [
+      {
+        quantity: 3,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: 'tomatoes (about 1 pound), chopped',
+        isGroupHeader: false,
+        descriptionMeasurements: [
+          {
+            quantity: 1,
+            quantity2: null,
+            unitOfMeasureID: 'pound',
+            unitOfMeasure: 'pound',
+            sourceText: '1 pound',
+            startIndex: 16,
+            endIndex: 23,
+          },
+        ],
+      },
+    ],
+    { extractDescriptionMeasurements: true },
+  ],
+  'description measurements: range': [
+    '2 apples, sliced into 1-2 inch pieces',
+    [
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: 'apples, sliced into 1-2 inch pieces',
+        isGroupHeader: false,
+        descriptionMeasurements: [
+          {
+            quantity: 1,
+            quantity2: 2,
+            unitOfMeasureID: 'inch',
+            unitOfMeasure: 'inch',
+            sourceText: '1-2 inch',
+            startIndex: 20,
+            endIndex: 28,
+          },
+        ],
+      },
+    ],
+    { extractDescriptionMeasurements: true },
+  ],
+  'description measurements: normalize units': [
+    '2 potatoes (about 3 lbs total)',
+    [
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: 'potatoes (about 3 lbs total)',
+        isGroupHeader: false,
+        descriptionMeasurements: [
+          {
+            quantity: 3,
+            quantity2: null,
+            unitOfMeasureID: 'pound',
+            unitOfMeasure: 'pound',
+            sourceText: '3 lbs',
+            startIndex: 16,
+            endIndex: 21,
+          },
+        ],
+      },
+    ],
+    { extractDescriptionMeasurements: true, normalizeUOM: true },
+  ],
+  'description measurements: additional and ignored units': [
+    '1 widget (3 buckets wide and 2 inches tall)',
+    [
+      {
+        quantity: 1,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: 'widget (3 buckets wide and 2 inches tall)',
+        isGroupHeader: false,
+        descriptionMeasurements: [
+          {
+            quantity: 3,
+            quantity2: null,
+            unitOfMeasureID: 'bucket',
+            unitOfMeasure: 'buckets',
+            sourceText: '3 buckets',
+            startIndex: 8,
+            endIndex: 17,
+          },
+        ],
+      },
+    ],
+    {
+      extractDescriptionMeasurements: true,
+      ignoreUOMs: ['inches'],
+      additionalUOMs: {
+        bucket: { short: 'bkt', plural: 'buckets', alternates: [] },
+      },
+    },
+  ],
+  'description measurements: known unit without a quantity is ignored': [
+    '1 cup flour, sifted into a large bowl',
+    [
+      {
+        quantity: 1,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cup',
+        description: 'flour, sifted into a large bowl',
+        isGroupHeader: false,
+        descriptionMeasurements: [],
+      },
+    ],
+    { extractDescriptionMeasurements: true },
+  ],
+  'description measurements: Unicode case folding preserves source indexes': [
+    '2 ingredients, İ 1 cup',
+    [
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: 'ingredients, İ 1 cup',
+        isGroupHeader: false,
+        descriptionMeasurements: [
+          {
+            quantity: 1,
+            quantity2: null,
+            unitOfMeasureID: 'cup',
+            unitOfMeasure: 'cup',
+            sourceText: '1 cup',
+            startIndex: 15,
+            endIndex: 20,
+          },
+        ],
+      },
+    ],
+    { extractDescriptionMeasurements: true },
+  ],
 };

@@ -10,6 +10,7 @@ import {
   firstWordRegEx,
 } from './constants';
 import { identifyUnit } from './convertUnit';
+import { extractDescriptionMeasurements } from './descriptionMeasurements';
 import type { Ingredient, ParseIngredientOptions } from './types';
 import { buildUnitLookupMaps, collectUOMStrings, getDefaultUnitLookupMaps } from './unitLookup';
 
@@ -286,6 +287,10 @@ export const parseIngredient = (
 
     if (!opts.allowLeadingOf && stripPrefixRegex && oIng.description.match(stripPrefixRegex)) {
       oIng.description = oIng.description.replace(stripPrefixRegex, '');
+    }
+
+    if (opts.extractDescriptionMeasurements) {
+      oIng.descriptionMeasurements = extractDescriptionMeasurements(oIng.description, opts);
     }
 
     return oIng;
