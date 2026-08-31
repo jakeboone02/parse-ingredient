@@ -154,7 +154,7 @@ export const rangeSeparatorRegEx: RegExp = buildRangeSeparatorRegex(
 export const firstWordRegEx: RegExp =
   /^(fl(?:uid)?(?:\s+|-)(?:oz|ounces?)|[\p{L}\p{N}_]+(?:[./-][\p{L}\p{N}_]+|\([\p{L}\p{N}_]+\))*[-.]?)(.+)?/iu;
 
-const numericRegexAnywhere = numericRegex.source.replace('^', '').replace(/\$$/, '');
+const numericRegexAnywhere = numericRegex.source.replace(/^\^/, '').replace(/\$$/, '');
 
 /**
  * Builds a regex to capture trailing quantity and unit of measure,
