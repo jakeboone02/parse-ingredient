@@ -131,13 +131,14 @@ export const extractDescriptionMeasurements = (
     lowercase: unit.toLowerCase(),
   }));
 
-  const lowercaseDescription = description.toLowerCase();
   const measurements: IngredientMeasurement[] = [];
 
   for (let unitStartIndex = 0; unitStartIndex < description.length; unitStartIndex += 1) {
     const unitMatch = units.find(candidate => {
+      const matchedText = description.slice(unitStartIndex, unitStartIndex + candidate.unit.length);
+
       return (
-        lowercaseDescription.startsWith(candidate.lowercase, unitStartIndex) &&
+        matchedText.toLowerCase() === candidate.lowercase &&
         hasUnitEndBoundary(description, candidate.unit, unitStartIndex + candidate.unit.length)
       );
     });

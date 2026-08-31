@@ -2146,4 +2146,29 @@ export const parseIngredientTests: Record<
     ],
     { extractDescriptionMeasurements: true },
   ],
+  'description measurements: Unicode case folding preserves source indexes': [
+    '2 ingredients, İ 1 cup',
+    [
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: 'ingredients, İ 1 cup',
+        isGroupHeader: false,
+        descriptionMeasurements: [
+          {
+            quantity: 1,
+            quantity2: null,
+            unitOfMeasureID: 'cup',
+            unitOfMeasure: 'cup',
+            sourceText: '1 cup',
+            startIndex: 15,
+            endIndex: 20,
+          },
+        ],
+      },
+    ],
+    { extractDescriptionMeasurements: true },
+  ],
 };
