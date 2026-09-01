@@ -248,6 +248,39 @@ export const parseIngredientTests: Record<
       },
     },
   ],
+  // README example (README §additionalUOMs) - keep in sync
+  'additionalUOMs: README example': [
+    '2 buckets of widgets',
+    [
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: 'bucket',
+        unitOfMeasure: 'buckets',
+        description: 'widgets',
+        isGroupHeader: false,
+      },
+    ],
+    {
+      additionalUOMs: {
+        bucket: { short: 'bkt', plural: 'buckets', alternates: ['bk'], type: 'volume' },
+      },
+    },
+  ],
+  'additionalUOMs: alternates omitted (JS consumers)': [
+    '2 buckets of widgets',
+    [
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: 'bucket',
+        unitOfMeasure: 'buckets',
+        description: 'widgets',
+        isGroupHeader: false,
+      },
+    ],
+    { additionalUOMs: { bucket: { short: 'bkt', plural: 'buckets' } } },
+  ],
   'allow leading "of "': [
     '1 cup of stuff',
     [
@@ -1702,7 +1735,7 @@ export const parseIngredientTests: Record<
     ],
     { includeMeta: true },
   ],
-  'includeMeta option - skips empty lines in index': [
+  'includeMeta option - sourceIndex counts empty lines': [
     '1 cup flour\n\n2 tbsp sugar',
     [
       {

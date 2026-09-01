@@ -24,7 +24,8 @@ export const buildUnitLookupMaps = (
 
   // Helper to add versions to maps (first one wins for case-insensitive)
   const addToMaps = (id: string, def: UnitOfMeasureDefinitions[string]) => {
-    const versions = [id, def.short, def.plural, ...def.alternates];
+    // `short`/`plural`/`alternates` may be missing when called from plain JS
+    const versions = [id, def.short, def.plural, ...(def.alternates ?? [])].filter(Boolean);
     for (const version of versions) {
       // For case-sensitive, later entries override (so additionalUOMs wins)
       caseSensitive.set(version, id);

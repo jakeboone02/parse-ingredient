@@ -8,7 +8,8 @@ export interface IngredientMeta {
   sourceText: string;
   /**
    * The source index (line number) of the ingredient in the input.
-   * Zero-based index relative to the order of non-empty lines.
+   * Zero-based index of the line (or array element) in the original input;
+   * empty lines are not parsed, but they do consume an index.
    */
   sourceIndex: number;
 }
@@ -81,8 +82,10 @@ export interface UnitOfMeasure {
   plural: string;
   /**
    * List of all known alternate spellings, abbreviations, etc.
+   *
+   * @default []
    */
-  alternates: string[];
+  alternates?: string[];
   /**
    * The type of measurement (volume, mass, length, count, or other).
    */

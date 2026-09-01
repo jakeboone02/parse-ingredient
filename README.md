@@ -39,6 +39,23 @@ interface Ingredient {
    * Whether the "ingredient" is actually a group header, e.g. "For icing:"
    */
   isGroupHeader: boolean;
+  /**
+   * Metadata about the parsed ingredient line.
+   * Only included when the `includeMeta` option is `true`.
+   */
+  meta?: IngredientMeta;
+}
+
+interface IngredientMeta {
+  /**
+   * The source text of the ingredient line before parsing.
+   */
+  sourceText: string;
+  /**
+   * The zero-based index of the line (or array element) in the original input.
+   * Empty lines are not parsed, but they do consume an index.
+   */
+  sourceIndex: number;
 }
 ```
 
@@ -173,7 +190,8 @@ parseIngredient('2 buckets of widgets', {
     bucket: {
       short: 'bkt',
       plural: 'buckets',
-      versions: ['bk'],
+      alternates: ['bk'],
+      type: 'volume',
     },
   },
 });
@@ -230,7 +248,7 @@ parseIngredient('2 large eggs', { ignoreUOMs: ['large'] });
 When `true`, each ingredient object will include a `meta` property containing source metadata:
 
 - `sourceText`: The original text of the ingredient line before parsing.
-- `sourceIndex`: The zero-based line number in the original input (accounts for empty lines).
+- `sourceIndex`: The zero-based index of the line (or array element) in the original input. Empty lines are not parsed, but they do consume an index.
 
 ```js
 parseIngredient('1 cup flour\n\n2 tbsp sugar', { includeMeta: true });
@@ -336,18 +354,26 @@ Words or patterns to strip from the beginning of ingredient descriptions. Common
 
 > **Note:** This option is only applied when `allowLeadingOf` is `false` (the default). If `allowLeadingOf` is `true`, prefix stripping is disabled entirely and this option is ignored.
 
+> **Note:** Prefixes are stripped from the description _after_ the unit of measure has been extracted. If the unit is not recognized (i.e., not registered via `additionalUOMs`), it remains at the start of the description and the prefix will not be at the start anymore, so nothing gets stripped. That is why both examples below also register the unit.
+
 ```js
 // Spanish "de" stripping
 parseIngredient('2 tazas de azúcar', {
   descriptionStripPrefixes: ['of', 'de'],
+  additionalUOMs: {
+    taza: { short: 'tz', plural: 'tazas', alternates: ['taza'] },
+  },
 });
-// [{ description: 'azúcar', ... }]
+// [{ quantity: 2, unitOfMeasure: 'tazas', description: 'azúcar', ... }]
 
 // French with regex patterns for elisions/contractions
 parseIngredient("2 tasses d'huile", {
   descriptionStripPrefixes: [/de\s+la\s+/iu, /de\s+l'/iu, /d'/iu, 'de'],
+  additionalUOMs: {
+    tasse: { short: 't', plural: 'tasses', alternates: ['tasse'] },
+  },
 });
-// [{ description: 'huile', ... }]
+// [{ quantity: 2, unitOfMeasure: 'tasses', description: 'huile', ... }]
 ```
 
 ### `trailingQuantityContext`
