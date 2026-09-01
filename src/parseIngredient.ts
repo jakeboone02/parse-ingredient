@@ -1,4 +1,9 @@
-import { numericQuantity, NumericQuantityOptions } from 'numeric-quantity';
+import {
+  numericQuantity,
+  NumericQuantityOptions,
+  superSubDigitToAsciiMap,
+  vulgarFractionToAsciiMap,
+} from 'numeric-quantity';
 import {
   buildLeadingQuantityPrefixRegex,
   buildPrefixPatternRegex,
@@ -15,6 +20,54 @@ import { buildUnitLookupMaps, collectUOMStrings, getDefaultUnitLookupMaps } from
 
 const newLineRegExp = /\r?\n/;
 const nextWordRegExp = /^([\p{L}\p{N}_]+(?:[.-]?[\p{L}\p{N}_]+)*[-.]?)(?:\s+|$)/iu;
+
+/**
+ * Matches the first character that `numericQuantity` could *not* consume, and therefore
+ * marks the end of any leading quantity. The class it negates covers the non-ASCII forms
+ * `numericQuantity` normalizes as well: Unicode decimal digits, vulgar fractions,
+ * super/subscript digits, and the fraction slash.
+ *
+ * This is not a grammar — it is only an upper bound on how far
+ * {@link matchLeadingQuantity} has to search. Being too narrow merely shortens the
+ * search; being too wide merely costs iterations. Correctness is delegated entirely to
+ * `numericQuantity`.
+ */
+const nonQuantityCharRegExp = new RegExp(
+  `[^\\p{Nd}\\s.,_/+\u2044${Object.keys(vulgarFractionToAsciiMap).join('')}${Object.keys(
+    superSubDigitToAsciiMap
+  ).join('')}eE-]`,
+  'u'
+);
+
+/**
+ * Finds the longest prefix of `text` that parses as a single numeric value.
+ *
+ * `numericQuantity` is all-or-nothing on the string it is given, so the end of the
+ * quantity can only be located by trying prefixes longest-first and taking the first one
+ * that both parses and satisfies `accept`.
+ *
+ * Returns the parsed value along with the remainder of the *original* text (never the
+ * normalized form `numericQuantity` works with internally), or `null` if no prefix
+ * qualifies.
+ */
+const matchLeadingQuantity = (
+  text: string,
+  nqOpts: NumericQuantityOptions & { bigIntOnOverflow: false; verbose: false },
+  accept: (value: number) => boolean
+): { value: number; rest: string } | null => {
+  const stop = nonQuantityCharRegExp.exec(text);
+  let result: { value: number; rest: string } | null = null;
+
+  for (let len = stop ? stop.index : text.length; len > 0 && !result; len--) {
+    const value = numericQuantity(text.substring(0, len).trim(), nqOpts);
+
+    if (accept(value)) {
+      result = { value, rest: text.substring(len).trim() };
+    }
+  }
+
+  return result;
+};
 
 /**
  * Repeatedly strips configured quantity prefixes from the start of a string.
@@ -46,12 +99,14 @@ export const parseIngredient = (
   options: ParseIngredientOptions = defaultOptions
 ): Ingredient[] => {
   const opts = { ...defaultOptions, ...options };
-  const nqOpts:
-    | (NumericQuantityOptions & { decimalSeparator: ','; bigIntOnOverflow: false; verbose: false })
-    | undefined =
-    opts.decimalSeparator === ','
-      ? { decimalSeparator: ',', bigIntOnOverflow: false, verbose: false }
-      : undefined;
+  // The `bigIntOnOverflow`/`verbose` literals are load-bearing: they are what narrows
+  // `numericQuantity`'s conditional return type to `number`.
+  const nqOpts: NumericQuantityOptions & { bigIntOnOverflow: false; verbose: false } = {
+    decimalSeparator: opts.decimalSeparator,
+    round: opts.round,
+    bigIntOnOverflow: false,
+    verbose: false,
+  };
 
   // Pre-compute lowercase ignored UOMs for the trailing quantity bail-out check
   const ignoredUOMsLC = opts.ignoreUOMs.map(u => u.toLowerCase());
@@ -104,19 +159,13 @@ export const parseIngredient = (
         (lineToParse[0] === opts.decimalSeparator &&
           !isNaN(numericQuantity(lineToParse.slice(0, 2), nqOpts))))
     ) {
-      // See how many of the first seven characters constitute a single value. This will be `quantity`.
-      let lenNum = 6;
-      let nqResult = NaN;
+      // Take the longest leading run of characters that parses as a single value.
+      // This will be `quantity`; whatever follows it is the description.
+      const leadingQuantity = matchLeadingQuantity(lineToParse, nqOpts, value => value > -1);
 
-      while (lenNum > 0 && isNaN(nqResult)) {
-        nqResult = numericQuantity(lineToParse.substring(0, lenNum).trim(), nqOpts);
-
-        if (nqResult > -1) {
-          oIng.quantity = nqResult;
-          oIng.description = lineToParse.substring(lenNum).trim();
-        }
-
-        lenNum--;
+      if (leadingQuantity) {
+        oIng.quantity = leadingQuantity.value;
+        oIng.description = leadingQuantity.rest;
       }
     } else {
       // The first character is not numeric. First check for trailing quantity/uom.
@@ -191,8 +240,8 @@ export const parseIngredient = (
 
     // Now check the description for a `quantity2` at the beginning.
     // First we look for a dash, emdash, endash, or word separator to
-    // indicate a range, then process the next seven characters just
-    // like we did for `quantity`.
+    // indicate a range, then extract a leading value just like we did
+    // for `quantity`.
     const q2reMatch = rangeSeparatorRegex.exec(oIng.description);
     if (q2reMatch) {
       const q2reMatchLen = q2reMatch[1].length;
@@ -207,16 +256,11 @@ export const parseIngredient = (
         const nqResultFirstChar = numericQuantity(q2Portion[0], nqOpts);
 
         if (!isNaN(nqResultFirstChar)) {
-          let lenNum = 7;
-          let nqResult = NaN;
+          const secondQuantity = matchLeadingQuantity(q2Portion, nqOpts, value => !isNaN(value));
 
-          while (--lenNum > 0 && isNaN(nqResult)) {
-            nqResult = numericQuantity(q2Portion.substring(0, lenNum), nqOpts);
-
-            if (!isNaN(nqResult)) {
-              oIng.quantity2 = nqResult;
-              oIng.description = q2Portion.substring(lenNum).trim();
-            }
+          if (secondQuantity) {
+            oIng.quantity2 = secondQuantity.value;
+            oIng.description = secondQuantity.rest;
           }
         }
       }

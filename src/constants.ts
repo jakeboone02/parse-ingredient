@@ -109,6 +109,7 @@ export const defaultOptions: Required<ParseIngredientOptions> = {
   normalizeUOM: false,
   ignoreUOMs: [],
   decimalSeparator: '.',
+  round: 3,
   groupHeaderPatterns: defaultGroupHeaderPatterns as unknown as string[],
   rangeSeparators: defaultRangeSeparators as unknown as string[],
   descriptionStripPrefixes: defaultDescriptionStripPrefixes as unknown as (string | RegExp)[],

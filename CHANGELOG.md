@@ -7,8 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `round` option, forwarded to `numericQuantity`, controlling the number of decimal places parsed quantities are rounded to. Defaults to `3`, matching previous behavior; pass `false` to disable rounding.
+
 ### Fixed
 
+- Quantities are no longer truncated to the first six characters of the line. The parser previously fell back to the longest _prefix_ of that window that happened to parse, so `'1 11/16 cups sugar'` yielded `quantity: 12` with `description: '6 cups sugar'`, and `'1000000 g flour'` yielded `quantity: 100000` with `description: '0 g flour'`. The search window is now derived from the input, so quantities of any length are extracted whole. The same fix applies to the second quantity of a range.
 - UMD build is emitted as `dist/parse-ingredient.umd.min.js`, matching the `unpkg` field in `package.json`. The path advertised to CDNs previously 404'd.
 - UMD build bundles `numeric-quantity` instead of expecting a `NumericQuantity` global, so it no longer throws `ReferenceError` when loaded on its own.
 - UMD build sets the `ParseIngredient` global variable when run in a browser (`window` is defined).

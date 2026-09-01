@@ -156,6 +156,16 @@ export interface ParseIngredientOptions {
    * @default "."
    */
   decimalSeparator?: '.' | ',';
+  /**
+   * Round parsed quantities to this many decimal places, or `false` to disable
+   * rounding. Forwarded to `numericQuantity`.
+   *
+   * With the default of `3`, `"1 11/16"` yields `1.688`; with `false` it
+   * yields `1.6875`.
+   *
+   * @default 3
+   */
+  round?: number | false;
 
   // --- Internationalization options ---
 

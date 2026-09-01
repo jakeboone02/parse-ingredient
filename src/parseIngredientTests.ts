@@ -1998,4 +1998,247 @@ export const parseIngredientTests: Record<
       },
     },
   ],
+
+  // --- Quantities longer than the description-splitting heuristic's old fixed window ---
+  'long quantity: mixed number with two-digit denominator': [
+    '1 11/16 cups sugar',
+    [
+      {
+        quantity: 1.688,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cups',
+        description: 'sugar',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'long quantity: seven-digit integer': [
+    '1234567 g flour',
+    [
+      {
+        quantity: 1234567,
+        quantity2: null,
+        unitOfMeasureID: 'gram',
+        unitOfMeasure: 'g',
+        description: 'flour',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'long quantity: trailing zeros are not split off': [
+    '1000000 g flour',
+    [
+      {
+        quantity: 1000000,
+        quantity2: null,
+        unitOfMeasureID: 'gram',
+        unitOfMeasure: 'g',
+        description: 'flour',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'long quantity: decimal with four fractional digits': [
+    '12.3456 g flour',
+    [
+      {
+        quantity: 12.346,
+        quantity2: null,
+        unitOfMeasureID: 'gram',
+        unitOfMeasure: 'g',
+        description: 'flour',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'long quantity: sixteenths': [
+    '1 15/16 tsp vanilla',
+    [
+      {
+        quantity: 1.938,
+        quantity2: null,
+        unitOfMeasureID: 'teaspoon',
+        unitOfMeasure: 'tsp',
+        description: 'vanilla',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'long quantity: fraction with two-digit denominator': [
+    '2 1/16 cups flour',
+    [
+      {
+        quantity: 2.063,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cups',
+        description: 'flour',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'long quantity: decimal with three fractional digits': [
+    '10.125 kg potatoes',
+    [
+      {
+        quantity: 10.125,
+        quantity2: null,
+        unitOfMeasureID: 'kilogram',
+        unitOfMeasure: 'kg',
+        description: 'potatoes',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'long quantity: exponential notation': [
+    '1e6 g flour',
+    [
+      {
+        quantity: 1000000,
+        quantity2: null,
+        unitOfMeasureID: 'gram',
+        unitOfMeasure: 'g',
+        description: 'flour',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'long quantity: digit group separators': [
+    '1,000,000 g flour',
+    [
+      {
+        quantity: 1000000,
+        quantity2: null,
+        unitOfMeasureID: 'gram',
+        unitOfMeasure: 'g',
+        description: 'flour',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'long quantity2: seven-digit integer': [
+    '1 - 1000000 g flour',
+    [
+      {
+        quantity: 1,
+        quantity2: 1000000,
+        unitOfMeasureID: 'gram',
+        unitOfMeasure: 'g',
+        description: 'flour',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'long quantity2: mixed number with two-digit denominator': [
+    '1 to 1 11/16 cups sugar',
+    [
+      {
+        quantity: 1,
+        quantity2: 1.688,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cups',
+        description: 'sugar',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+
+  // --- Non-ASCII numerics (normalized by `numericQuantity`, but never in the description) ---
+  'vulgar fraction quantity': [
+    '½ cup sugar',
+    [
+      {
+        quantity: 0.5,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cup',
+        description: 'sugar',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'mixed number with vulgar fraction': [
+    '1 ½ cups sugar',
+    [
+      {
+        quantity: 1.5,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cups',
+        description: 'sugar',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'non-ASCII decimal digits': [
+    '٢ cups sugar',
+    [
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cups',
+        description: 'sugar',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'vulgar fraction in description is left as-is': [
+    '2 cups ½ stick butter',
+    [
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cups',
+        description: '½ stick butter',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+
+  // --- round option ---
+  'round option: disabled': [
+    '1 11/16 cups sugar',
+    [
+      {
+        quantity: 1.6875,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cups',
+        description: 'sugar',
+        isGroupHeader: false,
+      },
+    ],
+    { round: false },
+  ],
+  'round option: one decimal place': [
+    '1 2/3 cups sugar',
+    [
+      {
+        quantity: 1.7,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cups',
+        description: 'sugar',
+        isGroupHeader: false,
+      },
+    ],
+    { round: 1 },
+  ],
+  'round option: applies to quantity2': [
+    '1 to 1 11/16 cups sugar',
+    [
+      {
+        quantity: 1,
+        quantity2: 1.6875,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cups',
+        description: 'sugar',
+        isGroupHeader: false,
+      },
+    ],
+    { round: false },
+  ],
 };

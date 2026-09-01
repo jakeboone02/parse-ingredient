@@ -256,6 +256,21 @@ parseIngredient('1 cup flour\n\n2 tbsp sugar', { includeMeta: true });
 // ]
 ```
 
+### `round`
+
+Rounds parsed quantities to the given number of decimal places, or disables rounding entirely when set to `false`. Defaults to `3`.
+
+```js
+parseIngredient('1 11/16 cups sugar');
+// [{ quantity: 1.688, ... }]
+
+parseIngredient('1 11/16 cups sugar', { round: false });
+// [{ quantity: 1.6875, ... }]
+
+parseIngredient('1 2/3 cups sugar', { round: 1 });
+// [{ quantity: 1.7, ... }]
+```
+
 ## Internationalization (i18n)
 
 The library supports parsing ingredients in multiple languages through configurable keyword options. While unit names can be localized using `additionalUOMs`, the following options allow localization of parsing keywords and quantities.
