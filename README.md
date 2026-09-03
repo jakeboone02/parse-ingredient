@@ -59,6 +59,10 @@ interface IngredientMeta {
 }
 ```
 
+Quantities are never negative and never `NaN`. A leading `'-'` is treated as part of the description, not as a sign or a range separator, so `'-2 cups sugar'` yields `quantity: null` with the description intact. `quantity2` is only set when `quantity` is also set — a range with no lower bound is not a range.
+
+Quantities _can_ be `Infinity`, which `numeric-quantity` returns intentionally for division by zero (`'1/0 cup sugar'`). Note that `JSON.stringify` silently lowers `Infinity` to `null`, so serializing results will lose the distinction between "divided by zero" and "no quantity found".
+
 For the `isGroupHeader` attribute to be `true`, the ingredient string must not start with a number, and must either start with `'For '` or end with `':'`.
 
 If present (i.e., not `null`), the `unitOfMeasureID` property corresponds to a key from the exported `unitsOfMeasure` object which defines short, plural, and other alternate versions of known units of measure. To extend the list of units, use the `additionalUOMs` option and/or or submit a [pull request](https://github.com/jakeboone02/parse-ingredient/pulls) to add new units to this library's default list.

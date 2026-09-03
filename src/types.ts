@@ -19,11 +19,17 @@ export interface IngredientMeta {
  */
 export interface Ingredient {
   /**
-   * The primary quantity (the lower quantity in a range, if applicable)
+   * The primary quantity (the lower quantity in a range, if applicable).
+   *
+   * Never negative and never `NaN`, but it *can* be `Infinity` (e.g. `'1/0 cup sugar'`),
+   * which `JSON.stringify` silently lowers to `null`.
    */
   quantity: number | null;
   /**
-   * The secondary quantity (the upper quantity in a range, or `null` if not applicable)
+   * The secondary quantity (the upper quantity in a range, or `null` if not applicable).
+   *
+   * Always `null` when {@link Ingredient.quantity} is `null`: a range with no lower bound
+   * is not a range. Subject to the same value constraints as `quantity`.
    */
   quantity2: number | null;
   /**

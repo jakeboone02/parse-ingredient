@@ -5,6 +5,7 @@ import {
   vulgarFractionToAsciiMap,
 } from 'numeric-quantity';
 import { parseIngredient } from './parseIngredient';
+import { isAcceptableQuantity } from './parsePhases';
 
 /**
  * The leading-quantity search bounds itself with a character class that must cover every
@@ -87,4 +88,23 @@ test('round applies to both quantities in a range', () => {
   expect(parseIngredient('1 1/3 to 1 2/3 cups sugar', { round: 1 })).toMatchObject([
     { quantity: 1.3, quantity2: 1.7 },
   ]);
+});
+
+/**
+ * `quantity` and `quantity2` share one acceptance test, so they can never disagree
+ * about whether a value counts as a quantity. Negatives are rejected on both paths;
+ * `Infinity` is accepted on both.
+ */
+test.each([
+  [0, true],
+  [0.5, true],
+  [1, true],
+  [Infinity, true],
+  [-0.5, false],
+  [-1, false],
+  [-2, false],
+  [-Infinity, false],
+  [NaN, false],
+])('isAcceptableQuantity(%p) is %p', (value, expected) => {
+  expect(isAcceptableQuantity(value)).toBe(expected);
 });

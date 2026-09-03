@@ -2274,4 +2274,109 @@ export const parseIngredientTests: Record<
     ],
     { round: false },
   ],
+  'negative quantity: leading sign is not a quantity or a range': [
+    '-2 cups sugar',
+    [
+      {
+        quantity: null,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: '-2 cups sugar',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'negative quantity: detached leading sign': [
+    '- 2 cups sugar',
+    [
+      {
+        quantity: null,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: '- 2 cups sugar',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'negative quantity: negative trailing quantity is rejected': [
+    'Ripe tomato x-2 - 3 cups',
+    [
+      {
+        quantity: null,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: 'Ripe tomato x-2 - 3 cups',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'negative quantity: negative trailing quantity2 is rejected': [
+    'Ripe tomato x2 - -3',
+    [
+      {
+        quantity: null,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: 'Ripe tomato x2 - -3',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'negative quantity: negative quantity2 leaves quantity intact': [
+    '1 - -2 cups sugar',
+    [
+      {
+        quantity: 1,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: '- -2 cups sugar',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'range separator with no leading quantity is not a range': [
+    'to 2 cups sugar',
+    [
+      {
+        quantity: null,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: 'to 2 cups sugar',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'trailing quantity: a leading sign is consumed as the separator, not the value': [
+    'Ripe tomato x-2',
+    [
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: 'Ripe tomato',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'trailing quantity: unparseable under the configured decimal separator is not a quantity': [
+    'stuff .5 cup',
+    [
+      {
+        quantity: null,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: 'stuff .5 cup',
+        isGroupHeader: false,
+      },
+    ],
+    { decimalSeparator: ',' },
+  ],
 };

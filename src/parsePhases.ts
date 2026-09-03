@@ -138,6 +138,19 @@ export const matchLeadingQuantity = (
 };
 
 /**
+ * The single acceptance test for a parsed quantity, shared by `quantity` and `quantity2`
+ * so the two paths can never disagree about whether a value counts as a quantity.
+ *
+ * Rejects `NaN` (nothing parsed) and negatives (a negative amount of an ingredient is
+ * meaningless). Deliberately *accepts* `Infinity`: `numeric-quantity` returns it for
+ * `'1/0'` intentionally, and this library retains it. Note that `JSON.stringify` lowers
+ * `Infinity` to `null`.
+ *
+ * @internal
+ */
+export const isAcceptableQuantity = (value: number): boolean => value >= 0;
+
+/**
  * Repeatedly strips configured quantity prefixes from the start of a string.
  *
  * @internal
@@ -199,7 +212,7 @@ export const parseLeadingQuantity = (
   text: string,
   ctx: ParseContext
 ): void => {
-  const leadingQuantity = matchLeadingQuantity(text, ctx.nqOpts, value => value > -1);
+  const leadingQuantity = matchLeadingQuantity(text, ctx.nqOpts, isAcceptableQuantity);
 
   if (leadingQuantity) {
     ingredient.quantity = leadingQuantity.value;
@@ -230,6 +243,15 @@ export const parseTrailingQuantity = (
   // user-supplied range separators, so its group numbering is not stable.
   const { qty1, qty2, uom: uomRaw } = trailingQtyResult.groups!;
 
+  // Same acceptance test as the leading path. A negative trailing quantity ("Tomato x-2 -
+  // 3") is not a quantity, so the whole line falls through to the description.
+  const quantity = numericQuantity(qty1 || qty2, ctx.nqOpts);
+  const quantity2 = qty1 ? numericQuantity(qty2, ctx.nqOpts) : null;
+
+  if (!isAcceptableQuantity(quantity) || (quantity2 !== null && !isAcceptableQuantity(quantity2))) {
+    return false;
+  }
+
   if (uomRaw && ctx.ignoredUOMsLC.includes(uomRaw.toLowerCase())) {
     // Trailing quantity detected, but bailing out since the UOM should be ignored.
     ingredient.description = text;
@@ -241,12 +263,8 @@ export const parseTrailingQuantity = (
   ingredient.description = text.replace(ctx.trailingQuantityRegex, '').trim();
 
   // Trailing quantity/range.
-  if (!qty1) {
-    ingredient.quantity = numericQuantity(qty2, ctx.nqOpts);
-  } else {
-    ingredient.quantity = numericQuantity(qty1, ctx.nqOpts);
-    ingredient.quantity2 = numericQuantity(qty2, ctx.nqOpts);
-  }
+  ingredient.quantity = quantity;
+  ingredient.quantity2 = quantity2;
 
   // Trailing unit of measure. The multi-word candidate extends backwards into the
   // description, e.g. "Broth x2 fluid|oz" — the unit's first word is the description's
@@ -296,9 +314,15 @@ export const parsePlainDescription = (
  * Checks the description for a `quantity2` at the beginning: a dash, emdash, endash, or
  * word separator indicating a range, followed by a leading value just like `quantity`.
  *
+ * Only runs when a `quantity` was found. A range with no lower bound is not a range, so a
+ * separator that opens the line (`'-2 cups sugar'`, `'to 2 cups sugar'`) is left in the
+ * description rather than producing a lone `quantity2`.
+ *
  * @internal
  */
 export const parseRangeQuantity2 = (ingredient: Ingredient, ctx: ParseContext): void => {
+  if (ingredient.quantity === null) return;
+
   const rangeMatch = ctx.rangeSeparatorRegex.exec(ingredient.description);
   if (!rangeMatch) return;
 
@@ -307,11 +331,11 @@ export const parseRangeQuantity2 = (ingredient: Ingredient, ctx: ParseContext): 
     ctx.leadingQuantityPrefixRegex
   );
 
-  // Guard against empty string after prefix stripping (e.g., aggressive
-  // prefixes could strip content down to nothing)
-  if (!quantity2Text || isNaN(numericQuantity(quantity2Text[0], ctx.nqOpts))) return;
+  // Same entry condition as the leading path. Guards against an empty string after prefix
+  // stripping (aggressive prefixes could strip content down to nothing).
+  if (!startsWithQuantity(quantity2Text, ctx)) return;
 
-  const secondQuantity = matchLeadingQuantity(quantity2Text, ctx.nqOpts, value => !isNaN(value));
+  const secondQuantity = matchLeadingQuantity(quantity2Text, ctx.nqOpts, isAcceptableQuantity);
 
   if (secondQuantity) {
     ingredient.quantity2 = secondQuantity.value;
