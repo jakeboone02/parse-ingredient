@@ -12,6 +12,7 @@
         "@types/node": "^26.4.0",
         "@types/web": "^0.0.354",
         "@typescript/native-preview": "^7.0.0-dev.20260707.2",
+        "format-quantity": "^3.2.0",
         "np": "^12.0.1",
         "oxfmt": "^0.65.0",
         "oxlint": "^1.80.0",
@@ -420,6 +421,8 @@
     "find-up": ["find-up@4.1.0", "", { "dependencies": { "locate-path": "^5.0.0", "path-exists": "^4.0.0" } }, "sha512-PpOwAdQ/YlXQ2vj8a3h8IipDuYRi3wceVQQGYWxNINccq40Anw7BlsEXCMbt1Zt+OLA6Fq9suIpIWD0OsnISlw=="],
 
     "find-up-simple": ["find-up-simple@1.0.1", "", {}, "sha512-afd4O7zpqHeRyg4PfDQsXmlDe2PfdHtJt6Akt8jOWaApLOZk5JXs6VMR29lz03pRe9mpykrRCYIYxaJYcfpncQ=="],
+
+    "format-quantity": ["format-quantity@3.2.0", "", { "dependencies": { "numeric-quantity": "^3.3.1" } }, "sha512-O+nIHJOkaqa5fMDvEqCQQMmXoY9E64gioujCHC+MfQY0sRAHYDNBzQ5nYaZV5Mc6YYJXWt210QlHSStg7pQyHA=="],
 
     "get-east-asian-width": ["get-east-asian-width@1.5.0", "", {}, "sha512-CQ+bEO+Tva/qlmw24dCejulK5pMzVnUOFOijVogd3KQs07HnRIgp8TGipvCCRT06xeYEbpbgwaCxglFyiuIcmA=="],
 
