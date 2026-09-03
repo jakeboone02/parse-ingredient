@@ -42,7 +42,7 @@
     "url": "git+https://github.com/jakeboone02/parse-ingredient.git"
   },
   "engines": {
-    "node": ">=10"
+    "node": ">=20"
   },
   "scripts": {
     "start": "bun --hot ./index.html",

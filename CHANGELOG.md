@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **BREAKING:** `quantity` and `quantity2` are now guaranteed finite and non-negative when not `null`. Lines that would previously yield `Infinity` (e.g. `'1/0 cups sugar'`), a negative, or an incoherent `quantity: null`/`quantity2: 2` pair (e.g. `'-2 cups sugar'`) now keep the whole line as the `description`.
 - **BREAKING:** `defaultOptions`, `unitsOfMeasure`, and the `default*` arrays are deeply frozen. Option array types and `UnitOfMeasure` members are now `readonly`; passing mutable arrays still works, writing to a shipped definition does not.
+- **BREAKING:** Minimum supported Node.js version is now 20 (`engines.node` bumped from `>=10`).
 - `UnitOfMeasure.alternates` is now optional.
 - `numeric-quantity` updated to v3.3.1.
 
