@@ -10,7 +10,7 @@ import { parseIngredient } from './parseIngredient';
  */
 
 /**
- * H-3: `buildTrailingQuantityRegex` inlines `numericRegex`'s source twice, so the same
+ * `buildTrailingQuantityRegex` inlines `numericRegex`'s source twice, so the same
  * group names would appear twice in one pattern — a construction-time `SyntaxError` —
  * if `numeric-quantity` ever adopted named groups. It is a caret dependency, so assert
  * the assumption rather than discovering it in a consumer's build.
@@ -54,7 +54,7 @@ test.each([
 });
 
 /**
- * H-2: `buildRangeSeparatorSource` wraps each user pattern in `(?:…)`, which does not
+ * `buildRangeSeparatorSource` wraps each user pattern in `(?:…)`, which does not
  * neutralize capture groups *inside* the pattern's own source. One extra group shifts
  * every index after it, so the fixed `[3]` / `[12]` reads land on the wrong slots and
  * `quantity2` is silently lost. The README advertises user `RegExp` patterns as a
