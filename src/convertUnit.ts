@@ -5,7 +5,7 @@ import {
   UnitOfMeasureDefinitions,
   UnitSystem,
 } from './types';
-import { buildUnitLookupMaps, getDefaultUnitLookupMaps, lookupUnit } from './unitLookup';
+import { getUnitLookupMaps, identifyUnitFromMaps } from './unitLookup';
 
 export type IdentifyUnitOptions = Pick<ParseIngredientOptions, 'additionalUOMs' | 'ignoreUOMs'>;
 
@@ -37,18 +37,11 @@ export const identifyUnit = (
 ): string | null => {
   const { additionalUOMs = {}, ignoreUOMs = [] } = options;
 
-  // Check if the unit should be ignored (case-insensitive)
-  if (ignoreUOMs.length > 0) {
-    const unitLC = unit.toLowerCase();
-    if (ignoreUOMs.some(ignored => ignored.toLowerCase() === unitLC)) {
-      return null;
-    }
-  }
-
-  const hasAdditionalUOMs = Object.keys(additionalUOMs).length > 0;
-  const maps = hasAdditionalUOMs ? buildUnitLookupMaps(additionalUOMs) : getDefaultUnitLookupMaps();
-
-  return lookupUnit(unit, maps);
+  return identifyUnitFromMaps(
+    unit,
+    getUnitLookupMaps(additionalUOMs),
+    ignoreUOMs.map(u => u.toLowerCase())
+  );
 };
 
 /**

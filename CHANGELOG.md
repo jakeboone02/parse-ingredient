@@ -45,6 +45,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - UMD build is emitted as `dist/parse-ingredient.umd.min.js`, matching the `unpkg` field in `package.json`. The path advertised to CDNs previously 404'd.
 - UMD build bundles `numeric-quantity` instead of expecting a `NumericQuantity` global, so it no longer throws `ReferenceError` when loaded on its own.
 - UMD build sets the `ParseIngredient` global variable when run in a browser (`window` is defined).
+- Passing `additionalUOMs` no longer rebuilds the unit lookup tables for every unit identification (up to four per line). The tables are built once per `parseIngredient` call, and repeat `identifyUnit`/`convertUnit` calls reuse them for a given `additionalUOMs` object, making parsing with `additionalUOMs` roughly an order of magnitude faster.
 
 ## [v2.2.0] - 2026-04-20
 

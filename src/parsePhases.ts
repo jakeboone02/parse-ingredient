@@ -14,9 +14,9 @@ import {
   defaultOptions,
   firstWordRegEx,
 } from './constants';
-import { identifyUnit } from './convertUnit';
 import type { Ingredient, ParseIngredientOptions } from './types';
-import { buildUnitLookupMaps, collectUOMStrings, getDefaultUnitLookupMaps } from './unitLookup';
+import type { UnitLookupMaps } from './unitLookup';
+import { collectUOMStrings, getUnitLookupMaps, identifyUnitFromMaps } from './unitLookup';
 
 /**
  * The options `numericQuantity` is called with. The `bigIntOnOverflow`/`verbose` literals
@@ -39,6 +39,8 @@ export interface ParseContext {
   nqOpts: NQOptions;
   /** `opts.ignoreUOMs`, lowercased once for the trailing-quantity bail-out check. */
   ignoredUOMsLC: string[];
+  /** Unit lookup maps, built once per call rather than per unit identification. */
+  lookupMaps: UnitLookupMaps;
   groupHeaderRegex: RegExp | null;
   rangeSeparatorRegex: RegExp;
   stripPrefixRegex: RegExp | null;
@@ -59,9 +61,11 @@ export const createParseContext = (
   options: ParseIngredientOptions = defaultOptions
 ): ParseContext => {
   const opts = { ...defaultOptions, ...options };
+  const lookupMaps = getUnitLookupMaps(opts.additionalUOMs);
 
   return {
     opts,
+    lookupMaps,
     nqOpts: {
       decimalSeparator: opts.decimalSeparator,
       round: opts.round,
@@ -75,13 +79,7 @@ export const createParseContext = (
     trailingContextRegex: buildTrailingContextRegex(opts.trailingQuantityContext),
     trailingQuantityRegex: buildTrailingQuantityRegex(opts.rangeSeparators),
     leadingQuantityPrefixRegex: buildLeadingQuantityPrefixRegex(opts.leadingQuantityPrefixes),
-    uomStrings: opts.partialUnitMatching
-      ? collectUOMStrings(
-          Object.keys(opts.additionalUOMs).length > 0
-            ? buildUnitLookupMaps(opts.additionalUOMs)
-            : getDefaultUnitLookupMaps()
-        )
-      : [],
+    uomStrings: opts.partialUnitMatching ? collectUOMStrings(lookupMaps) : [],
   };
 };
 
@@ -187,11 +185,11 @@ export const identifyGreedyUnit = (
   ctx: ParseContext
 ): { id: string; matchedText: string; isTwoWord: boolean } | null => {
   if (twoWord) {
-    const twoWordID = identifyUnit(twoWord, ctx.opts);
+    const twoWordID = identifyUnitFromMaps(twoWord, ctx.lookupMaps, ctx.ignoredUOMsLC);
     if (twoWordID) return { id: twoWordID, matchedText: twoWord, isTwoWord: true };
   }
 
-  const id = identifyUnit(singleWord, ctx.opts);
+  const id = identifyUnitFromMaps(singleWord, ctx.lookupMaps, ctx.ignoredUOMsLC);
   return id ? { id, matchedText: singleWord, isTwoWord: false } : null;
 };
 
@@ -404,7 +402,7 @@ export const identifyPartialUnit = (ingredient: Ingredient, ctx: ParseContext): 
     if (idx === -1) continue;
 
     const matchedText = ingredient.description.substring(idx, idx + uomStr.length);
-    const uomID = identifyUnit(matchedText, ctx.opts);
+    const uomID = identifyUnitFromMaps(matchedText, ctx.lookupMaps, ctx.ignoredUOMsLC);
     if (!uomID) continue;
 
     const before = ingredient.description.substring(0, idx).trim();
