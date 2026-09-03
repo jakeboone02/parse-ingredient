@@ -21,8 +21,8 @@ export interface Ingredient {
   /**
    * The primary quantity (the lower quantity in a range, if applicable).
    *
-   * Never negative and never `NaN`, but it *can* be `Infinity` (e.g. `'1/0 cup sugar'`),
-   * which `JSON.stringify` silently lowers to `null`.
+   * Always a finite, non-negative number when not `null` — never negative, never `NaN`,
+   * never `Infinity`.
    */
   quantity: number | null;
   /**

@@ -52,9 +52,12 @@ const invariantViolations = (ingredient: Ingredient): string[] => {
     violations.push('quantity2 is a number or null');
   }
 
-  // `NaN` is never a meaningful quantity; `Infinity` is intentionally allowed (see below).
-  if (Number.isNaN(ingredient.quantity) || Number.isNaN(ingredient.quantity2)) {
-    violations.push('quantities are never NaN');
+  // Neither `NaN` nor `Infinity` is ever a meaningful quantity.
+  if (
+    (ingredient.quantity !== null && !Number.isFinite(ingredient.quantity)) ||
+    (ingredient.quantity2 !== null && !Number.isFinite(ingredient.quantity2))
+  ) {
+    violations.push('quantities are always finite');
   }
 
   return violations;
@@ -142,25 +145,25 @@ test.each(['to 2 cups sugar', 'or 2 cups sugar'])(
 );
 
 /**
- * `Infinity` is intentional and retained, matching `numeric-quantity`. Pinned here
- * because it is the one non-finite value the invariants deliberately permit — and because
- * `JSON.stringify` silently lowers it to `null`, which consumers need to know.
+ * Division by zero is the one input that reaches this library as `Infinity` —
+ * `numeric-quantity` returns it intentionally. It is not a usable measurement, so the
+ * token is rejected and the whole line stays in the description.
  */
-test('Infinity is retained as a quantity', () => {
+test('a division by zero is not a quantity', () => {
   expect(parseIngredient('1/0 cups sugar')).toEqual([
     {
-      quantity: Infinity,
+      quantity: null,
       quantity2: null,
-      unitOfMeasureID: 'cup',
-      unitOfMeasure: 'cups',
-      description: 'sugar',
+      unitOfMeasureID: null,
+      unitOfMeasure: null,
+      description: '1/0 cups sugar',
       isGroupHeader: false,
     },
   ]);
 });
 
-test('Infinity quantities are lowered to null by JSON.stringify', () => {
-  expect(JSON.parse(JSON.stringify(parseIngredient('1/0 cups sugar')))[0].quantity).toBeNull();
+test('a division by zero in the upper bound of a range is not a range', () => {
+  expect(parseIngredient('1 to 1/0 cups sugar')).toMatchObject([{ quantity: 1, quantity2: null }]);
 });
 
 /**

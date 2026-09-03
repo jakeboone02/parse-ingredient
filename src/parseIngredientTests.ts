@@ -2339,6 +2339,45 @@ export const parseIngredientTests: Record<
       },
     ],
   ],
+  'division by zero is not a quantity': [
+    '1/0 cups sugar',
+    [
+      {
+        quantity: null,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: '1/0 cups sugar',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'division by zero in a range is not a quantity': [
+    '1/0 to 2 cups sugar',
+    [
+      {
+        quantity: null,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: '1/0 to 2 cups sugar',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'division by zero as quantity2 leaves quantity intact': [
+    '1 to 1/0 cups sugar',
+    [
+      {
+        quantity: 1,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: 'to 1/0 cups sugar',
+        isGroupHeader: false,
+      },
+    ],
+  ],
   'range separator with no leading quantity is not a range': [
     'to 2 cups sugar',
     [

@@ -112,6 +112,11 @@ const nonQuantityCharRegExp = new RegExp(
  * quantity can only be located by trying prefixes longest-first and taking the first one
  * that both parses and satisfies `accept`.
  *
+ * A prefix that parses to a *rejected* value (negative, `Infinity`) ends the search
+ * instead of shortening it: the shorter prefixes are fragments of that same number, so
+ * accepting one would silently reinterpret part of the value as description. `'1/0 cups'`
+ * must not become `quantity: 1` with a description of `'/0 cups'`.
+ *
  * Returns the parsed value along with the remainder of the *original* text (never the
  * normalized form `numericQuantity` works with internally), or `null` if no prefix
  * qualifies.
@@ -124,31 +129,32 @@ export const matchLeadingQuantity = (
   accept: (value: number) => boolean
 ): { value: number; rest: string } | null => {
   const stop = nonQuantityCharRegExp.exec(text);
-  let result: { value: number; rest: string } | null = null;
 
-  for (let len = stop ? stop.index : text.length; len > 0 && !result; len--) {
+  for (let len = stop ? stop.index : text.length; len > 0; len--) {
     const value = numericQuantity(text.substring(0, len).trim(), nqOpts);
 
     if (accept(value)) {
-      result = { value, rest: text.substring(len).trim() };
+      return { value, rest: text.substring(len).trim() };
     }
+
+    if (!Number.isNaN(value)) break;
   }
 
-  return result;
+  return null;
 };
 
 /**
  * The single acceptance test for a parsed quantity, shared by `quantity` and `quantity2`
  * so the two paths can never disagree about whether a value counts as a quantity.
  *
- * Rejects `NaN` (nothing parsed) and negatives (a negative amount of an ingredient is
- * meaningless). Deliberately *accepts* `Infinity`: `numeric-quantity` returns it for
- * `'1/0'` intentionally, and this library retains it. Note that `JSON.stringify` lowers
- * `Infinity` to `null`.
+ * Rejects `NaN` (nothing parsed), negatives (a negative amount of an ingredient is
+ * meaningless), and non-finite values (`numeric-quantity` returns `Infinity` for `'1/0'`,
+ * which is not a usable recipe quantity and would serialize to `null` anyway).
  *
  * @internal
  */
-export const isAcceptableQuantity = (value: number): boolean => value >= 0;
+export const isAcceptableQuantity = (value: number): boolean =>
+  Number.isFinite(value) && value >= 0;
 
 /**
  * Repeatedly strips configured quantity prefixes from the start of a string.
@@ -205,19 +211,24 @@ export const startsWithQuantity = (text: string, ctx: ParseContext): boolean =>
  * Takes the longest leading run of characters that parses as a single value as
  * `quantity`; whatever follows it is the description.
  *
+ * @returns `true` if a quantity was found, `false` if the line should fall through to the
+ * remaining strategies (e.g. `'1/0 cups sugar'`, which starts numerically but whose only
+ * parseable value is rejected).
+ *
  * @internal
  */
 export const parseLeadingQuantity = (
   ingredient: Ingredient,
   text: string,
   ctx: ParseContext
-): void => {
+): boolean => {
   const leadingQuantity = matchLeadingQuantity(text, ctx.nqOpts, isAcceptableQuantity);
 
-  if (leadingQuantity) {
-    ingredient.quantity = leadingQuantity.value;
-    ingredient.description = leadingQuantity.rest;
-  }
+  if (!leadingQuantity) return false;
+
+  ingredient.quantity = leadingQuantity.value;
+  ingredient.description = leadingQuantity.rest;
+  return true;
 };
 
 /**
@@ -453,9 +464,10 @@ export const parseIngredientLine = (
 
   const text = stripLeadingQuantityPrefixes(line, ctx.leadingQuantityPrefixRegex);
 
-  if (startsWithQuantity(text, ctx)) {
-    parseLeadingQuantity(ingredient, text, ctx);
-  } else if (!parseTrailingQuantity(ingredient, text, ctx)) {
+  if (
+    !(startsWithQuantity(text, ctx) && parseLeadingQuantity(ingredient, text, ctx)) &&
+    !parseTrailingQuantity(ingredient, text, ctx)
+  ) {
     parsePlainDescription(ingredient, text, ctx);
   }
 

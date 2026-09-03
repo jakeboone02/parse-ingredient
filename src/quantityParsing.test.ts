@@ -92,14 +92,14 @@ test('round applies to both quantities in a range', () => {
 
 /**
  * `quantity` and `quantity2` share one acceptance test, so they can never disagree
- * about whether a value counts as a quantity. Negatives are rejected on both paths;
- * `Infinity` is accepted on both.
+ * about whether a value counts as a quantity. Negatives, `NaN`, and `Infinity` are
+ * rejected on both paths.
  */
 test.each([
   [0, true],
   [0.5, true],
   [1, true],
-  [Infinity, true],
+  [Infinity, false],
   [-0.5, false],
   [-1, false],
   [-2, false],

@@ -59,9 +59,7 @@ interface IngredientMeta {
 }
 ```
 
-Quantities are never negative and never `NaN`. A leading `'-'` is treated as part of the description, not as a sign or a range separator, so `'-2 cups sugar'` yields `quantity: null` with the description intact. `quantity2` is only set when `quantity` is also set — a range with no lower bound is not a range.
-
-Quantities _can_ be `Infinity`, which `numeric-quantity` returns intentionally for division by zero (`'1/0 cup sugar'`). Note that `JSON.stringify` silently lowers `Infinity` to `null`, so serializing results will lose the distinction between "divided by zero" and "no quantity found".
+Quantities are always finite, non-negative numbers when present — never negative, never `NaN`, never `Infinity`. A leading `'-'` is treated as part of the description, not as a sign or a range separator, so `'-2 cups sugar'` yields `quantity: null` with the description intact. Likewise `'1/0 cups sugar'` yields `quantity: null` with the description intact, since a division by zero is not a usable measurement. `quantity2` is only set when `quantity` is also set — a range with no lower bound is not a range.
 
 For the `isGroupHeader` attribute to be `true`, the ingredient string must not start with a number, and must either start with `'For '` or end with `':'`.
 
