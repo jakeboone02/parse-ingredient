@@ -161,10 +161,20 @@ export const defaultOptions: Readonly<Required<ParseIngredientOptions>> = deepFr
 });
 
 /**
+ * Source of the unit-of-measure word pattern, shared by `firstWordRegEx` and
+ * `buildTrailingQuantityRegex` so the two cannot drift.
+ *
+ * Contains no capture groups (only `(?:…)` and the escaped literal parens in
+ * `\(…\)`), so inlining it any number of times cannot perturb group indices.
+ *
+ * @internal
+ */
+export const uomWordSource: string = String.raw`fl(?:uid)?(?:\s+|-)(?:oz|ounces?)|[\p{L}\p{N}_]+(?:[./-][\p{L}\p{N}_]+|\([\p{L}\p{N}_]+\))*[-.]?`;
+
+/**
  * Regex to capture the first word of a description to check if it's a unit of measure.
  */
-export const firstWordRegEx: RegExp =
-  /^(fl(?:uid)?(?:\s+|-)(?:oz|ounces?)|[\p{L}\p{N}_]+(?:[./-][\p{L}\p{N}_]+|\([\p{L}\p{N}_]+\))*[-.]?)(.+)?/iu;
+export const firstWordRegEx: RegExp = new RegExp(`^(${uomWordSource})(.+)?`, 'iu');
 
 const numericRegexAnywhere = numericRegex.source.replace(/^\^/, '').replace(/\$$/, '');
 
@@ -175,13 +185,16 @@ const numericRegexAnywhere = numericRegex.source.replace(/^\^/, '').replace(/\$$
  * Matches are read through the named groups `qty1`, `sep`, `qty2`, and `uom` — never by
  * index. `numericRegexAnywhere` is inlined twice and user range separators may contain
  * capture groups of their own, so every index here is unstable by construction.
+ *
+ * The `uom` body is `uomWordSource`, shared with `firstWordRegEx`; it is group-free, so
+ * inlining it is index-neutral.
  */
 export const buildTrailingQuantityRegex = (
   rangeSeparators: readonly (string | RegExp)[]
 ): RegExp => {
   const rangeSeparatorSource = buildRangeSeparatorSource(rangeSeparators);
   return new RegExp(
-    `(?:,|:|-|–|—|x|⨯)?\\s*(?:(?<qty1>${numericRegexAnywhere})\\s*(?<sep>${rangeSeparatorSource}))?\\s*(?<qty2>${numericRegexAnywhere})\\s*(?<uom>fl(?:uid)?(?:\\s+|-)(?:oz|ounces?)|[\\p{L}\\p{N}_]+(?:[./-][\\p{L}\\p{N}_]+|\\([\\p{L}\\p{N}_]+\\))*[-.]?)?$`,
+    `(?:,|:|-|–|—|x|⨯)?\\s*(?:(?<qty1>${numericRegexAnywhere})\\s*(?<sep>${rangeSeparatorSource}))?\\s*(?<qty2>${numericRegexAnywhere})\\s*(?<uom>${uomWordSource})?$`,
     'iu'
   );
 };

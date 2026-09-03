@@ -1,6 +1,6 @@
 import { expect, test } from 'bun:test';
 import { numericRegex } from 'numeric-quantity';
-import { buildRangeSeparatorSource, buildTrailingQuantityRegex } from './constants';
+import { buildRangeSeparatorSource, buildTrailingQuantityRegex, firstWordRegEx } from './constants';
 import { parseIngredient } from './parseIngredient';
 
 /**
@@ -125,6 +125,33 @@ test('a lookbehind in a user range separator is preserved', () => {
   expect(
     parseIngredient('Stuff 1 bis 2 cups', { rangeSeparators: [/(?<!\s)bis/iu] })
   ).toMatchObject([{ quantity: 2, quantity2: null, description: 'Stuff 1 bis' }]);
+});
+
+/**
+ * The UOM word pattern is `uomWordSource`, inlined by both `firstWordRegEx` and
+ * `buildTrailingQuantityRegex`. Sharing one source makes textual drift impossible, so
+ * there is nothing left to assert about the sources themselves — but the *shapes* that
+ * pattern is meant to admit were never covered. These pin them, on both consumers at
+ * once, so a future narrowing of the pattern fails loudly rather than silently changing
+ * which words count as units.
+ */
+test.each([
+  'cups',
+  'fl oz',
+  'fl-oz',
+  'fluid ounces',
+  'fluid-ounce',
+  'oz.',
+  'T.',
+  'c/s',
+  'kilo-gram',
+  'tasses',
+  '大さじ',
+  'cup(s)',
+  'gram.s',
+])('%p is captured as a unit word by both consumers', uom => {
+  expect(firstWordRegEx.exec(`${uom} sugar`)?.[1]).toBe(uom);
+  expect(buildTrailingQuantityRegex(['to', 'or']).exec(`Stuff 1 ${uom}`)?.groups?.uom).toBe(uom);
 });
 
 /** An escaped `\(?<name>` is literal text, not a group, and must not be rewritten. */
