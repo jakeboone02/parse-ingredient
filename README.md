@@ -348,6 +348,8 @@ parseIngredient('2 à 3 cups sugar', {
 });
 ```
 
+> **Note:** RegExp separators are used as-is, except that named capture groups (`(?<name>…)`) in them are rewritten as non-capturing groups so they can't collide with the library's own group names. Lookbehinds (`(?<=…)`, `(?<!…)`) are unaffected. Plain capture groups are also safe, but their contents are not surfaced anywhere.
+
 ### `descriptionStripPrefixes`
 
 Words or patterns to strip from the beginning of ingredient descriptions. Commonly used to remove "of" from phrases like "1 cup of sugar". Strings are matched as whole words followed by whitespace. RegExp patterns are used as-is, which is useful for languages with contractions or elisions. Defaults to `['of']`.

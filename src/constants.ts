@@ -22,12 +22,23 @@ export const buildPrefixPatternRegex = (patterns: (string | RegExp)[]): RegExp |
 };
 
 /**
+ * Rewrites named capture groups in a user-supplied pattern source as non-capturing
+ * groups, leaving lookbehinds (`(?<=`, `(?<!`) and escaped sequences alone.
+ *
+ * User patterns are composed into larger regexes that use named groups of their own, so
+ * a user group named e.g. `sep` would otherwise throw at construction time. The names
+ * would be unreadable to callers anyway, since only the composed regex is exposed.
+ */
+const stripNamedGroups = (source: string): string =>
+  source.replace(/\\.|\(\?<(?![=!])[^>]*>/gu, m => (m.startsWith('\\') ? m : '(?:'));
+
+/**
  * Builds a regex source string for range separators (dashes and word separators).
  * Always includes dash characters (-, –, —), plus any custom word separators.
  */
 export const buildRangeSeparatorSource = (words: (string | RegExp)[]): string => {
   const wordParts = words.map(w =>
-    w instanceof RegExp ? `(?:${w.source})` : `(?:${escapeRegex(w)})`
+    w instanceof RegExp ? `(?:${stripNamedGroups(w.source)})` : `(?:${escapeRegex(w)})`
   );
   // Always include dashes, then word separators followed by whitespace
   return `(-|–|—|(?:${wordParts.join('|')})\\s)`;
@@ -160,11 +171,15 @@ const numericRegexAnywhere = numericRegex.source.replace(/^\^/, '').replace(/\$$
 /**
  * Builds a regex to capture trailing quantity and unit of measure,
  * using the provided range separator words.
+ *
+ * Matches are read through the named groups `qty1`, `sep`, `qty2`, and `uom` — never by
+ * index. `numericRegexAnywhere` is inlined twice and user range separators may contain
+ * capture groups of their own, so every index here is unstable by construction.
  */
 export const buildTrailingQuantityRegex = (rangeSeparators: (string | RegExp)[]): RegExp => {
   const rangeSeparatorSource = buildRangeSeparatorSource(rangeSeparators);
   return new RegExp(
-    `(,|:|-|–|—|x|⨯)?\\s*((${numericRegexAnywhere})\\s*(${rangeSeparatorSource}))?\\s*(${numericRegexAnywhere})\\s*(fl(?:uid)?(?:\\s+|-)(?:oz|ounces?)|[\\p{L}\\p{N}_]+(?:[./-][\\p{L}\\p{N}_]+|\\([\\p{L}\\p{N}_]+\\))*[-.]?)?$`,
+    `(?:,|:|-|–|—|x|⨯)?\\s*(?:(?<qty1>${numericRegexAnywhere})\\s*(?<sep>${rangeSeparatorSource}))?\\s*(?<qty2>${numericRegexAnywhere})\\s*(?<uom>fl(?:uid)?(?:\\s+|-)(?:oz|ounces?)|[\\p{L}\\p{N}_]+(?:[./-][\\p{L}\\p{N}_]+|\\([\\p{L}\\p{N}_]+\\))*[-.]?)?$`,
     'iu'
   );
 };

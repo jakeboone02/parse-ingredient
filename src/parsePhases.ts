@@ -226,7 +226,9 @@ export const parseTrailingQuantity = (
 
   if (!trailingQtyResult) return false;
 
-  const uomRaw = trailingQtyResult.at(-1);
+  // Named groups, never indices: the regex inlines `numericRegex` twice and splices in
+  // user-supplied range separators, so its group numbering is not stable.
+  const { qty1, qty2, uom: uomRaw } = trailingQtyResult.groups!;
 
   if (uomRaw && ctx.ignoredUOMsLC.includes(uomRaw.toLowerCase())) {
     // Trailing quantity detected, but bailing out since the UOM should be ignored.
@@ -239,13 +241,11 @@ export const parseTrailingQuantity = (
   ingredient.description = text.replace(ctx.trailingQuantityRegex, '').trim();
 
   // Trailing quantity/range.
-  const firstQty = trailingQtyResult[3];
-  const secondQty = trailingQtyResult[12];
-  if (!firstQty) {
-    ingredient.quantity = numericQuantity(secondQty, ctx.nqOpts);
+  if (!qty1) {
+    ingredient.quantity = numericQuantity(qty2, ctx.nqOpts);
   } else {
-    ingredient.quantity = numericQuantity(firstQty, ctx.nqOpts);
-    ingredient.quantity2 = numericQuantity(secondQty, ctx.nqOpts);
+    ingredient.quantity = numericQuantity(qty1, ctx.nqOpts);
+    ingredient.quantity2 = numericQuantity(qty2, ctx.nqOpts);
   }
 
   // Trailing unit of measure. The multi-word candidate extends backwards into the
