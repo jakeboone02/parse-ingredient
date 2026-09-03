@@ -160,32 +160,6 @@ export const defaultOptions: Readonly<Required<ParseIngredientOptions>> = deepFr
   partialUnitMatching: false,
 });
 
-// --- Legacy Exports (for backward compatibility) ---
-
-/**
- * List of "for" equivalents.
- * @deprecated Use `defaultGroupHeaderPatterns` instead.
- */
-export const fors: typeof defaultGroupHeaderPatterns = defaultGroupHeaderPatterns;
-
-/**
- * Regex to capture "for" equivalents.
- * @deprecated Build dynamically using `buildPrefixPatternRegex(options.groupHeaderPatterns)`.
- */
-export const forsRegEx: RegExp = buildPrefixPatternRegex(defaultGroupHeaderPatterns)!;
-
-/**
- * List of range separators.
- * @deprecated Use `defaultRangeSeparators` instead.
- */
-export const rangeSeparatorWords: typeof defaultRangeSeparators = defaultRangeSeparators;
-
-/**
- * Regex to capture range separators.
- * @deprecated Build dynamically using `buildRangeSeparatorRegex(options.rangeSeparators)`.
- */
-export const rangeSeparatorRegEx: RegExp = buildRangeSeparatorRegex(defaultRangeSeparators);
-
 /**
  * Regex to capture the first word of a description to check if it's a unit of measure.
  */
@@ -211,36 +185,6 @@ export const buildTrailingQuantityRegex = (
     'iu'
   );
 };
-
-/**
- * Regex to capture trailing quantity and unit of measure.
- * @deprecated Build dynamically using `buildTrailingQuantityRegex(options.rangeSeparators)`.
- */
-export const trailingQuantityRegEx: RegExp = buildTrailingQuantityRegex(defaultRangeSeparators);
-
-/**
- * List of "of" equivalents.
- * @deprecated Use `defaultDescriptionStripPrefixes` instead.
- */
-export const ofs: typeof defaultDescriptionStripPrefixes = defaultDescriptionStripPrefixes;
-
-/**
- * Regex to capture "of" equivalents at the beginning of a string.
- * @deprecated Build dynamically using `buildStripPrefixRegex(options.descriptionStripPrefixes)`.
- */
-export const ofRegEx: RegExp = buildStripPrefixRegex(defaultDescriptionStripPrefixes)!;
-
-/**
- * List of "from" equivalents.
- * @deprecated Use `defaultTrailingQuantityContext` instead.
- */
-export const froms: typeof defaultTrailingQuantityContext = defaultTrailingQuantityContext;
-
-/**
- * Regex to capture "from" equivalents at the end of a string.
- * @deprecated Build dynamically using `buildTrailingContextRegex(options.trailingQuantityContext)`.
- */
-export const fromRegEx: RegExp = buildTrailingContextRegex(defaultTrailingQuantityContext);
 
 /**
  * Default unit of measure specifications.

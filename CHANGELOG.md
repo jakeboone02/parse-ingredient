@@ -11,6 +11,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `round` option, forwarded to `numericQuantity`, controlling the number of decimal places parsed quantities are rounded to. Defaults to `3`, matching previous behavior; pass `false` to disable rounding.
 
+### Removed
+
+- **BREAKING:** The legacy exports deprecated in v2.1.0 have been removed. Each maps 1:1 onto a `default*` value or a `build*Regex` function:
+
+  | Removed                 | Replacement                                                  |
+  | ----------------------- | ------------------------------------------------------------ |
+  | `fors`                  | `defaultGroupHeaderPatterns`                                 |
+  | `forsRegEx`             | `buildPrefixPatternRegex(options.groupHeaderPatterns)`       |
+  | `rangeSeparatorWords`   | `defaultRangeSeparators`                                     |
+  | `rangeSeparatorRegEx`   | `buildRangeSeparatorRegex(options.rangeSeparators)`          |
+  | `trailingQuantityRegEx` | `buildTrailingQuantityRegex(options.rangeSeparators)`        |
+  | `ofs`                   | `defaultDescriptionStripPrefixes`                            |
+  | `ofRegEx`               | `buildStripPrefixRegex(options.descriptionStripPrefixes)`    |
+  | `froms`                 | `defaultTrailingQuantityContext`                             |
+  | `fromRegEx`             | `buildTrailingContextRegex(options.trailingQuantityContext)` |
+
+  The `build*Regex` functions accept the corresponding default array if you want the previous values, e.g. `buildRangeSeparatorRegex(defaultRangeSeparators)`. `buildPrefixPatternRegex` and `buildStripPrefixRegex` return `null` for an empty input array.
+
 ### Fixed
 
 - Quantities are no longer truncated to the first six characters of the line. The parser previously fell back to the longest _prefix_ of that window that happened to parse, so `'1 11/16 cups sugar'` yielded `quantity: 12` with `description: '6 cups sugar'`, and `'1000000 g flour'` yielded `quantity: 100000` with `description: '0 g flour'`. The search window is now derived from the input, so quantities of any length are extracted whole. The same fix applies to the second quantity of a range.
