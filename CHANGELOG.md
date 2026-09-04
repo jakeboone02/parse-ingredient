@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+- **BREAKING:** `identifyUnit` and the `IdentifyUnitOptions` type are no longer part of the public API. They were incidentally exported from the package entry point via `convertUnit`; they now live in the internal `unitLookup` module and are marked `@internal`. Use `convertUnit` or `parseIngredient` instead.
 - **BREAKING:** The legacy exports deprecated in v2.1.0 have been removed. Each maps 1:1 onto a `default*` value or a `build*Regex` function:
 
   | Removed                 | Replacement                                                  |
