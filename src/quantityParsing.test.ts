@@ -1,11 +1,12 @@
-import { expect, test } from 'bun:test';
+import { describe, expect, test } from 'bun:test';
 import {
   numericQuantity,
   superSubDigitToAsciiMap,
   vulgarFractionToAsciiMap,
 } from 'numeric-quantity';
+import { buildLeadingQuantityPrefixRegex } from './constants';
 import { parseIngredient } from './parseIngredient';
-import { isAcceptableQuantity } from './parsePhases';
+import { isAcceptableQuantity, stripLeadingQuantityPrefixes } from './parsePhases';
 
 /**
  * The leading-quantity search bounds itself with a character class that must cover every
@@ -107,4 +108,48 @@ test.each([
   [NaN, false],
 ])('isAcceptableQuantity(%p) is %p', (value, expected) => {
   expect(isAcceptableQuantity(value)).toBe(expected);
+});
+
+describe('stripLeadingQuantityPrefixes', () => {
+  const regex = buildLeadingQuantityPrefixRegex(['about', 'ca.']);
+
+  test('returns the text unchanged when there is no prefix regex', () => {
+    expect(stripLeadingQuantityPrefixes('  about 2 cups', null)).toBe('  about 2 cups');
+  });
+
+  test('returns empty text unchanged', () => {
+    expect(stripLeadingQuantityPrefixes('', regex)).toBe('');
+  });
+
+  test('strips a prefix and the whitespace around it', () => {
+    expect(stripLeadingQuantityPrefixes('  about   2 cups', regex)).toBe('2 cups');
+  });
+
+  test('strips a prefix that is adjacent to the quantity', () => {
+    expect(stripLeadingQuantityPrefixes('ca.200 g', regex)).toBe('200 g');
+  });
+
+  test('strips repeatedly', () => {
+    expect(stripLeadingQuantityPrefixes('about ca. 200 g', regex)).toBe('200 g');
+  });
+
+  test('leaves text that does not start with a prefix', () => {
+    expect(stripLeadingQuantityPrefixes('2 cups about', regex)).toBe('2 cups about');
+  });
+
+  test('stops on a zero-length match rather than looping forever', () => {
+    expect(stripLeadingQuantityPrefixes('2 cups', buildLeadingQuantityPrefixRegex([/x?/u]))).toBe(
+      '2 cups'
+    );
+  });
+
+  /** Alternation is left-to-right, so a shorter pattern listed first wins (README note). */
+  test('matches patterns in the order given', () => {
+    expect(stripLeadingQuantityPrefixes('ca. 200 g', buildLeadingQuantityPrefixRegex(['ca']))).toBe(
+      '. 200 g'
+    );
+    expect(
+      stripLeadingQuantityPrefixes('ca. 200 g', buildLeadingQuantityPrefixRegex(['ca.', 'ca']))
+    ).toBe('200 g');
+  });
 });

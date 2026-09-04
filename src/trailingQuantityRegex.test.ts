@@ -158,3 +158,21 @@ test.each([
 test('an escaped group-like sequence in a user range separator is left alone', () => {
   expect(buildRangeSeparatorSource([/\(\?<x>bis/u])).toContain(String.raw`\(\?<x>bis`);
 });
+
+/**
+ * String separators go through `escapeRegex` before being interpolated. Asserting the
+ * escaping in isolation is not enough — these compose the escaped string into the real
+ * pattern and check that the metacharacters are matched literally rather than acting.
+ */
+test.each([
+  ['a.b', 'Stuff 1 a.b 2 cups', 'Stuff 1 axb 2 cups'],
+  ['(o)', 'Stuff 1 (o) 2 cups', 'Stuff 1 o 2 cups'],
+  ['a|b', 'Stuff 1 a|b 2 cups', 'Stuff 1 a 2 cups'],
+  ['a+', 'Stuff 1 a+ 2 cups', 'Stuff 1 aa 2 cups'],
+  ['[x]', 'Stuff 1 [x] 2 cups', 'Stuff 1 x 2 cups'],
+])('a %p separator is matched literally, not as a pattern', (separator, literal, pattern) => {
+  const regex = buildTrailingQuantityRegex([separator]);
+  expect(regex.exec(literal)?.groups).toMatchObject({ qty1: '1', qty2: '2' });
+  // The range half is optional, so a non-matching separator leaves `qty1` unset.
+  expect(regex.exec(pattern)?.groups?.qty1).toBeUndefined();
+});

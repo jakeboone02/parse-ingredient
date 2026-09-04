@@ -2,6 +2,7 @@ import { describe, expect, test } from 'bun:test';
 import type { UnitOfMeasureDefinitions } from './types';
 import {
   buildUnitLookupMaps,
+  collectUOMStrings,
   getDefaultUnitLookupMaps,
   getUnitLookupMaps,
   identifyUnitFromMaps,
@@ -53,5 +54,37 @@ describe('identifyUnitFromMaps', () => {
   test('honors the lowercased ignore list', () => {
     expect(identifyUnitFromMaps('Large', maps, ['large'])).toBeNull();
     expect(identifyUnitFromMaps('lg', maps, ['large'])).toBe('large');
+  });
+});
+
+describe('collectUOMStrings', () => {
+  test('returns every key of the case-sensitive map', () => {
+    const maps = buildUnitLookupMaps();
+    expect(collectUOMStrings(maps)).toBeArrayOfSize(maps.caseSensitive.size);
+    expect(collectUOMStrings(maps)).toContain('tablespoon');
+    expect(collectUOMStrings(maps)).toContain('T');
+  });
+
+  test('includes additionalUOMs strings', () => {
+    expect(collectUOMStrings(buildUnitLookupMaps(bucket))).toEqual(
+      expect.arrayContaining(['bucket', 'bkt', 'buckets', 'pail'])
+    );
+  });
+
+  /**
+   * `partialUnitMatching` scans descriptions in this order, so the longest-first contract
+   * is what makes the longer of two overlapping units win (e.g. 大さじ over 大).
+   */
+  test('sorts longest-first', () => {
+    const strings = collectUOMStrings(
+      buildUnitLookupMaps({
+        大: { short: '大', plural: '大' },
+        大さじ: { short: '大さじ', plural: '大さじ' },
+      })
+    );
+    for (const [index, value] of strings.slice(1).entries()) {
+      expect(value.length).toBeLessThanOrEqual(strings[index].length);
+    }
+    expect(strings.indexOf('大さじ')).toBeLessThan(strings.indexOf('大'));
   });
 });
