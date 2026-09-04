@@ -13,8 +13,8 @@ jobs:
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
-      - run: bun install
-      - run: bun --bun run build
+      - run: bun install --frozen-lockfile
+      - run: bun run build
       - run: bun run docs
       - uses: actions/upload-pages-artifact@v5
         with:
