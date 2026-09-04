@@ -48,6 +48,7 @@
     "start": "bun --hot ./index.html",
     "build": "bun --bun x tsdown",
     "docs": "typedoc",
+    "generate:ci-examples": "bun scripts/generateCIExamples.ts",
     "test": "bun test",
     "watch": "bun test --watch",
     "lint": "bunx oxlint",

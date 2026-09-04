@@ -14,5 +14,5 @@
     "skipLibCheck": true,
     "lib": ["ES2022", "DOM"]
   },
-  "include": ["./*.ts", "./src"]
+  "include": ["./*.ts", "./scripts", "./src"]
 }
