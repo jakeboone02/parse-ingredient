@@ -27,5 +27,9 @@ jobs:
       - uses: codecov/codecov-action@v7
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      - name: Are the types wrong?
+        run: bunx @arethetypeswrong/cli --pack .
+      - name: PubLint
+        run: bunx publint
       - name: Publish to pkg.pr.new
         run: bunx pkg-pr-new publish --packageManager=bun,npm,pnpm --bun --template=./ci
