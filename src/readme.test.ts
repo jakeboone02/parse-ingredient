@@ -105,12 +105,15 @@ const evaluate = (code: string): unknown =>
   );
 
 /** `{ a: 1, ... }` is illustrative, not valid JS; drop the elision and match partially. */
-const elisionRegex = /,?\s*\.\.\.\s*(?=[}\]])/gu;
+const elisionSource = String.raw`,?\s*\.\.\.\s*(?=[}\]])`;
+// Separate regexes: `test` on a `g` regex advances `lastIndex` and would leak state.
+const elisionTestRegex = new RegExp(elisionSource, 'u');
+const elisionStripRegex = new RegExp(elisionSource, 'gu');
 
 const parseExpectation = (expectation: string) => {
-  const elided = elisionRegex.test(expectation);
+  const elided = elisionTestRegex.test(expectation);
   // oxlint-disable-next-line typescript/no-implied-eval -- executing README snippets is the point
-  const value = new Function(`return ${expectation.replace(elisionRegex, '')}`)();
+  const value = new Function(`return ${expectation.replace(elisionStripRegex, '')}`)();
   return { elided, value };
 };
 
