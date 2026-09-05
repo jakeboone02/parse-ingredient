@@ -6,7 +6,7 @@ const config: ReturnType<typeof defineConfig> = defineConfig(options => {
     entry: {
       'parse-ingredient': 'src/index.ts',
     },
-    dts: { tsgo: true },
+    dts: { oxc: {} },
     platform: 'neutral',
     sourcemap: true,
     ...options,
