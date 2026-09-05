@@ -69,7 +69,7 @@ export const parseIngredientTests: Record<
       },
     ],
   ],
-  'range (emdash)': [
+  'range (endash)': [
     '1\u20132 cups stuff',
     [
       {
@@ -82,7 +82,7 @@ export const parseIngredientTests: Record<
       },
     ],
   ],
-  'range (endash)': [
+  'range (emdash)': [
     '1\u20142 cups stuff',
     [
       {
@@ -95,7 +95,7 @@ export const parseIngredientTests: Record<
       },
     ],
   ],
-  'range (spaced emdash)': [
+  'range (spaced endash)': [
     '1 \u2013 2 cups stuff',
     [
       {
@@ -108,7 +108,7 @@ export const parseIngredientTests: Record<
       },
     ],
   ],
-  'range (spaced endash)': [
+  'range (spaced emdash)': [
     '1 \u2014 2 cups stuff',
     [
       {
@@ -442,8 +442,8 @@ export const parseIngredientTests: Record<
       ['comma', ','],
       ['colon', ':'],
       ['dash', '-'],
-      ['emdash', '\u2013'],
-      ['endash', '\u2014'],
+      ['endash', '\u2013'],
+      ['emdash', '\u2014'],
       ['x', 'x'],
       ['⨯', '⨯'],
     ].map(([desc, char]) => [
@@ -489,7 +489,7 @@ export const parseIngredientTests: Record<
       },
     ],
   ],
-  'trailing range (emdash)': [
+  'trailing range (endash)': [
     'stuff 1\u20132 cups',
     [
       {
@@ -502,7 +502,7 @@ export const parseIngredientTests: Record<
       },
     ],
   ],
-  'trailing range (endash)': [
+  'trailing range (emdash)': [
     'stuff 1\u20142 cups',
     [
       {
@@ -515,7 +515,7 @@ export const parseIngredientTests: Record<
       },
     ],
   ],
-  'trailing range (spaced emdash)': [
+  'trailing range (spaced endash)': [
     'stuff 1 \u2013 2 cups',
     [
       {
@@ -528,7 +528,7 @@ export const parseIngredientTests: Record<
       },
     ],
   ],
-  'trailing range (spaced endash)': [
+  'trailing range (spaced emdash)': [
     'stuff 1 \u2014 2 cups',
     [
       {
