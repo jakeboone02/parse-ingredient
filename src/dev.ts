@@ -31,7 +31,7 @@ const parse = () => {
     .map(s => s.trim())
     .filter(Boolean);
   const results = document.getElementById('results')!;
-  results.innerHTML = JSON.stringify(
+  results.textContent = JSON.stringify(
     parseIngredient((document.getElementById('ingredient-list') as HTMLInputElement).value, {
       normalizeUOM,
       allowLeadingOf,
