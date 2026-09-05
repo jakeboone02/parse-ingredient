@@ -9,7 +9,6 @@
     "dist"
   ],
   "main": "./dist/cjs/index.js",
-  "module": "./dist/parse-ingredient.legacy-esm.js",
   "exports": {
     "./package.json": "./package.json",
     ".": {
@@ -24,7 +23,7 @@
     }
   },
   "sideEffects": false,
-  "types": "./dist/parse-ingredient.legacy-esm.d.ts",
+  "types": "./dist/cjs/index.d.ts",
   "unpkg": "./dist/parse-ingredient.umd.min.js",
   "keywords": [
     "parse",

@@ -19,8 +19,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **BREAKING:** Minimum supported Node.js version is now 20 (`engines.node` bumped from `>=10`).
 - `UnitOfMeasure.alternates` is now optional.
 - `numeric-quantity` updated to v3.3.1.
+- The CJS build is now a single unminified `dist/cjs/index.js` instead of a `process.env.NODE_ENV` switch between separate development and production bundles. The library reads no environment, so the two bundles only ever differed by minification. Resolution through the `exports` map is unchanged.
+- `types` now points at `./dist/cjs/index.d.ts`. The declarations are identical to the previous `legacy-esm` ones; only the path changed.
 
 ### Removed
+
+- **BREAKING:** The Webpack 4 compatibility build (`dist/parse-ingredient.legacy-esm.js`, advertised via the `module` field) is gone, as is the `module` field itself. Webpack 4 has been end-of-life since 2021; bundlers resolve through `exports`.
+- The unreferenced `dist/parse-ingredient.production.mjs` build. Nothing in `exports`, `unpkg`, or the docs ever pointed at it. Consumers wanting a minified browser bundle should use the UMD build at the `unpkg` path.
 
 - **BREAKING:** `identifyUnit` and the `IdentifyUnitOptions` type are no longer part of the public API. They were incidentally exported from the package entry point via `convertUnit`; they now live in the internal `unitLookup` module and are marked `@internal`. Use `convertUnit` or `parseIngredient` instead.
 - **BREAKING:** The legacy exports deprecated in v2.1.0 have been removed. Each maps 1:1 onto a `default*` value or a `build*Regex` function:
