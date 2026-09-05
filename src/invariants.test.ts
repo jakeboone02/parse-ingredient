@@ -60,6 +60,14 @@ const invariantViolations = (ingredient: Ingredient): string[] => {
     violations.push('quantities are always finite');
   }
 
+  // Documented in `Ingredient`: a parsed quantity is never negative.
+  if (
+    (ingredient.quantity !== null && ingredient.quantity < 0) ||
+    (ingredient.quantity2 !== null && ingredient.quantity2 < 0)
+  ) {
+    violations.push('quantities are never negative');
+  }
+
   return violations;
 };
 
