@@ -357,7 +357,7 @@ parseIngredient('2 à 3 cups sugar', {
 Words or patterns to strip from the beginning of ingredient descriptions. Commonly used to remove "of" from phrases like "1 cup of sugar". Strings are matched as whole words followed by whitespace. RegExp patterns are used as-is, which is useful for languages with contractions or elisions. Defaults to `['of']`.
 
 > **Note:** This option is only applied when `allowLeadingOf` is `false` (the default). If `allowLeadingOf` is `true`, prefix stripping is disabled entirely and this option is ignored.
-
+>
 > **Note:** Prefixes are stripped from the description _after_ the unit of measure has been extracted. If the unit is not recognized (i.e., not registered via `additionalUOMs`), it remains at the start of the description and the prefix will not be at the start anymore, so nothing gets stripped. That is why both examples below also register the unit.
 
 ```js
@@ -397,7 +397,7 @@ parseIngredient('Saft von 3 Zitronen', {
 Words or patterns to strip from the beginning of quantity expressions. Useful for approximation prefixes and modifiers like `'about'`, `'ca.'`, or `'bis zu'`. Defaults to `[]`.
 
 > **Note:** When providing multiple patterns, list longer/more-specific patterns before shorter ones. Standard regex alternation matches left-to-right, so `['ca', 'ca.']` would match `"ca"` first in `"ca. 200g"`, leaving `". 200g"`. Use `['ca.', 'ca']` instead.
-
+>
 > **Note:** Be mindful of overlap between `rangeSeparators` and `leadingQuantityPrefixes`. For example, with `rangeSeparators: ['bis']` and `leadingQuantityPrefixes: ['bis zu']`, input like `"3 bis zu 5 EL"` will match `"bis"` as a range separator first during range extraction, leaving `"zu 5 EL"`. The prefix regex won't strip the leftover `"zu"` on its own. If you need both, ensure the range separator and prefix don't share a common leading word, or accept the range interpretation taking priority.
 
 ```js
