@@ -39,8 +39,27 @@ interface Ingredient {
    * Whether the "ingredient" is actually a group header, e.g. "For icing:"
    */
   isGroupHeader: boolean;
+  /**
+   * Metadata about the parsed ingredient line.
+   * Only included when the `includeMeta` option is `true`.
+   */
+  meta?: IngredientMeta;
+}
+
+interface IngredientMeta {
+  /**
+   * The source text of the ingredient line before parsing.
+   */
+  sourceText: string;
+  /**
+   * The zero-based index of the line (or array element) in the original input.
+   * Empty lines are not parsed, but they do consume an index.
+   */
+  sourceIndex: number;
 }
 ```
+
+Quantities are always finite, non-negative numbers when present — never negative, never `NaN`, never `Infinity`. A leading `'-'` is treated as part of the description, not as a sign or a range separator, so `'-2 cups sugar'` yields `quantity: null` with the description intact. Likewise `'1/0 cups sugar'` yields `quantity: null` with the description intact, since a division by zero is not a usable measurement. `quantity2` is only set when `quantity` is also set — a range with no lower bound is not a range.
 
 For the `isGroupHeader` attribute to be `true`, the ingredient string must not start with a number, and must either start with `'For '` or end with `':'`.
 
@@ -173,7 +192,8 @@ parseIngredient('2 buckets of widgets', {
     bucket: {
       short: 'bkt',
       plural: 'buckets',
-      versions: ['bk'],
+      alternates: ['bk'],
+      type: 'volume',
     },
   },
 });
@@ -230,7 +250,7 @@ parseIngredient('2 large eggs', { ignoreUOMs: ['large'] });
 When `true`, each ingredient object will include a `meta` property containing source metadata:
 
 - `sourceText`: The original text of the ingredient line before parsing.
-- `sourceIndex`: The zero-based line number in the original input (accounts for empty lines).
+- `sourceIndex`: The zero-based index of the line (or array element) in the original input. Empty lines are not parsed, but they do consume an index.
 
 ```js
 parseIngredient('1 cup flour\n\n2 tbsp sugar', { includeMeta: true });
@@ -254,6 +274,21 @@ parseIngredient('1 cup flour\n\n2 tbsp sugar', { includeMeta: true });
 //     meta: { sourceText: '2 tbsp sugar', sourceIndex: 2 },
 //   },
 // ]
+```
+
+### `round`
+
+Rounds parsed quantities to the given number of decimal places, or disables rounding entirely when set to `false`. Defaults to `3`.
+
+```js
+parseIngredient('1 11/16 cups sugar');
+// [{ quantity: 1.688, ... }]
+
+parseIngredient('1 11/16 cups sugar', { round: false });
+// [{ quantity: 1.6875, ... }]
+
+parseIngredient('1 2/3 cups sugar', { round: 1 });
+// [{ quantity: 1.7, ... }]
 ```
 
 ## Internationalization (i18n)
@@ -315,24 +350,34 @@ parseIngredient('2 à 3 cups sugar', {
 });
 ```
 
+> **Note:** RegExp separators are used as-is, except that named capture groups (`(?<name>…)`) in them are rewritten as non-capturing groups so they can't collide with the library's own group names. Lookbehinds (`(?<=…)`, `(?<!…)`) are unaffected. Plain capture groups are also safe, but their contents are not surfaced anywhere.
+
 ### `descriptionStripPrefixes`
 
 Words or patterns to strip from the beginning of ingredient descriptions. Commonly used to remove "of" from phrases like "1 cup of sugar". Strings are matched as whole words followed by whitespace. RegExp patterns are used as-is, which is useful for languages with contractions or elisions. Defaults to `['of']`.
 
 > **Note:** This option is only applied when `allowLeadingOf` is `false` (the default). If `allowLeadingOf` is `true`, prefix stripping is disabled entirely and this option is ignored.
+>
+> **Note:** Prefixes are stripped from the description _after_ the unit of measure has been extracted. If the unit is not recognized (i.e., not registered via `additionalUOMs`), it remains at the start of the description and the prefix will not be at the start anymore, so nothing gets stripped. That is why both examples below also register the unit.
 
 ```js
 // Spanish "de" stripping
 parseIngredient('2 tazas de azúcar', {
   descriptionStripPrefixes: ['of', 'de'],
+  additionalUOMs: {
+    taza: { short: 'tz', plural: 'tazas', alternates: ['taza'] },
+  },
 });
-// [{ description: 'azúcar', ... }]
+// [{ quantity: 2, unitOfMeasure: 'tazas', description: 'azúcar', ... }]
 
 // French with regex patterns for elisions/contractions
 parseIngredient("2 tasses d'huile", {
   descriptionStripPrefixes: [/de\s+la\s+/iu, /de\s+l'/iu, /d'/iu, 'de'],
+  additionalUOMs: {
+    tasse: { short: 't', plural: 'tasses', alternates: ['tasse'] },
+  },
 });
-// [{ description: 'huile', ... }]
+// [{ quantity: 2, unitOfMeasure: 'tasses', description: 'huile', ... }]
 ```
 
 ### `trailingQuantityContext`
@@ -352,7 +397,7 @@ parseIngredient('Saft von 3 Zitronen', {
 Words or patterns to strip from the beginning of quantity expressions. Useful for approximation prefixes and modifiers like `'about'`, `'ca.'`, or `'bis zu'`. Defaults to `[]`.
 
 > **Note:** When providing multiple patterns, list longer/more-specific patterns before shorter ones. Standard regex alternation matches left-to-right, so `['ca', 'ca.']` would match `"ca"` first in `"ca. 200g"`, leaving `". 200g"`. Use `['ca.', 'ca']` instead.
-
+>
 > **Note:** Be mindful of overlap between `rangeSeparators` and `leadingQuantityPrefixes`. For example, with `rangeSeparators: ['bis']` and `leadingQuantityPrefixes: ['bis zu']`, input like `"3 bis zu 5 EL"` will match `"bis"` as a range separator first during range extraction, leaving `"zu 5 EL"`. The prefix regex won't strip the leftover `"zu"` on its own. If you need both, ensure the range separator and prefix don't share a common leading word, or accept the range interpretation taking priority.
 
 ```js

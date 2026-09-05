@@ -24,7 +24,8 @@ export const buildUnitLookupMaps = (
 
   // Helper to add versions to maps (first one wins for case-insensitive)
   const addToMaps = (id: string, def: UnitOfMeasureDefinitions[string]) => {
-    const versions = [id, def.short, def.plural, ...def.alternates];
+    // `short`/`plural`/`alternates` may be missing when called from plain JS
+    const versions = [id, def.short, def.plural, ...(def.alternates ?? [])].filter(Boolean);
     for (const version of versions) {
       // For case-sensitive, later entries override (so additionalUOMs wins)
       caseSensitive.set(version, id);
@@ -63,6 +64,48 @@ let defaultLookupMaps: UnitLookupMaps | null = null;
  */
 export const getDefaultUnitLookupMaps = (): UnitLookupMaps =>
   defaultLookupMaps ?? (defaultLookupMaps = buildUnitLookupMaps());
+
+/**
+ * Maps keyed by the `additionalUOMs` object they were built from, so repeat calls with
+ * the same definitions object reuse the maps instead of rebuilding ~50 definitions.
+ *
+ * The key is object identity, so mutating an `additionalUOMs` object after it has been
+ * used does not invalidate its maps. Pass a new object to pick up changed definitions.
+ */
+const additionalLookupMapsCache = new WeakMap<UnitOfMeasureDefinitions, UnitLookupMaps>();
+
+/**
+ * Gets the lookup maps for the given `additionalUOMs`, reusing the cached default maps
+ * when there are none.
+ */
+export const getUnitLookupMaps = (
+  additionalUOMs: UnitOfMeasureDefinitions = {}
+): UnitLookupMaps => {
+  if (Object.keys(additionalUOMs).length === 0) return getDefaultUnitLookupMaps();
+
+  const cached = additionalLookupMapsCache.get(additionalUOMs);
+  if (cached) return cached;
+
+  const maps = buildUnitLookupMaps(additionalUOMs);
+  additionalLookupMapsCache.set(additionalUOMs, maps);
+  return maps;
+};
+
+/**
+ * Identifies a unit of measure against prebuilt maps. The maps-based counterpart of
+ * `identifyUnit`, for callers that already hold a {@link UnitLookupMaps} and the
+ * lowercased ignore list.
+ *
+ * @internal
+ */
+export const identifyUnitFromMaps = (
+  unit: string,
+  maps: UnitLookupMaps,
+  ignoredUOMsLC: readonly string[]
+): string | null =>
+  ignoredUOMsLC.length > 0 && ignoredUOMsLC.includes(unit.toLowerCase())
+    ? null
+    : lookupUnit(unit, maps);
 
 /**
  * Collects all known UOM strings from the lookup maps, sorted longest-first.

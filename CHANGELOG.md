@@ -7,7 +7,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-N/A
+### Added
+
+- `round` option, forwarded to `numericQuantity`, controlling the number of decimal places parsed quantities are rounded to. Defaults to `3`, matching previous behavior; pass `false` to disable rounding.
+- `"sideEffects": false` in `package.json` for downstream tree-shaking.
+
+### Changed
+
+- **BREAKING:** `quantity` and `quantity2` are now guaranteed finite and non-negative when not `null`. Lines that would previously yield `Infinity` (e.g. `'1/0 cups sugar'`), a negative, or an incoherent `quantity: null`/`quantity2: 2` pair (e.g. `'-2 cups sugar'`) now keep the whole line as the `description`.
+- **BREAKING:** `defaultOptions`, `unitsOfMeasure`, and the `default*` arrays are deeply frozen. Option array types and `UnitOfMeasure` members are now `readonly`; passing mutable arrays still works, writing to a shipped definition does not.
+- **BREAKING:** Minimum supported Node.js version is now 20 (`engines.node` bumped from `>=10`).
+- `UnitOfMeasure.alternates` is now optional.
+- `numeric-quantity` updated to v3.3.1.
+- The CJS build is now a single unminified `dist/cjs/index.js` instead of a `process.env.NODE_ENV` switch between separate development and production bundles. The library reads no environment, so the two bundles only ever differed by minification. Resolution through the `exports` map is unchanged.
+- `types` now points at `./dist/cjs/index.d.ts`. The declarations are identical to the previous `legacy-esm` ones; only the path changed.
+
+### Removed
+
+- **BREAKING:** The Webpack 4 compatibility build (`dist/parse-ingredient.legacy-esm.js`, advertised via the `module` field) is gone, as is the `module` field itself. Webpack 4 has been end-of-life since 2021; bundlers resolve through `exports`.
+- The unreferenced `dist/parse-ingredient.production.mjs` build. Nothing in `exports`, `unpkg`, or the docs ever pointed at it. Consumers wanting a minified browser bundle should use the UMD build at the `unpkg` path.
+
+- **BREAKING:** `identifyUnit` and the `IdentifyUnitOptions` type are no longer part of the public API. They were incidentally exported from the package entry point via `convertUnit`; they now live in the internal `unitLookup` module and are marked `@internal`. Use `convertUnit` or `parseIngredient` instead.
+- **BREAKING:** The legacy exports deprecated in v2.1.0 have been removed. Each maps 1:1 onto a `default*` value or a `build*Regex` function:
+
+  | Removed                 | Replacement                                                  |
+  | ----------------------- | ------------------------------------------------------------ |
+  | `fors`                  | `defaultGroupHeaderPatterns`                                 |
+  | `forsRegEx`             | `buildPrefixPatternRegex(options.groupHeaderPatterns)`       |
+  | `rangeSeparatorWords`   | `defaultRangeSeparators`                                     |
+  | `rangeSeparatorRegEx`   | `buildRangeSeparatorRegex(options.rangeSeparators)`          |
+  | `trailingQuantityRegEx` | `buildTrailingQuantityRegex(options.rangeSeparators)`        |
+  | `ofs`                   | `defaultDescriptionStripPrefixes`                            |
+  | `ofRegEx`               | `buildStripPrefixRegex(options.descriptionStripPrefixes)`    |
+  | `froms`                 | `defaultTrailingQuantityContext`                             |
+  | `fromRegEx`             | `buildTrailingContextRegex(options.trailingQuantityContext)` |
+
+  The `build*Regex` functions accept the corresponding default array if you want the previous values, e.g. `buildRangeSeparatorRegex(defaultRangeSeparators)`. `buildPrefixPatternRegex` and `buildStripPrefixRegex` return `null` for an empty input array.
+
+### Fixed
+
+- Quantities are no longer truncated to the first six characters of the line. The parser previously fell back to the longest _prefix_ of that window that happened to parse, so `'1 11/16 cups sugar'` yielded `quantity: 12` with `description: '6 cups sugar'`, and `'1000000 g flour'` yielded `quantity: 100000` with `description: '0 g flour'`. The search window is now derived from the input, so quantities of any length are extracted whole. The same fix applies to the second quantity of a range.
+- `rangeSeparators` patterns containing capture groups (e.g. `/(bis)/iu`) no longer cause `quantity2` to be dropped from trailing ranges. The trailing-quantity regex uses named capture groups, and named groups in user patterns are neutralized.
+- UMD build is emitted as `dist/parse-ingredient.umd.min.js`, matching the `unpkg` field in `package.json`. The path advertised to CDNs previously 404'd.
+- UMD build bundles `numeric-quantity` instead of expecting a `NumericQuantity` global, so it no longer throws `ReferenceError` when loaded on its own.
+- UMD build sets the `ParseIngredient` global variable when run in a browser (`window` is defined).
+- Passing `additionalUOMs` no longer rebuilds the unit lookup tables for every unit identification (up to four per line). The tables are built once per `parseIngredient` call, and repeat `identifyUnit`/`convertUnit` calls reuse them for a given `additionalUOMs` object, making parsing with `additionalUOMs` roughly an order of magnitude faster.
 
 ## [v2.2.0] - 2026-04-20
 

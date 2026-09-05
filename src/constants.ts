@@ -13,7 +13,7 @@ export const escapeRegex = (str: string): string => str.replace(/[.*+?^${}()|[\]
  * followed by whitespace. Strings are escaped and treated as literal prefixes.
  * RegExp patterns have their source extracted and combined.
  */
-export const buildPrefixPatternRegex = (patterns: (string | RegExp)[]): RegExp | null => {
+export const buildPrefixPatternRegex = (patterns: readonly (string | RegExp)[]): RegExp | null => {
   if (patterns.length === 0) return null;
   const parts = patterns.map(p =>
     p instanceof RegExp ? `(?:${p.source})` : `(?:${escapeRegex(p)})\\s`
@@ -22,12 +22,23 @@ export const buildPrefixPatternRegex = (patterns: (string | RegExp)[]): RegExp |
 };
 
 /**
+ * Rewrites named capture groups in a user-supplied pattern source as non-capturing
+ * groups, leaving lookbehinds (`(?<=`, `(?<!`) and escaped sequences alone.
+ *
+ * User patterns are composed into larger regexes that use named groups of their own, so
+ * a user group named e.g. `sep` would otherwise throw at construction time. The names
+ * would be unreadable to callers anyway, since only the composed regex is exposed.
+ */
+const stripNamedGroups = (source: string): string =>
+  source.replace(/\\.|\(\?<(?![=!])[^>]*>/gu, m => (m.startsWith('\\') ? m : '(?:'));
+
+/**
  * Builds a regex source string for range separators (dashes and word separators).
  * Always includes dash characters (-, –, —), plus any custom word separators.
  */
-export const buildRangeSeparatorSource = (words: (string | RegExp)[]): string => {
+export const buildRangeSeparatorSource = (words: readonly (string | RegExp)[]): string => {
   const wordParts = words.map(w =>
-    w instanceof RegExp ? `(?:${w.source})` : `(?:${escapeRegex(w)})`
+    w instanceof RegExp ? `(?:${stripNamedGroups(w.source)})` : `(?:${escapeRegex(w)})`
   );
   // Always include dashes, then word separators followed by whitespace
   return `(-|–|—|(?:${wordParts.join('|')})\\s)`;
@@ -36,7 +47,7 @@ export const buildRangeSeparatorSource = (words: (string | RegExp)[]): string =>
 /**
  * Builds a regex that matches range separators at the start of a string.
  */
-export const buildRangeSeparatorRegex = (words: (string | RegExp)[]): RegExp =>
+export const buildRangeSeparatorRegex = (words: readonly (string | RegExp)[]): RegExp =>
   new RegExp(`^${buildRangeSeparatorSource(words)}`, 'iu');
 
 /**
@@ -44,7 +55,7 @@ export const buildRangeSeparatorRegex = (words: (string | RegExp)[]): RegExp =>
  * Strings are matched as whole words followed by whitespace.
  * RegExp patterns are used as-is for more complex matching (e.g., French elisions).
  */
-export const buildStripPrefixRegex = (patterns: (string | RegExp)[]): RegExp | null => {
+export const buildStripPrefixRegex = (patterns: readonly (string | RegExp)[]): RegExp | null => {
   if (patterns.length === 0) return null;
   const parts = patterns.map(p =>
     p instanceof RegExp ? `(?:${p.source})` : `(?:${escapeRegex(p)})\\s+`
@@ -56,7 +67,9 @@ export const buildStripPrefixRegex = (patterns: (string | RegExp)[]): RegExp | n
  * Builds a regex that matches approximation/modifier prefixes at the start of
  * quantity expressions (e.g., "about", "ca.", "bis zu"), followed by optional whitespace.
  */
-export const buildLeadingQuantityPrefixRegex = (patterns: (string | RegExp)[]): RegExp | null => {
+export const buildLeadingQuantityPrefixRegex = (
+  patterns: readonly (string | RegExp)[]
+): RegExp | null => {
   if (patterns.length === 0) return null;
   // Uses `\s*` (optional whitespace) instead of `\s+` (required whitespace, as in
   // buildStripPrefixRegex) because quantity prefixes like "ca." may appear directly
@@ -71,143 +84,129 @@ export const buildLeadingQuantityPrefixRegex = (patterns: (string | RegExp)[]): 
  * Builds a regex that matches any of the given words at the end of a string,
  * preceded by whitespace. Used for trailing quantity context like "from" or "of".
  */
-export const buildTrailingContextRegex = (words: string[]): RegExp =>
+export const buildTrailingContextRegex = (words: readonly string[]): RegExp =>
   new RegExp(`\\s+(?:${words.map(escapeRegex).join('|')})$`, 'iu');
 
 // --- Default i18n Values ---
 
 /**
+ * Recursively freezes an object and everything reachable from it.
+ *
+ * `RegExp` instances are left alone: freezing one makes `lastIndex` non-writable, which
+ * breaks matching for global/sticky patterns.
+ */
+const deepFreeze = <T>(value: T): T => {
+  if (
+    value !== null &&
+    typeof value === 'object' &&
+    !(value instanceof RegExp) &&
+    !Object.isFrozen(value)
+  ) {
+    // Freeze before recursing so a self-referential value can't loop forever.
+    Object.freeze(value);
+    for (const nested of Object.values(value)) {
+      deepFreeze(nested);
+    }
+  }
+  return value;
+};
+
+/**
  * Default group header prefixes (e.g., "For the icing:").
  */
-export const defaultGroupHeaderPatterns = ['For'] as const;
+export const defaultGroupHeaderPatterns: readonly ['For'] = Object.freeze(['For'] as const);
 
 /**
  * Default range separator words (e.g., "1 to 2", "1 or 2").
  */
-export const defaultRangeSeparators = ['or', 'to'] as const;
+export const defaultRangeSeparators: readonly ['or', 'to'] = Object.freeze(['or', 'to'] as const);
 
 /**
  * Default words to strip from the beginning of descriptions.
  */
-export const defaultDescriptionStripPrefixes = ['of'] as const;
+export const defaultDescriptionStripPrefixes: readonly ['of'] = Object.freeze(['of'] as const);
 
 /**
  * Default words that indicate trailing quantity context.
  */
-export const defaultTrailingQuantityContext = ['from', 'of'] as const;
+export const defaultTrailingQuantityContext: readonly ['from', 'of'] = Object.freeze([
+  'from',
+  'of',
+] as const);
 /**
  * Default words/patterns that are stripped from the beginning of quantity expressions.
  */
-export const defaultLeadingQuantityPrefixes = [] as const;
+export const defaultLeadingQuantityPrefixes: readonly [] = Object.freeze([] as const);
 
 /**
  * Default options for {@link parseIngredient}.
+ *
+ * Deep-frozen: it is spread into every {@link parseIngredient} call, so a write here
+ * would otherwise reconfigure the library for the whole process.
  */
-export const defaultOptions: Required<ParseIngredientOptions> = {
+export const defaultOptions: Readonly<Required<ParseIngredientOptions>> = deepFreeze({
   additionalUOMs: {},
   allowLeadingOf: false,
   normalizeUOM: false,
   ignoreUOMs: [],
   decimalSeparator: '.',
-  groupHeaderPatterns: defaultGroupHeaderPatterns as unknown as string[],
-  rangeSeparators: defaultRangeSeparators as unknown as string[],
-  descriptionStripPrefixes: defaultDescriptionStripPrefixes as unknown as (string | RegExp)[],
-  trailingQuantityContext: defaultTrailingQuantityContext as unknown as string[],
-  leadingQuantityPrefixes: defaultLeadingQuantityPrefixes as unknown as (string | RegExp)[],
+  round: 3,
+  groupHeaderPatterns: defaultGroupHeaderPatterns,
+  rangeSeparators: defaultRangeSeparators,
+  descriptionStripPrefixes: defaultDescriptionStripPrefixes,
+  trailingQuantityContext: defaultTrailingQuantityContext,
+  leadingQuantityPrefixes: defaultLeadingQuantityPrefixes,
   includeMeta: false,
   partialUnitMatching: false,
-} as const;
-
-// --- Legacy Exports (for backward compatibility) ---
+});
 
 /**
- * List of "for" equivalents.
- * @deprecated Use `defaultGroupHeaderPatterns` instead.
+ * Source of the unit-of-measure word pattern, shared by `firstWordRegEx` and
+ * `buildTrailingQuantityRegex` so the two cannot drift.
+ *
+ * Contains no capture groups (only `(?:…)` and the escaped literal parens in
+ * `\(…\)`), so inlining it any number of times cannot perturb group indices.
+ *
+ * @internal
  */
-export const fors: typeof defaultGroupHeaderPatterns = defaultGroupHeaderPatterns;
-
-/**
- * Regex to capture "for" equivalents.
- * @deprecated Build dynamically using `buildPrefixPatternRegex(options.groupHeaderPatterns)`.
- */
-export const forsRegEx: RegExp = buildPrefixPatternRegex(
-  defaultGroupHeaderPatterns as unknown as string[]
-)!;
-
-/**
- * List of range separators.
- * @deprecated Use `defaultRangeSeparators` instead.
- */
-export const rangeSeparatorWords: typeof defaultRangeSeparators = defaultRangeSeparators;
-
-/**
- * Regex to capture range separators.
- * @deprecated Build dynamically using `buildRangeSeparatorRegex(options.rangeSeparators)`.
- */
-export const rangeSeparatorRegEx: RegExp = buildRangeSeparatorRegex(
-  defaultRangeSeparators as unknown as string[]
-);
+export const uomWordSource: string = String.raw`fl(?:uid)?(?:\s+|-)(?:oz|ounces?)|[\p{L}\p{N}_]+(?:[./-][\p{L}\p{N}_]+|\([\p{L}\p{N}_]+\))*[-.]?`;
 
 /**
  * Regex to capture the first word of a description to check if it's a unit of measure.
  */
-export const firstWordRegEx: RegExp =
-  /^(fl(?:uid)?(?:\s+|-)(?:oz|ounces?)|[\p{L}\p{N}_]+(?:[./-][\p{L}\p{N}_]+|\([\p{L}\p{N}_]+\))*[-.]?)(.+)?/iu;
+export const firstWordRegEx: RegExp = new RegExp(`^(${uomWordSource})(.+)?`, 'iu');
 
-const numericRegexAnywhere = numericRegex.source.replace('^', '').replace(/\$$/, '');
+const numericRegexAnywhere = numericRegex.source.replace(/^\^/, '').replace(/\$$/, '');
 
 /**
  * Builds a regex to capture trailing quantity and unit of measure,
  * using the provided range separator words.
+ *
+ * Matches are read through the named groups `qty1`, `sep`, `qty2`, and `uom` — never by
+ * index. `numericRegexAnywhere` is inlined twice and user range separators may contain
+ * capture groups of their own, so every index here is unstable by construction.
+ *
+ * The `uom` body is `uomWordSource`, shared with `firstWordRegEx`; it is group-free, so
+ * inlining it is index-neutral.
  */
-export const buildTrailingQuantityRegex = (rangeSeparators: (string | RegExp)[]): RegExp => {
+export const buildTrailingQuantityRegex = (
+  rangeSeparators: readonly (string | RegExp)[]
+): RegExp => {
   const rangeSeparatorSource = buildRangeSeparatorSource(rangeSeparators);
   return new RegExp(
-    `(,|:|-|–|—|x|⨯)?\\s*((${numericRegexAnywhere})\\s*(${rangeSeparatorSource}))?\\s*(${numericRegexAnywhere})\\s*(fl(?:uid)?(?:\\s+|-)(?:oz|ounces?)|[\\p{L}\\p{N}_]+(?:[./-][\\p{L}\\p{N}_]+|\\([\\p{L}\\p{N}_]+\\))*[-.]?)?$`,
+    `(?:,|:|-|–|—|x|⨯)?\\s*(?:(?<qty1>${numericRegexAnywhere})\\s*(?<sep>${rangeSeparatorSource}))?\\s*(?<qty2>${numericRegexAnywhere})\\s*(?<uom>${uomWordSource})?$`,
     'iu'
   );
 };
 
 /**
- * Regex to capture trailing quantity and unit of measure.
- * @deprecated Build dynamically using `buildTrailingQuantityRegex(options.rangeSeparators)`.
- */
-export const trailingQuantityRegEx: RegExp = buildTrailingQuantityRegex(
-  defaultRangeSeparators as unknown as string[]
-);
-
-/**
- * List of "of" equivalents.
- * @deprecated Use `defaultDescriptionStripPrefixes` instead.
- */
-export const ofs: typeof defaultDescriptionStripPrefixes = defaultDescriptionStripPrefixes;
-
-/**
- * Regex to capture "of" equivalents at the beginning of a string.
- * @deprecated Build dynamically using `buildStripPrefixRegex(options.descriptionStripPrefixes)`.
- */
-export const ofRegEx: RegExp = buildStripPrefixRegex(
-  defaultDescriptionStripPrefixes as unknown as string[]
-)!;
-
-/**
- * List of "from" equivalents.
- * @deprecated Use `defaultTrailingQuantityContext` instead.
- */
-export const froms: typeof defaultTrailingQuantityContext = defaultTrailingQuantityContext;
-
-/**
- * Regex to capture "from" equivalents at the end of a string.
- * @deprecated Build dynamically using `buildTrailingContextRegex(options.trailingQuantityContext)`.
- */
-export const fromRegEx: RegExp = buildTrailingContextRegex(
-  defaultTrailingQuantityContext as unknown as string[]
-);
-
-/**
  * Default unit of measure specifications.
+ *
+ * Deep-frozen, including each definition and its `alternates`/`conversionFactor`. The
+ * lookup maps built from it are memoized, so a mutation would otherwise take effect or
+ * not depending on whether anything had parsed yet.
  */
-export const unitsOfMeasure: UnitOfMeasureDefinitions = {
+export const unitsOfMeasure: Readonly<UnitOfMeasureDefinitions> = deepFreeze({
   // Count units (no conversion factor)
   bag: {
     short: 'bag',
@@ -505,4 +504,4 @@ export const unitsOfMeasure: UnitOfMeasureDefinitions = {
     alternates: [] satisfies string[],
     type: 'volume',
   },
-} as const;
+});

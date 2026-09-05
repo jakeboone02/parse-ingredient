@@ -1,18 +1,35 @@
 name: Continuous Integration
-on: [push, pull_request, workflow_dispatch]
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
 
 jobs:
   build:
     name: Build, test, and lint
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
       - uses: oven-sh/setup-bun@v2
       - run: bun install --frozen-lockfile
       - run: bunx tsc
+      - run: bunx tsc -p ci
       - run: bun run build
       - run: bun run test
+      - run: bun run fmt --check
       - run: bun run lint --format=github
-      - uses: codecov/codecov-action@v6
+      - uses: codecov/codecov-action@v7
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      - name: Are the types wrong?
+        run: bunx @arethetypeswrong/cli --pack .
+      - name: PubLint
+        run: bunx publint
+      - name: Publish to pkg.pr.new
+        run: bunx pkg-pr-new publish --packageManager=bun,npm,pnpm --bun --template=./ci

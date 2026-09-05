@@ -3,18 +3,24 @@ on:
   push:
     branches: [main]
 
+permissions:
+  contents: read
+
 jobs:
   generate:
     name: Generate documentation
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
 
     steps:
       - uses: actions/checkout@v6
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
-      - run: bun install
-      - run: bun --bun run build
+      - run: bun install --frozen-lockfile
+      - run: bun run build
       - run: bun run docs
       - uses: actions/upload-pages-artifact@v5
         with:

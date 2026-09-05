@@ -8,7 +8,8 @@ export interface IngredientMeta {
   sourceText: string;
   /**
    * The source index (line number) of the ingredient in the input.
-   * Zero-based index relative to the order of non-empty lines.
+   * Zero-based index of the line (or array element) in the original input;
+   * empty lines are not parsed, but they do consume an index.
    */
   sourceIndex: number;
 }
@@ -18,11 +19,17 @@ export interface IngredientMeta {
  */
 export interface Ingredient {
   /**
-   * The primary quantity (the lower quantity in a range, if applicable)
+   * The primary quantity (the lower quantity in a range, if applicable).
+   *
+   * Always a finite, non-negative number when not `null` — never negative, never `NaN`,
+   * never `Infinity`.
    */
   quantity: number | null;
   /**
-   * The secondary quantity (the upper quantity in a range, or `null` if not applicable)
+   * The secondary quantity (the upper quantity in a range, or `null` if not applicable).
+   *
+   * Always `null` when {@link Ingredient.quantity} is `null`: a range with no lower bound
+   * is not a range. Subject to the same value constraints as `quantity`.
    */
   quantity2: number | null;
   /**
@@ -62,37 +69,42 @@ export type UnitSystem = 'us' | 'imperial' | 'metric';
  * Conversion factor that differs between measurement systems.
  */
 export interface MultiSystemConversionFactor {
-  us?: number;
-  imperial?: number;
-  metric?: number;
+  readonly us?: number;
+  readonly imperial?: number;
+  readonly metric?: number;
 }
 
 /**
  * Unit of measure properties.
+ *
+ * All properties are `readonly`: the shipped {@link unitsOfMeasure} definitions are
+ * deep-frozen, so writing to one would throw at runtime.
  */
 export interface UnitOfMeasure {
   /**
    * Abbreviation or short name for the unit.
    */
-  short: string;
+  readonly short: string;
   /**
    * Full name of the unit used when quantity is greater than one.
    */
-  plural: string;
+  readonly plural: string;
   /**
    * List of all known alternate spellings, abbreviations, etc.
+   *
+   * @default []
    */
-  alternates: string[];
+  readonly alternates?: readonly string[];
   /**
    * The type of measurement (volume, mass, length, count, or other).
    */
-  type?: UnitType;
+  readonly type?: UnitType;
   /**
    * Conversion factor to base unit (ml for volume, g for mass, mm for length).
    * A number means the same factor applies to all systems.
    * An object with `us`, `imperial`, and/or `metric` keys means the factor differs by system.
    */
-  conversionFactor?: number | MultiSystemConversionFactor;
+  readonly conversionFactor?: number | MultiSystemConversionFactor;
 }
 
 export type UnitOfMeasureDefinitions = Record<string, UnitOfMeasure>;
@@ -141,7 +153,7 @@ export interface ParseIngredientOptions {
    *
    * @default []
    */
-  ignoreUOMs?: string[];
+  ignoreUOMs?: readonly string[];
   /**
    * If `true`, ingredient descriptions that start with "of " will not be
    * modified. (By default, a leading "of " will be removed from all descriptions.)
@@ -156,6 +168,16 @@ export interface ParseIngredientOptions {
    * @default "."
    */
   decimalSeparator?: '.' | ',';
+  /**
+   * Round parsed quantities to this many decimal places, or `false` to disable
+   * rounding. Forwarded to `numericQuantity`.
+   *
+   * With the default of `3`, `"1 11/16"` yields `1.688`; with `false` it
+   * yields `1.6875`.
+   *
+   * @default 3
+   */
+  round?: number | false;
 
   // --- Internationalization options ---
 
@@ -167,7 +189,7 @@ export interface ParseIngredientOptions {
    * @default ['For']
    * @example ['For', 'Für', /^Pour\s/iu]
    */
-  groupHeaderPatterns?: (string | RegExp)[];
+  groupHeaderPatterns?: readonly (string | RegExp)[];
   /**
    * Words or patterns to identify ranges between quantities (e.g., "1 to 2", "1 or 2").
    * Strings are matched as whole words followed by whitespace.
@@ -176,7 +198,7 @@ export interface ParseIngredientOptions {
    * @default ['to', 'or']
    * @example ['to', 'or', 'bis', 'oder', 'à']
    */
-  rangeSeparators?: (string | RegExp)[];
+  rangeSeparators?: readonly (string | RegExp)[];
   /**
    * Words or patterns to strip from the beginning of ingredient descriptions.
    * Commonly used to remove "of" from phrases like "1 cup of sugar".
@@ -186,7 +208,7 @@ export interface ParseIngredientOptions {
    * @default ['of']
    * @example ['of', 'de', /d[eu]?\s/iu, new RegExp("de\\s+l[ae']?\\s*", "iu")]
    */
-  descriptionStripPrefixes?: (string | RegExp)[];
+  descriptionStripPrefixes?: readonly (string | RegExp)[];
   /**
    * Words that indicate a trailing quantity extraction context.
    * Used to identify patterns like "Juice of 3 lemons" or "Peels from 5 oranges".
@@ -194,7 +216,7 @@ export interface ParseIngredientOptions {
    * @default ['from', 'of']
    * @example ['from', 'of', 'von', 'de']
    */
-  trailingQuantityContext?: string[];
+  trailingQuantityContext?: readonly string[];
   /**
    * Words or patterns to strip from the beginning of a quantity expression.
    * Useful for approximation prefixes like "about 2 cups", "ca. 200 g", or
@@ -206,7 +228,7 @@ export interface ParseIngredientOptions {
    * @default []
    * @example ['about', 'approx.', 'ca.', 'etwa', 'bis zu']
    */
-  leadingQuantityPrefixes?: (string | RegExp)[];
+  leadingQuantityPrefixes?: readonly (string | RegExp)[];
   /**
    * If `true`, include a `meta` property on each ingredient containing
    * the original text, original index, and other metadata.
