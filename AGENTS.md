@@ -18,7 +18,7 @@ parse-ingredient is a TypeScript library that parses recipe ingredient lines int
 - **Docs:** `bun run docs` (TypeDoc → `docs/`)
 - **Regenerate CI demo examples:** `bun run generate:ci-examples`
 
-CI runs all of the above; keep every one of them green.
+CI (`.github/workflows/main.yml`) runs `bunx tsc`, `bunx tsc -p ci`, `bun run build`, `bun run test`, `bun run fmt --check`, and `bun run lint`, plus `attw`, `publint`, and a pkg.pr.new publish. Keep those green. The watch, single-file test, docs, and `generate:ci-examples` commands are local-only, but a stale `ci/src/examples.ts` fails `bun run test` via `src/ciExamples.test.ts`.
 
 ## Architecture
 
