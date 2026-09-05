@@ -68,6 +68,9 @@ export const getDefaultUnitLookupMaps = (): UnitLookupMaps =>
 /**
  * Maps keyed by the `additionalUOMs` object they were built from, so repeat calls with
  * the same definitions object reuse the maps instead of rebuilding ~50 definitions.
+ *
+ * The key is object identity, so mutating an `additionalUOMs` object after it has been
+ * used does not invalidate its maps. Pass a new object to pick up changed definitions.
  */
 const additionalLookupMapsCache = new WeakMap<UnitOfMeasureDefinitions, UnitLookupMaps>();
 
