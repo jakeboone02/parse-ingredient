@@ -72,10 +72,29 @@ const splitSnippets = (block: string): Snippet[] => {
 
 const snippets = jsBlocks.flatMap(splitSnippets);
 
+/**
+ * Not every snippet prints a result — some only demonstrate option shapes — so the count
+ * of result-bearing snippets is pinned exactly rather than inferred.
+ */
+const snippetsWithResults = snippets.filter(s => s.expectation !== '');
+
+/**
+ * Lines whose trailing `//` comment is not consumed as an expectation. The trailing-result
+ * path requires the statement to be terminated (`call(…); // result`); a line such as
+ * `call(…) // result` would silently land in `code`, leave `expectation` empty, and make
+ * the snippet's test vacuous. Comments that continue an open expression end in `,`.
+ */
+const unconsumedTrailingComments = jsBlocks.flatMap(block =>
+  block.split('\n').filter(line => /^[^/]*\S\s*\/\//u.test(line) && !/[;,]\s*\/\//u.test(line))
+);
+
 /** Guards against the extractor silently matching nothing after a README reformat. */
 test('README snippets are extracted', () => {
-  expect(snippets.length).toBeGreaterThan(20);
-  expect(snippets.filter(s => s.expectation !== '').length).toBeGreaterThan(15);
+  // Exact counts, not lower bounds: a dropped result comment must fail loudly.
+  expect(jsBlocks).toBeArrayOfSize(18);
+  expect(snippets).toBeArrayOfSize(35);
+  expect(snippetsWithResults).toBeArrayOfSize(33);
+  expect(unconsumedTrailingComments).toEqual([]);
 });
 
 const evaluate = (code: string): unknown =>
