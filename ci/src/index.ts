@@ -28,6 +28,32 @@ const columns: { label: string; options?: ParseIngredientOptions }[] = [
     label: 'descriptionMeasurements',
     options: { descriptionMeasurements: true, includeMeta: true },
   },
+  // Composed columns: fixtures needing option overrides also get descriptionMeasurements so the
+  // measurement scan is exercised against non-default parses, not just the default one.
+  {
+    label: 'descriptionMeasurements + convertible',
+    options: { descriptionMeasurements: true, includeMeta: true, measurementUnits: 'convertible' },
+  },
+  {
+    label: 'descriptionMeasurements + ignoreUOMs',
+    options: {
+      descriptionMeasurements: true,
+      includeMeta: true,
+      ignoreUOMs: ['cup', 'cups'],
+    },
+  },
+  {
+    label: 'descriptionMeasurements + additionalUOMs',
+    options: { descriptionMeasurements: true, includeMeta: true, additionalUOMs },
+  },
+  {
+    label: 'descriptionMeasurements + decimalSeparator ","',
+    options: { descriptionMeasurements: true, includeMeta: true, decimalSeparator: ',' },
+  },
+  {
+    label: 'descriptionMeasurements + normalizeUOM',
+    options: { descriptionMeasurements: true, includeMeta: true, normalizeUOM: true },
+  },
 ];
 
 const grid = document.querySelector<HTMLElement>('#grid');
