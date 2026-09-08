@@ -173,6 +173,12 @@ const scannerCache = new WeakMap<
 >();
 
 /**
+ * Scanners for the no-`additionalUOMs` case, keyed by unit filter. The default parameter
+ * is a fresh `{}` on every call, so identity-keyed caching cannot catch it.
+ */
+const defaultScanners = new Map<MeasurementUnitFilter, UOMScanner>();
+
+/**
  * Gets the {@link UOMScanner} for the given inputs, building it at most once per distinct
  * combination.
  *
@@ -182,9 +188,11 @@ export const getUOMScanner = (
   additionalUOMs: UnitOfMeasureDefinitions = {},
   measurementUnits: MeasurementUnitFilter = 'all'
 ): UOMScanner => {
-  let byFilter = scannerCache.get(additionalUOMs);
-  if (!byFilter) {
-    byFilter = new Map();
+  let byFilter: Map<MeasurementUnitFilter, UOMScanner>;
+  if (Object.keys(additionalUOMs).length === 0) {
+    byFilter = defaultScanners;
+  } else {
+    byFilter = scannerCache.get(additionalUOMs) ?? new Map();
     scannerCache.set(additionalUOMs, byFilter);
   }
 
