@@ -1,12 +1,20 @@
 {
   "compilerOptions": {
-    "strict": true,
-    "module": "commonjs",
-    "jsx": "preserve",
+    "target": "es2022",
+    "types": ["web"],
+    "isolatedModules": true,
     "esModuleInterop": true,
-    "sourceMap": true,
-    "allowJs": true,
-    "lib": ["ES6", "DOM"],
-    "moduleResolution": "bundler"
-  }
+    "strict": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "noEmit": true,
+    "skipLibCheck": true,
+    "lib": ["ES2022", "DOM"],
+    // Typechecked against the source in `../src` so `bunx tsc -p ci` needs no install here. At
+    // runtime the app resolves `parse-ingredient` to the pkg.pr.new build of `main`.
+    "paths": {
+      "parse-ingredient": ["../src/index.ts"]
+    }
+  },
+  "include": ["./src"]
 }

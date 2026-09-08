@@ -69,7 +69,7 @@ export const parseIngredientTests: Record<
       },
     ],
   ],
-  'range (emdash)': [
+  'range (endash)': [
     '1\u20132 cups stuff',
     [
       {
@@ -82,7 +82,7 @@ export const parseIngredientTests: Record<
       },
     ],
   ],
-  'range (endash)': [
+  'range (emdash)': [
     '1\u20142 cups stuff',
     [
       {
@@ -95,7 +95,7 @@ export const parseIngredientTests: Record<
       },
     ],
   ],
-  'range (spaced emdash)': [
+  'range (spaced endash)': [
     '1 \u2013 2 cups stuff',
     [
       {
@@ -108,7 +108,7 @@ export const parseIngredientTests: Record<
       },
     ],
   ],
-  'range (spaced endash)': [
+  'range (spaced emdash)': [
     '1 \u2014 2 cups stuff',
     [
       {
@@ -247,6 +247,39 @@ export const parseIngredientTests: Record<
         },
       },
     },
+  ],
+  // README example (README §additionalUOMs) - keep in sync
+  'additionalUOMs: README example': [
+    '2 buckets of widgets',
+    [
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: 'bucket',
+        unitOfMeasure: 'buckets',
+        description: 'widgets',
+        isGroupHeader: false,
+      },
+    ],
+    {
+      additionalUOMs: {
+        bucket: { short: 'bkt', plural: 'buckets', alternates: ['bk'], type: 'volume' },
+      },
+    },
+  ],
+  'additionalUOMs: alternates omitted (JS consumers)': [
+    '2 buckets of widgets',
+    [
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: 'bucket',
+        unitOfMeasure: 'buckets',
+        description: 'widgets',
+        isGroupHeader: false,
+      },
+    ],
+    { additionalUOMs: { bucket: { short: 'bkt', plural: 'buckets' } } },
   ],
   'allow leading "of "': [
     '1 cup of stuff',
@@ -409,8 +442,8 @@ export const parseIngredientTests: Record<
       ['comma', ','],
       ['colon', ':'],
       ['dash', '-'],
-      ['emdash', '\u2013'],
-      ['endash', '\u2014'],
+      ['endash', '\u2013'],
+      ['emdash', '\u2014'],
       ['x', 'x'],
       ['⨯', '⨯'],
     ].map(([desc, char]) => [
@@ -456,7 +489,7 @@ export const parseIngredientTests: Record<
       },
     ],
   ],
-  'trailing range (emdash)': [
+  'trailing range (endash)': [
     'stuff 1\u20132 cups',
     [
       {
@@ -469,7 +502,7 @@ export const parseIngredientTests: Record<
       },
     ],
   ],
-  'trailing range (endash)': [
+  'trailing range (emdash)': [
     'stuff 1\u20142 cups',
     [
       {
@@ -482,7 +515,7 @@ export const parseIngredientTests: Record<
       },
     ],
   ],
-  'trailing range (spaced emdash)': [
+  'trailing range (spaced endash)': [
     'stuff 1 \u2013 2 cups',
     [
       {
@@ -495,7 +528,7 @@ export const parseIngredientTests: Record<
       },
     ],
   ],
-  'trailing range (spaced endash)': [
+  'trailing range (spaced emdash)': [
     'stuff 1 \u2014 2 cups',
     [
       {
@@ -1702,7 +1735,7 @@ export const parseIngredientTests: Record<
     ],
     { includeMeta: true },
   ],
-  'includeMeta option - skips empty lines in index': [
+  'includeMeta option - sourceIndex counts empty lines': [
     '1 cup flour\n\n2 tbsp sugar',
     [
       {
@@ -1997,5 +2030,392 @@ export const parseIngredientTests: Record<
         大さじ: { short: '大さじ', plural: '大さじ', alternates: [] },
       },
     },
+  ],
+
+  // --- Quantities longer than the description-splitting heuristic's old fixed window ---
+  'long quantity: mixed number with two-digit denominator': [
+    '1 11/16 cups sugar',
+    [
+      {
+        quantity: 1.688,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cups',
+        description: 'sugar',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'long quantity: seven-digit integer': [
+    '1234567 g flour',
+    [
+      {
+        quantity: 1234567,
+        quantity2: null,
+        unitOfMeasureID: 'gram',
+        unitOfMeasure: 'g',
+        description: 'flour',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'long quantity: trailing zeros are not split off': [
+    '1000000 g flour',
+    [
+      {
+        quantity: 1000000,
+        quantity2: null,
+        unitOfMeasureID: 'gram',
+        unitOfMeasure: 'g',
+        description: 'flour',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'long quantity: decimal with four fractional digits': [
+    '12.3456 g flour',
+    [
+      {
+        quantity: 12.346,
+        quantity2: null,
+        unitOfMeasureID: 'gram',
+        unitOfMeasure: 'g',
+        description: 'flour',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'long quantity: sixteenths': [
+    '1 15/16 tsp vanilla',
+    [
+      {
+        quantity: 1.938,
+        quantity2: null,
+        unitOfMeasureID: 'teaspoon',
+        unitOfMeasure: 'tsp',
+        description: 'vanilla',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'long quantity: fraction with two-digit denominator': [
+    '2 1/16 cups flour',
+    [
+      {
+        quantity: 2.063,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cups',
+        description: 'flour',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'long quantity: decimal with three fractional digits': [
+    '10.125 kg potatoes',
+    [
+      {
+        quantity: 10.125,
+        quantity2: null,
+        unitOfMeasureID: 'kilogram',
+        unitOfMeasure: 'kg',
+        description: 'potatoes',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'long quantity: exponential notation': [
+    '1e6 g flour',
+    [
+      {
+        quantity: 1000000,
+        quantity2: null,
+        unitOfMeasureID: 'gram',
+        unitOfMeasure: 'g',
+        description: 'flour',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'long quantity: digit group separators': [
+    '1,000,000 g flour',
+    [
+      {
+        quantity: 1000000,
+        quantity2: null,
+        unitOfMeasureID: 'gram',
+        unitOfMeasure: 'g',
+        description: 'flour',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'long quantity2: seven-digit integer': [
+    '1 - 1000000 g flour',
+    [
+      {
+        quantity: 1,
+        quantity2: 1000000,
+        unitOfMeasureID: 'gram',
+        unitOfMeasure: 'g',
+        description: 'flour',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'long quantity2: mixed number with two-digit denominator': [
+    '1 to 1 11/16 cups sugar',
+    [
+      {
+        quantity: 1,
+        quantity2: 1.688,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cups',
+        description: 'sugar',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+
+  // --- Non-ASCII numerics (normalized by `numericQuantity`, but never in the description) ---
+  'vulgar fraction quantity': [
+    '½ cup sugar',
+    [
+      {
+        quantity: 0.5,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cup',
+        description: 'sugar',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'mixed number with vulgar fraction': [
+    '1 ½ cups sugar',
+    [
+      {
+        quantity: 1.5,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cups',
+        description: 'sugar',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'non-ASCII decimal digits': [
+    '٢ cups sugar',
+    [
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cups',
+        description: 'sugar',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'vulgar fraction in description is left as-is': [
+    '2 cups ½ stick butter',
+    [
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cups',
+        description: '½ stick butter',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+
+  // --- round option ---
+  'round option: disabled': [
+    '1 11/16 cups sugar',
+    [
+      {
+        quantity: 1.6875,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cups',
+        description: 'sugar',
+        isGroupHeader: false,
+      },
+    ],
+    { round: false },
+  ],
+  'round option: one decimal place': [
+    '1 2/3 cups sugar',
+    [
+      {
+        quantity: 1.7,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cups',
+        description: 'sugar',
+        isGroupHeader: false,
+      },
+    ],
+    { round: 1 },
+  ],
+  'round option: applies to quantity2': [
+    '1 to 1 11/16 cups sugar',
+    [
+      {
+        quantity: 1,
+        quantity2: 1.6875,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cups',
+        description: 'sugar',
+        isGroupHeader: false,
+      },
+    ],
+    { round: false },
+  ],
+  'negative quantity: leading sign is not a quantity or a range': [
+    '-2 cups sugar',
+    [
+      {
+        quantity: null,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: '-2 cups sugar',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'negative quantity: detached leading sign': [
+    '- 2 cups sugar',
+    [
+      {
+        quantity: null,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: '- 2 cups sugar',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'negative quantity: negative trailing quantity is rejected': [
+    'Ripe tomato x-2 - 3 cups',
+    [
+      {
+        quantity: null,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: 'Ripe tomato x-2 - 3 cups',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'negative quantity: negative trailing quantity2 is rejected': [
+    'Ripe tomato x2 - -3',
+    [
+      {
+        quantity: null,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: 'Ripe tomato x2 - -3',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'negative quantity: negative quantity2 leaves quantity intact': [
+    '1 - -2 cups sugar',
+    [
+      {
+        quantity: 1,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: '- -2 cups sugar',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'division by zero is not a quantity': [
+    '1/0 cups sugar',
+    [
+      {
+        quantity: null,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: '1/0 cups sugar',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'division by zero in a range is not a quantity': [
+    '1/0 to 2 cups sugar',
+    [
+      {
+        quantity: null,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: '1/0 to 2 cups sugar',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'division by zero as quantity2 leaves quantity intact': [
+    '1 to 1/0 cups sugar',
+    [
+      {
+        quantity: 1,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: 'to 1/0 cups sugar',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'range separator with no leading quantity is not a range': [
+    'to 2 cups sugar',
+    [
+      {
+        quantity: null,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: 'to 2 cups sugar',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'trailing quantity: a leading sign is consumed as the separator, not the value': [
+    'Ripe tomato x-2',
+    [
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: 'Ripe tomato',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'trailing quantity: unparseable under the configured decimal separator is not a quantity': [
+    'stuff .5 cup',
+    [
+      {
+        quantity: null,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: 'stuff .5 cup',
+        isGroupHeader: false,
+      },
+    ],
+    { decimalSeparator: ',' },
   ],
 };

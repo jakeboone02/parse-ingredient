@@ -1,6 +1,6 @@
 import { parseIngredient } from './parseIngredient';
 
-declare const hljs: any;
+declare const hljs: { highlightElement: (el: HTMLElement) => void };
 
 const seed = `For The Buttercream (or make a cream cheese frosting)
 4 large egg whites
@@ -28,8 +28,10 @@ const parse = () => {
   const allowLeadingOf = (document.getElementById('allow-leading-of') as HTMLInputElement).checked;
   const ignoreUOMs = ((document.getElementById('ignore-uoms') as HTMLInputElement).value ?? '')
     .split(',')
-    .map(s => s.trim());
-  document.getElementById('results')!.innerHTML = JSON.stringify(
+    .map(s => s.trim())
+    .filter(Boolean);
+  const results = document.getElementById('results')!;
+  results.textContent = JSON.stringify(
     parseIngredient((document.getElementById('ingredient-list') as HTMLInputElement).value, {
       normalizeUOM,
       allowLeadingOf,
@@ -38,7 +40,9 @@ const parse = () => {
     null,
     2
   );
-  hljs.highlightBlock(document.getElementById('results'));
+  // hljs v11 skips (and warns about) elements it has already marked
+  delete results.dataset.highlighted;
+  hljs.highlightElement(results);
 };
 
 document.getElementById('ingredient-list')!.addEventListener('change', parse);

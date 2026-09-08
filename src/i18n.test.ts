@@ -90,8 +90,8 @@ describe('buildRangeSeparatorRegex', () => {
   test('matches dashes at start of string', () => {
     const regex = buildRangeSeparatorRegex(['to', 'or']);
     expect(regex.test('-2')).toBe(true);
-    expect(regex.test('–2')).toBe(true); // emdash
-    expect(regex.test('—2')).toBe(true); // endash
+    expect(regex.test('–2')).toBe(true); // endash
+    expect(regex.test('—2')).toBe(true); // emdash
   });
 
   test('matches word separators at start of string', () => {

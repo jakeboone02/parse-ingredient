@@ -9,7 +9,6 @@
     "dist"
   ],
   "main": "./dist/cjs/index.js",
-  "module": "./dist/parse-ingredient.legacy-esm.js",
   "exports": {
     "./package.json": "./package.json",
     ".": {
@@ -24,7 +23,7 @@
     }
   },
   "sideEffects": false,
-  "types": "./dist/parse-ingredient.legacy-esm.d.ts",
+  "types": "./dist/cjs/index.d.ts",
   "unpkg": "./dist/parse-ingredient.umd.min.js",
   "keywords": [
     "parse",
@@ -42,12 +41,13 @@
     "url": "git+https://github.com/jakeboone02/parse-ingredient.git"
   },
   "engines": {
-    "node": ">=10"
+    "node": ">=20"
   },
   "scripts": {
     "start": "bun --hot ./index.html",
     "build": "bun --bun x tsdown",
     "docs": "typedoc",
+    "generate:ci-examples": "bun scripts/generateCIExamples.ts",
     "test": "bun test",
     "watch": "bun test --watch",
     "lint": "bunx oxlint",
@@ -55,15 +55,18 @@
     "publish:npm": "np"
   },
   "devDependencies": {
-    "@types/bun": "^1.4.0",
-    "@types/node": "^26.4.0",
-    "@types/web": "^0.0.354",
+    "@arethetypeswrong/cli": "^0.18.5",
+    "@types/bun": "^1.4.1",
+    "@types/node": "^26.4.1",
+    "@types/web": "^0.0.355",
     "@typescript/native-preview": "^7.0.0-dev.20260707.2",
-    "np": "^12.0.1",
-    "oxfmt": "^0.65.0",
-    "oxlint": "^1.80.0",
+    "format-quantity": "^3.2.0",
+    "np": "^12.1.0",
+    "oxfmt": "^0.66.0",
+    "oxlint": "^1.81.0",
     "oxlint-tsgolint": "^7.0.2001",
-    "tsdown": "^0.22.14",
+    "publint": "^0.3.24",
+    "tsdown": "^0.23.0",
     "typedoc": "^0.28.20",
     "typescript": "^6.0.3"
   },

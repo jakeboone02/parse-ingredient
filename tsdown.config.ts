@@ -1,4 +1,3 @@
-import { writeFile } from 'fs/promises';
 import type { UserConfig } from 'tsdown';
 import { defineConfig } from 'tsdown';
 
@@ -7,96 +6,45 @@ const config: ReturnType<typeof defineConfig> = defineConfig(options => {
     entry: {
       'parse-ingredient': 'src/index.ts',
     },
-    dts: { tsgo: true },
-    outputOptions: {
-      globals: {
-        'numeric-quantity': 'NumericQuantity',
-      },
-    },
+    dts: { oxc: {} },
     platform: 'neutral',
     sourcemap: true,
     ...options,
   } satisfies UserConfig;
 
-  const productionOptions = {
-    minify: true,
-    define: { NODE_ENV: 'production' },
-  } satisfies UserConfig;
-
   const opts: UserConfig[] = [
-    // ESM, standard bundler dev, embedded `process` references
+    // ESM
     {
       ...commonOptions,
       clean: true,
       format: 'esm',
     },
-    // ESM, Webpack 4 support. Target ES2017 syntax to compile away optional chaining and spreads
+    // CJS. The library reads no environment, so there is no dev/prod distinction to make
     {
       ...commonOptions,
-      entry: {
-        'parse-ingredient.legacy-esm': 'src/index.ts',
-      },
-      // ESBuild outputs `'.mjs'` by default for the 'esm' format. Force '.js'
-      outExtensions: () => ({ js: '.js' }),
-      format: 'esm',
-      target: 'es2017',
-    },
-    // ESM for use in browsers. Minified, with `process` compiled away
-    {
-      ...commonOptions,
-      ...productionOptions,
-      entry: {
-        'parse-ingredient.production': 'src/index.ts',
-      },
-      format: 'esm',
-      outExtensions: () => ({ js: '.mjs' }),
-    },
-    // CJS development
-    {
-      ...commonOptions,
-      entry: {
-        'parse-ingredient.cjs.development': 'src/index.ts',
-      },
+      entry: { index: 'src/index.ts' },
       format: 'cjs',
       outDir: './dist/cjs/',
     },
-    // CJS production
+    // UMD (browser global `ParseIngredient`, plus CJS/AMD interop)
     {
       ...commonOptions,
-      ...productionOptions,
-      entry: {
-        'parse-ingredient.cjs.production': 'src/index.ts',
-      },
-      format: 'cjs',
-      outDir: './dist/cjs/',
-      onSuccess: async () => {
-        // Write the CJS index file
-        await Promise.all([
-          writeFile(
-            'dist/cjs/index.js',
-            `'use strict';
-if (process.env.NODE_ENV === 'production') {
-  module.exports = require('./parse-ingredient.cjs.production.js');
-} else {
-  module.exports = require('./parse-ingredient.cjs.development.js');
-}
-`
-          ),
-          writeFile(
-            'dist/cjs/index.d.ts',
-            `export * from './parse-ingredient.cjs.development.js';`
-          ),
-        ]);
-      },
-    },
-    // UMD (ish)
-    {
-      ...commonOptions,
-      ...productionOptions,
       dts: false,
-      format: 'iife',
+      minify: true,
+      format: 'umd',
       globalName: 'ParseIngredient',
-      outExtensions: () => ({ js: '.umd.min.js' }),
+      deps: { alwaysBundle: ['numeric-quantity'] },
+      outExtensions: () => ({ js: '.min.js' }),
+      // `numeric-quantity`'s overflow path uses bigint literals, which are left as-is
+      suppressWarnings: [
+        'Big integer literals are not available in the configured target environment.',
+      ],
+      // Bundlers that treat classic <script> tags as CJS modules (e.g. Bun's HTML entrypoint
+      // support) hit the UMD `exports` branch, so the browser global never gets defined.
+      // Re-expose it explicitly when running in a browser.
+      footer: {
+        js: `typeof window<"u"&&typeof exports=="object"&&(window.ParseIngredient=exports);`,
+      },
     },
   ];
 

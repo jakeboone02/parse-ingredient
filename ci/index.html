@@ -1,18 +1,20 @@
-<html>
+<!doctype html>
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>parse-ingredient CI</title>
+    <link rel="stylesheet" href="/src/styles.css" />
   </head>
   <body>
     <h1>parse-ingredient CI</h1>
-    <div id="grid">
-      <div>ingredient list</div>
-      <div>default</div>
-      <div>allowLeadingOf</div>
-      <div>normalizeUOM</div>
-      <div>additionalUOMs</div>
-      <div>ignoreUOMs</div>
-    </div>
-    <script src="src/index.ts"></script>
+    <p>
+      Every <code>parseIngredient</code> fixture, parsed by the latest build of
+      <code>main</code> under each option set.
+    </p>
+    <div id="grid"></div>
+    <h2>convertUnit</h2>
+    <table id="conversions"></table>
+    <script type="module" src="/src/index.ts"></script>
   </body>
 </html>
