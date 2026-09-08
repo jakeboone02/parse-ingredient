@@ -51,6 +51,17 @@ export const buildRangeSeparatorRegex = (words: readonly (string | RegExp)[]): R
   new RegExp(`^${buildRangeSeparatorSource(words)}`, 'iu');
 
 /**
+ * Builds a regex that matches a range separator at the *end* of a string, ignoring
+ * trailing whitespace. The backwards counterpart of {@link buildRangeSeparatorRegex},
+ * used when scanning right-to-left from an already-located unit of measure.
+ *
+ * The source is wrapped in a non-capturing group rather than read by index: it may
+ * contain groups of its own, from user-supplied `rangeSeparators`.
+ */
+export const buildTrailingRangeSeparatorRegex = (words: readonly (string | RegExp)[]): RegExp =>
+  new RegExp(`(?:${buildRangeSeparatorSource(words)})\\s*$`, 'iu');
+
+/**
  * Builds a regex that matches any of the given words or patterns at the start of a string.
  * Strings are matched as whole words followed by whitespace.
  * RegExp patterns are used as-is for more complex matching (e.g., French elisions).
@@ -158,6 +169,8 @@ export const defaultOptions: Readonly<Required<ParseIngredientOptions>> = deepFr
   leadingQuantityPrefixes: defaultLeadingQuantityPrefixes,
   includeMeta: false,
   partialUnitMatching: false,
+  descriptionMeasurements: false,
+  measurementUnits: 'all',
 });
 
 /**

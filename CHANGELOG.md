@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - `round` option, forwarded to `numericQuantity`, controlling the number of decimal places parsed quantities are rounded to. Defaults to `3`, matching previous behavior; pass `false` to disable rounding.
+- `descriptionMeasurements` option. When `true`, each ingredient carries a `descriptionMeasurements` array of the quantity/unit pairs found _within_ its `description` — e.g. the `1 1/2-inch` in `'1 pound beef, cut into 1 1/2-inch cubes'` — so embedded measurements can be converted rather than left as-is. Each entry reports its span in the `description` (`startIndex`/`endIndex`, always present) and in the original line (`sourceStartIndex`/`sourceEndIndex`, `null` when the description cannot be mapped back unambiguously). The description is scanned rather than the line, so an ingredient's own quantity and unit are never reported twice. Group headers always carry an empty array. The algorithm is adapted from [#55] by [@nerdstep](https://github.com/nerdstep).
+- `measurementUnits` option (`'all'` | `'convertible'`, default `'all'`), controlling which units count as a description measurement. `piece`, `pinch`, and `large` are real units, so `'cut into 4 pieces'` is a measurement by default; `'convertible'` narrows the results to units with a `conversionFactor`.
+- `extractMeasurements`, the standalone form of the above, for scanning arbitrary text. Composes directly with `convertUnit`. Exported alongside the `Measurement`, `DescriptionMeasurement`, `ExtractMeasurementsOptions`, and `MeasurementUnitFilter` types.
 - `"sideEffects": false` in `package.json` for downstream tree-shaking.
 
 ### Changed
@@ -279,10 +282,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#34]: https://github.com/jakeboone02/parse-ingredient/pull/34
 [#37]: https://github.com/jakeboone02/parse-ingredient/pull/37
 [#40]: https://github.com/jakeboone02/parse-ingredient/pull/40
+[#44]: https://github.com/jakeboone02/parse-ingredient/discussions/44
 [#46]: https://github.com/jakeboone02/parse-ingredient/pull/46
 [#47]: https://github.com/jakeboone02/parse-ingredient/pull/47
 [#48]: https://github.com/jakeboone02/parse-ingredient/pull/48
 [#49]: https://github.com/jakeboone02/parse-ingredient/pull/49
+[#55]: https://github.com/jakeboone02/parse-ingredient/pull/55
 
 <!-- Release comparison links -->
 

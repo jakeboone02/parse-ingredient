@@ -1,9 +1,5 @@
-import {
-  numericQuantity,
-  NumericQuantityOptions,
-  superSubDigitToAsciiMap,
-  vulgarFractionToAsciiMap,
-} from 'numeric-quantity';
+import { numericQuantity } from 'numeric-quantity';
+import { alignDescription, mapSpan } from './alignDescription';
 import {
   buildLeadingQuantityPrefixRegex,
   buildPrefixPatternRegex,
@@ -14,16 +10,13 @@ import {
   defaultOptions,
   firstWordRegEx,
 } from './constants';
+import type { MeasurementContext } from './measurementScan';
+import { createMeasurementContext, scanMeasurements } from './measurementScan';
+import type { NQOptions } from './quantityScan';
+import { isAcceptableQuantity, matchLeadingQuantity } from './quantityScan';
 import type { Ingredient, ParseIngredientOptions } from './types';
 import type { UnitLookupMaps } from './unitLookup';
 import { collectUOMStrings, getUnitLookupMaps, identifyUnitFromMaps } from './unitLookup';
-
-/**
- * The options `numericQuantity` is called with. The `bigIntOnOverflow`/`verbose` literals
- * are load-bearing: they are what narrows `numericQuantity`'s conditional return type to
- * `number`.
- */
-type NQOptions = NumericQuantityOptions & { bigIntOnOverflow: false; verbose: false };
 
 /**
  * Everything derived from a single {@link parseIngredient} call's options, computed once
@@ -49,6 +42,11 @@ export interface ParseContext {
   leadingQuantityPrefixRegex: RegExp | null;
   /** Known UOM strings, longest-first. Empty unless `partialUnitMatching` is on. */
   uomStrings: string[];
+  /**
+   * Scan regexes and lookups for description measurements. `null` unless
+   * `descriptionMeasurements` is on, so the option costs nothing when disabled.
+   */
+  measurementCtx: MeasurementContext | null;
 }
 
 /**
@@ -80,79 +78,11 @@ export const createParseContext = (
     trailingQuantityRegex: buildTrailingQuantityRegex(opts.rangeSeparators),
     leadingQuantityPrefixRegex: buildLeadingQuantityPrefixRegex(opts.leadingQuantityPrefixes),
     uomStrings: opts.partialUnitMatching ? collectUOMStrings(lookupMaps) : [],
+    measurementCtx: opts.descriptionMeasurements ? createMeasurementContext(opts) : null,
   };
 };
 
 const nextWordRegExp = /^([\p{L}\p{N}_]+(?:[.-]?[\p{L}\p{N}_]+)*[-.]?)(?:\s+|$)/iu;
-
-/**
- * Matches the first character that `numericQuantity` could *not* consume, and therefore
- * marks the end of any leading quantity. The class it negates covers the non-ASCII forms
- * `numericQuantity` normalizes as well: Unicode decimal digits, vulgar fractions,
- * super/subscript digits, and the fraction slash.
- *
- * This is not a grammar — it is only an upper bound on how far
- * {@link matchLeadingQuantity} has to search. Being too narrow merely shortens the
- * search; being too wide merely costs iterations. Correctness is delegated entirely to
- * `numericQuantity`.
- */
-const nonQuantityCharRegExp = new RegExp(
-  `[^\\p{Nd}\\s.,_/+\u2044${Object.keys(vulgarFractionToAsciiMap).join('')}${Object.keys(
-    superSubDigitToAsciiMap
-  ).join('')}eE-]`,
-  'u'
-);
-
-/**
- * Finds the longest prefix of `text` that parses as a single numeric value.
- *
- * `numericQuantity` is all-or-nothing on the string it is given, so the end of the
- * quantity can only be located by trying prefixes longest-first and taking the first one
- * that both parses and satisfies `accept`.
- *
- * A prefix that parses to a *rejected* value (negative, `Infinity`) ends the search
- * instead of shortening it: the shorter prefixes are fragments of that same number, so
- * accepting one would silently reinterpret part of the value as description. `'1/0 cups'`
- * must not become `quantity: 1` with a description of `'/0 cups'`.
- *
- * Returns the parsed value along with the remainder of the *original* text (never the
- * normalized form `numericQuantity` works with internally), or `null` if no prefix
- * qualifies.
- *
- * @internal
- */
-export const matchLeadingQuantity = (
-  text: string,
-  nqOpts: NQOptions,
-  accept: (value: number) => boolean
-): { value: number; rest: string } | null => {
-  const stop = nonQuantityCharRegExp.exec(text);
-
-  for (let len = stop ? stop.index : text.length; len > 0; len--) {
-    const value = numericQuantity(text.substring(0, len).trim(), nqOpts);
-
-    if (accept(value)) {
-      return { value, rest: text.substring(len).trim() };
-    }
-
-    if (!Number.isNaN(value)) break;
-  }
-
-  return null;
-};
-
-/**
- * The single acceptance test for a parsed quantity, shared by `quantity` and `quantity2`
- * so the two paths can never disagree about whether a value counts as a quantity.
- *
- * Rejects `NaN` (nothing parsed), negatives (a negative amount of an ingredient is
- * meaningless), and non-finite values (`numeric-quantity` returns `Infinity` for `'1/0'`,
- * which is not a usable recipe quantity and would serialize to `null` anyway).
- *
- * @internal
- */
-export const isAcceptableQuantity = (value: number): boolean =>
-  Number.isFinite(value) && value >= 0;
 
 /**
  * Repeatedly strips configured quantity prefixes from the start of a string.
@@ -437,6 +367,42 @@ export const stripDescriptionPrefix = (ingredient: Ingredient, ctx: ParseContext
 };
 
 /**
+ * Scans the finished description for embedded measurements and reports each one against
+ * both the description and the original line.
+ *
+ * Runs last, on the description as consumers actually receive it, so the ingredient's own
+ * quantity and unit — already removed by the earlier phases — can never be re-reported.
+ * Group headers are labels rather than measurements, so they are skipped.
+ *
+ * @internal
+ */
+export const collectDescriptionMeasurements = (
+  ingredient: Ingredient,
+  line: string,
+  ctx: ParseContext
+): void => {
+  if (!ctx.measurementCtx) return;
+
+  if (ingredient.isGroupHeader) {
+    ingredient.descriptionMeasurements = [];
+    return;
+  }
+
+  const measurements = scanMeasurements(ingredient.description, ctx.measurementCtx);
+
+  // Alignment is only paid for when there is something to map.
+  const alignment = measurements.length > 0 ? alignDescription(line, ingredient.description) : null;
+
+  ingredient.descriptionMeasurements = measurements.map(measurement => ({
+    ...measurement,
+    ...(mapSpan(alignment, measurement.startIndex, measurement.endIndex) ?? {
+      sourceStartIndex: null,
+      sourceEndIndex: null,
+    }),
+  }));
+};
+
+/**
  * Parses a single, already-trimmed, non-empty line into an {@link Ingredient} by running
  * each parsing phase in order.
  *
@@ -473,6 +439,7 @@ export const parseIngredientLine = (
   identifyLeadingUnit(ingredient, ctx);
   identifyPartialUnit(ingredient, ctx);
   stripDescriptionPrefix(ingredient, ctx);
+  collectDescriptionMeasurements(ingredient, line, ctx);
 
   return ingredient;
 };

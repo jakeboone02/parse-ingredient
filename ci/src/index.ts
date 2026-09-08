@@ -1,5 +1,6 @@
 import {
   convertUnit,
+  extractMeasurements,
   parseIngredient,
   type ParseIngredientOptions,
   type UnitOfMeasureDefinitions,
@@ -23,6 +24,10 @@ const columns: { label: string; options?: ParseIngredientOptions }[] = [
   { label: 'decimalSeparator ","', options: { decimalSeparator: ',' } },
   { label: 'partialUnitMatching', options: { additionalUOMs, partialUnitMatching: true } },
   { label: 'round: false', options: { round: false } },
+  {
+    label: 'descriptionMeasurements',
+    options: { descriptionMeasurements: true, includeMeta: true },
+  },
 ];
 
 const grid = document.querySelector<HTMLElement>('#grid');
@@ -64,6 +69,29 @@ if (conversionTable) {
     ...conversions.map(
       ([value, from, to]) =>
         `<tr><td>convertUnit(${value}, '${escapeHTML(from)}', '${escapeHTML(to)}')</td><td>${convertUnit(value, from, to)}</td></tr>`
+    ),
+  ].join('');
+}
+
+/** Strings scanned by the `extractMeasurements` table. */
+const measurementTexts: string[] = [
+  'cut into 1 1/2-inch cubes',
+  'beef (about 1 pound)',
+  'a 1 inch by 2 inch by 3 cm block',
+  'chill 1 to 2 hours, then cut into 4 pieces',
+  'stir into the pan and add a pinch of salt',
+];
+
+const measurementTable = document.querySelector('#measurements');
+
+if (measurementTable) {
+  measurementTable.innerHTML = [
+    `<tr><th>text</th><th>measurements</th></tr>`,
+    ...measurementTexts.map(
+      text =>
+        `<tr><td>${escapeHTML(text)}</td><td>${escapeHTML(
+          JSON.stringify(extractMeasurements(text), null, 2)
+        )}</td></tr>`
     ),
   ].join('');
 }

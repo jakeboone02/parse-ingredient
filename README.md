@@ -291,6 +291,70 @@ parseIngredient('1 2/3 cups sugar', { round: 1 });
 // [{ quantity: 1.7, ... }]
 ```
 
+### `descriptionMeasurements`
+
+When `true`, each ingredient object will include a `descriptionMeasurements` array holding the quantity/unit pairs found _within_ its `description` — the measurements the parser does not extract because they are not the ingredient's own amount.
+
+```js
+parseIngredient('1 pound beef, cut into 1 1/2-inch cubes', {
+  descriptionMeasurements: true,
+});
+// [
+//   {
+//     quantity: 1,
+//     quantity2: null,
+//     unitOfMeasureID: 'pound',
+//     unitOfMeasure: 'pound',
+//     description: 'beef, cut into 1 1/2-inch cubes',
+//     isGroupHeader: false,
+//     descriptionMeasurements: [
+//       {
+//         quantity: 1.5,
+//         quantity2: null,
+//         unitOfMeasureID: 'inch',
+//         unitOfMeasure: 'inch',
+//         unitType: 'length',
+//         text: '1 1/2-inch',
+//         startIndex: 15,
+//         endIndex: 25,
+//         sourceStartIndex: 23,
+//         sourceEndIndex: 33,
+//       },
+//     ],
+//   },
+// ]
+```
+
+`startIndex` and `endIndex` are indices into `description` and are always present; `text` is always exactly `description.slice(startIndex, endIndex)`. `sourceStartIndex` and `sourceEndIndex` are the same span's position in the original line, which is what [`includeMeta`](#includemeta) reports as `meta.sourceText`. They are `null` in the rare cases where the description cannot be mapped back onto the line unambiguously; the description-relative indices remain valid regardless.
+
+The description is scanned, not the line, so an ingredient's own quantity and unit are never reported twice:
+
+```js
+parseIngredient('1 cup flour', { descriptionMeasurements: true });
+// [{ description: 'flour', descriptionMeasurements: [], ... }]
+```
+
+Group headers are labels rather than measurements, so they always carry an empty array.
+
+### `measurementUnits`
+
+Controls which units count as a description measurement. Has no effect unless `descriptionMeasurements` is `true`. Defaults to `'all'`.
+
+Note that `piece`, `pinch`, `large`, and the other count/`other` units are real units of measure, so by default `"cut into 4 pieces"` is a measurement. Use `'convertible'` to see only the units [`convertUnit`](#convertunit) can act on — those with a `conversionFactor`.
+
+```js
+parseIngredient('2 eggs, cut into 4 pieces', { descriptionMeasurements: true });
+// [{ descriptionMeasurements: [{ quantity: 4, unitOfMeasureID: 'piece', ... }], ... }]
+
+parseIngredient('2 eggs, cut into 4 pieces', {
+  descriptionMeasurements: true,
+  measurementUnits: 'convertible',
+});
+// [{ descriptionMeasurements: [], ... }]
+```
+
+Every measurement also carries the unit's `unitType`, so the results can be filtered without a second lookup.
+
 ## Internationalization (i18n)
 
 The library supports parsing ingredients in multiple languages through configurable keyword options. While unit names can be localized using `additionalUOMs`, the following options allow localization of parsing keywords and quantities.
@@ -559,6 +623,52 @@ cup: {
 ```
 
 Supported unit types: `volume`, `mass`, `length`. Units without a `conversionFactor` or `type` (such as `pinch`, `clove`, or count-based units like `bag`) cannot be converted.
+
+## Description Measurements
+
+### `extractMeasurements`
+
+Finds every quantity paired with a known unit of measure in an arbitrary string, along with where each one sits in the text. This is exactly what the [`descriptionMeasurements`](#descriptionmeasurements) option runs over each ingredient's description, exposed on its own for text that has already been parsed — a description, a recipe step, a note.
+
+```js
+import { extractMeasurements } from 'parse-ingredient';
+
+extractMeasurements('cut into 1 1/2-inch cubes');
+// [
+//   {
+//     quantity: 1.5,
+//     quantity2: null,
+//     unitOfMeasureID: 'inch',
+//     unitOfMeasure: 'inch',
+//     unitType: 'length',
+//     text: '1 1/2-inch',
+//     startIndex: 9,
+//     endIndex: 19,
+//   },
+// ]
+```
+
+Ranges are recognized the same way the parser recognizes them:
+
+```js
+extractMeasurements('cut into 1 to 2 inch cubes');
+// [{ quantity: 1, quantity2: 2, text: '1 to 2 inch', ... }]
+```
+
+A unit is only reported when the text immediately before it parses, in its entirety, as a quantity or a range. That is what keeps prose out of the results:
+
+```js
+extractMeasurements('stir into the pan and add a pinch of salt');
+// []
+```
+
+The unit IDs feed straight into [`convertUnit`](#convertunit), which is the point:
+
+```js
+convertUnit(extractMeasurements('cut into 1 1/2-inch cubes')[0].quantity, 'inch', 'cm'); // 3.81
+```
+
+`extractMeasurements` accepts the `additionalUOMs`, `decimalSeparator`, `ignoreUOMs`, `measurementUnits`, `normalizeUOM`, `rangeSeparators`, and `round` options, with the same meanings they have in `parseIngredient`.
 
 ## Contributors ✨
 

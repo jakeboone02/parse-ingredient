@@ -6,7 +6,8 @@ import {
 } from 'numeric-quantity';
 import { buildLeadingQuantityPrefixRegex } from './constants';
 import { parseIngredient } from './parseIngredient';
-import { isAcceptableQuantity, stripLeadingQuantityPrefixes } from './parsePhases';
+import { stripLeadingQuantityPrefixes } from './parsePhases';
+import { isAcceptableQuantity } from './quantityScan';
 
 /**
  * The leading-quantity search bounds itself with a character class that must cover every

@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'bun:test';
 import { parseIngredient } from './parseIngredient';
 import { parseIngredientTests } from './parseIngredientTests';
+import { isAcceptableQuantity } from './quantityScan';
 import type { Ingredient } from './types';
 
 /**
@@ -68,6 +69,75 @@ const invariantViolations = (ingredient: Ingredient): string[] => {
     violations.push('quantities are never negative');
   }
 
+  violations.push(...measurementViolations(ingredient));
+
+  return violations;
+};
+
+/**
+ * Post-conditions for `descriptionMeasurements`. The index assertions are the load-bearing
+ * ones: `text === description.slice(startIndex, endIndex)` catches every description-index
+ * bug at once, and its source-relative counterpart does the same for the alignment.
+ */
+const measurementViolations = (ingredient: Ingredient): string[] => {
+  const violations: string[] = [];
+  const measurements = ingredient.descriptionMeasurements;
+
+  if (!measurements) return violations;
+
+  // A group header is a label, not a measurement — same rule as its quantity and unit.
+  if (ingredient.isGroupHeader && measurements.length > 0) {
+    violations.push('group headers carry no measurements');
+  }
+
+  let previousEnd = 0;
+
+  for (const measurement of measurements) {
+    if (!(measurement.startIndex < measurement.endIndex)) {
+      violations.push('startIndex < endIndex');
+    }
+
+    if (measurement.startIndex < previousEnd) {
+      violations.push('measurement spans ascend and do not overlap');
+    }
+    previousEnd = measurement.endIndex;
+
+    if (
+      ingredient.description.slice(measurement.startIndex, measurement.endIndex) !==
+      measurement.text
+    ) {
+      violations.push('text === description.slice(startIndex, endIndex)');
+    }
+
+    if ((measurement.sourceStartIndex === null) !== (measurement.sourceEndIndex === null)) {
+      violations.push('sourceStartIndex and sourceEndIndex are both null or both set');
+    }
+
+    if (
+      measurement.sourceStartIndex !== null &&
+      measurement.sourceEndIndex !== null &&
+      ingredient.meta!.sourceText.slice(
+        measurement.sourceStartIndex,
+        measurement.sourceEndIndex
+      ) !== measurement.text
+    ) {
+      violations.push('text === sourceText.slice(sourceStartIndex, sourceEndIndex)');
+    }
+
+    // A measurement without a recognized unit is not a measurement.
+    if (!measurement.unitOfMeasureID || !measurement.unitOfMeasure) {
+      violations.push('measurements always carry a unit');
+    }
+
+    // Same acceptance test the parser's own quantities are held to.
+    if (
+      !isAcceptableQuantity(measurement.quantity) ||
+      (measurement.quantity2 !== null && !isAcceptableQuantity(measurement.quantity2))
+    ) {
+      violations.push('measurement quantities are finite and non-negative');
+    }
+  }
+
   return violations;
 };
 
@@ -75,7 +145,14 @@ const expectInvariants = (
   input: string | string[],
   options?: Parameters<typeof parseIngredient>[1]
 ) => {
-  const failures = parseIngredient(input, options)
+  // `includeMeta` and `descriptionMeasurements` are forced on so that every input is held
+  // to the measurement and alignment invariants too, not just the ones whose fixture
+  // happens to enable them.
+  const failures = parseIngredient(input, {
+    ...options,
+    includeMeta: true,
+    descriptionMeasurements: true,
+  })
     .map(ingredient => ({ ingredient, violations: invariantViolations(ingredient) }))
     .filter(({ violations }) => violations.length > 0);
 
@@ -123,6 +200,20 @@ const adversarialInputs = [
   '1,5 cups sugar',
   '000 cups sugar',
   '9007199254740993 cups sugar',
+  // Description measurements: duplicated text, back-to-back units, interior splices, and
+  // units with nothing parseable in front of them.
+  '1 inch inch',
+  'cup 1 cup cup',
+  'of of 1 of of',
+  '1 inch cm mm',
+  'inch 1',
+  'Juice of 1 lemon cut into 1 inch wedges',
+  'Zest of 2 oranges and juice of 1 lime',
+  'cut into 1--2 inch cubes',
+  'cut into 1/0 inch cubes',
+  'cut into -1 inch cubes',
+  'cut into 1e1000 inch cubes',
+  'İnch 1 inch',
 ];
 
 test.each(adversarialInputs)('adversarial input %p satisfies the invariants', input => {
