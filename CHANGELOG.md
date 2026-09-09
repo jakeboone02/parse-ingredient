@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v3.0.0] - 2026-09-08
+
 ### Added
 
 - `round` option, forwarded to `numericQuantity`, controlling the number of decimal places parsed quantities are rounded to. Defaults to `3`, matching previous behavior; pass `false` to disable rounding.
@@ -29,7 +31,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **BREAKING:** The Webpack 4 compatibility build (`dist/parse-ingredient.legacy-esm.js`, advertised via the `module` field) is gone, as is the `module` field itself. Webpack 4 has been end-of-life since 2021; bundlers resolve through `exports`.
 - The unreferenced `dist/parse-ingredient.production.mjs` build. Nothing in `exports`, `unpkg`, or the docs ever pointed at it. Consumers wanting a minified browser bundle should use the UMD build at the `unpkg` path.
-
 - **BREAKING:** `identifyUnit` and the `IdentifyUnitOptions` type are no longer part of the public API. They were incidentally exported from the package entry point via `convertUnit`; they now live in the internal `unitLookup` module and are marked `@internal`. Use `convertUnit` or `parseIngredient` instead.
 - **BREAKING:** The legacy exports deprecated in v2.1.0 have been removed. Each maps 1:1 onto a `default*` value or a `build*Regex` function:
 
@@ -292,7 +293,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- Release comparison links -->
 
-[unreleased]: https://github.com/jakeboone02/parse-ingredient/compare/v2.2.0...HEAD
+[unreleased]: https://github.com/jakeboone02/parse-ingredient/compare/v3.0.0...HEAD
+[v3.0.0]: https://github.com/jakeboone02/parse-ingredient/compare/v2.2.0...v3.0.0
 [v2.2.0]: https://github.com/jakeboone02/parse-ingredient/compare/v2.1.0...v2.2.0
 [v2.1.0]: https://github.com/jakeboone02/parse-ingredient/compare/v2.0.1...v2.1.0
 [v2.0.1]: https://github.com/jakeboone02/parse-ingredient/compare/v2.0.0...v2.0.1
