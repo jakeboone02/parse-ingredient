@@ -8,7 +8,7 @@ parse-ingredient is a TypeScript library that parses recipe ingredient lines int
 
 ## Commands
 
-- **Build:** `bun run build` (tsdown → ESM, CJS, legacy ESM, UMD)
+- **Build:** `bun run build` (tsdown → ESM, CJS, UMD)
 - **Test:** `bun test` (Bun test runner; 100% coverage threshold)
 - **Test single file:** `bun test src/parseIngredient.test.ts`
 - **Test watch:** `bun run watch`
@@ -22,14 +22,17 @@ CI (`.github/workflows/main.yml`) runs `bunx tsc`, `bunx tsc -p ci`, `bun run bu
 
 ## Architecture
 
-All library source lives in `src/`. The public entry point is `src/index.ts`, which re-exports `constants`, `convertUnit`, `parseIngredient`, and `types`.
+All library source lives in `src/`. The public entry point is `src/index.ts`, which re-exports `constants`, `convertUnit`, `extractMeasurements`, `parseIngredient`, and `types`.
 
 - `src/parseIngredient.ts` — thin public wrapper: splits input into lines, builds a `ParseContext` once, maps each line through `parseIngredientLine`.
 - `src/parsePhases.ts` — the actual parser, split into discrete phases. `createParseContext` is the **only** place option defaults are applied and the only place regexes and unit lookup maps are built; phases never see raw user options and never rebuild a regex per line.
 - `src/constants.ts` — default option values, regex sources and `build*Regex` factories, and the `unitsOfMeasure` table. Re-exported wholesale from the entry point, so anything added here becomes public API.
-- `src/unitLookup.ts` — lookup-map construction and caching, plus `identifyUnitFromMaps` and `collectUOMStrings`. Internal.
+- `src/quantityScan.ts` — `matchLeadingQuantity` / `matchTrailingQuantity` and the shared `isAcceptableQuantity` predicate. The only code that calls `numericQuantity`. Internal.
+- `src/unitLookup.ts` — lookup-map and UOM-scanner construction and caching, plus `identifyUnitFromMaps` and `collectUOMStrings`. Internal.
 - `src/identifyUnit.ts` — convenience wrapper over `unitLookup`. `@internal`; deliberately **not** exported from `src/index.ts`.
-- `src/convertUnit.ts`, `src/types.ts` — public.
+- `src/measurementScan.ts` — the unit-first scan behind `extractMeasurements` and the `descriptionMeasurements` option. `createMeasurementContext` is its counterpart to `createParseContext`. Internal.
+- `src/alignDescription.ts` — maps a parsed `description` span back onto its source line, after the fact, to produce `sourceStartIndex`/`sourceEndIndex`. Internal.
+- `src/extractMeasurements.ts`, `src/convertUnit.ts`, `src/types.ts` — public.
 - `src/dev.ts`, `src/parseIngredientTests.ts` — dev scratch file and shared test fixtures.
 
 `ci/` is a separate Vite app used as the pkg.pr.new preview template; its `src/examples.ts` is generated from `parseIngredientTests` and guarded against staleness by `src/ciExamples.test.ts`. Root `index.html` is the standalone `bun --hot` demo. Do not conflate the two.
@@ -50,9 +53,9 @@ These are load-bearing and mostly unenforceable by the type system. Do not "clea
 
 ## Public API surface
 
-`src/index.ts` uses `export *`, so the export surface is whatever `constants.ts`, `convertUnit.ts`, `parseIngredient.ts`, and `types.ts` declare. Treat that surface as frozen: adding to it is a commitment, removing from it is a breaking change and belongs in `CHANGELOG.md`.
+`src/index.ts` uses `export *`, so the export surface is whatever `constants.ts`, `convertUnit.ts`, `extractMeasurements.ts`, `parseIngredient.ts`, and `types.ts` declare. Treat that surface as frozen: adding to it is a commitment, removing from it is a breaking change and belongs in `CHANGELOG.md`.
 
-Not public, despite living in `src/`: `parsePhases.ts`, `unitLookup.ts`, `identifyUnit.ts`. These are marked `@internal` and are unreachable from the entry point. If you need one in a test, import it from its own module rather than re-exporting it.
+Not public, despite living in `src/`: `parsePhases.ts`, `quantityScan.ts`, `unitLookup.ts`, `identifyUnit.ts`, `measurementScan.ts`, `alignDescription.ts`. These are marked `@internal` and are unreachable from the entry point. If you need one in a test, import it from its own module rather than re-exporting it.
 
 ## Testing
 
@@ -71,4 +74,4 @@ Tests use `bun:test`. Coverage must stay at 100% (`coverageThreshold = 1` in `bu
 
 ## Build Output
 
-Dual-package ESM + CJS, plus a legacy ESM build for Webpack 4 and a UMD bundle (`dist/parse-ingredient.umd.min.js`, the `unpkg` target) that bundles `numeric-quantity` and sets a `ParseIngredient` global. Only `dist/` is published.
+Dual-package ESM + CJS, plus a UMD bundle (`dist/parse-ingredient.umd.min.js`, the `unpkg` target) that bundles `numeric-quantity` and sets a `ParseIngredient` global. Only `dist/` is published.
