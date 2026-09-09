@@ -1,13 +1,14 @@
 import { expect, test } from 'bun:test';
 import { convertUnit } from './convertUnit';
+import { extractMeasurements } from './extractMeasurements';
 import { parseIngredient } from './parseIngredient';
 
 /*
  * Every executable README snippet is run here and checked against the output printed
  * beside it, so an example can't drift from the library's actual behavior.
  *
- * Snippet shape (consistent throughout the README): a `parseIngredient(…)` or
- * `convertUnit(…)` call, followed either by `// …` lines holding the result or by a
+ * Snippet shape (consistent throughout the README): a `parseIngredient(…)`,
+ * `convertUnit(…)`, or `extractMeasurements(…)` call, followed either by `// …` lines holding the result or by a
  * trailing `// …` comment on the closing line. Results that elide fields with `...` are
  * compared partially; results printed in full are compared exactly.
  */
@@ -24,7 +25,8 @@ interface Snippet {
 /** Text of every ```js fence. Other languages (ts, html, shell) are not executable. */
 const jsBlocks = [...readme.matchAll(/^```js\n([\s\S]*?)^```/gmu)].map(match => match[1]);
 
-const isCallStart = (line: string) => /^(parseIngredient|convertUnit)\(/u.test(line);
+const isCallStart = (line: string) =>
+  /^(parseIngredient|convertUnit|extractMeasurements)\(/u.test(line);
 const isComment = (line: string) => line.trimStart().startsWith('//');
 
 /**
@@ -91,18 +93,20 @@ const unconsumedTrailingComments = jsBlocks.flatMap(block =>
 /** Guards against the extractor silently matching nothing after a README reformat. */
 test('README snippets are extracted', () => {
   // Exact counts, not lower bounds: a dropped result comment must fail loudly.
-  expect(jsBlocks).toBeArrayOfSize(18);
-  expect(snippets).toBeArrayOfSize(35);
-  expect(snippetsWithResults).toBeArrayOfSize(33);
+  expect(jsBlocks).toBeArrayOfSize(25);
+  expect(snippets).toBeArrayOfSize(43);
+  expect(snippetsWithResults).toBeArrayOfSize(41);
   expect(unconsumedTrailingComments).toEqual([]);
 });
 
 const evaluate = (code: string): unknown =>
   // oxlint-disable-next-line typescript/no-implied-eval -- executing README snippets is the point
-  new Function('parseIngredient', 'convertUnit', `return ${code.replace(/;\s*$/u, '')}`)(
-    parseIngredient,
-    convertUnit
-  );
+  new Function(
+    'parseIngredient',
+    'convertUnit',
+    'extractMeasurements',
+    `return ${code.replace(/;\s*$/u, '')}`
+  )(parseIngredient, convertUnit, extractMeasurements);
 
 /** `{ a: 1, ... }` is illustrative, not valid JS; drop the elision and match partially. */
 const elisionSource = String.raw`,?\s*\.\.\.\s*(?=[}\]])`;

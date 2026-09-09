@@ -53,7 +53,107 @@ export interface Ingredient {
    * Only included when the `includeMeta` option is `true`.
    */
   meta?: IngredientMeta;
+  /**
+   * Quantity/unit pairs found *within* {@link Ingredient.description}, e.g. the
+   * `1 1/2-inch` in `"1 pound beef, cut into 1 1/2-inch cubes"`.
+   *
+   * Only included when the `descriptionMeasurements` option is `true`. Always an empty
+   * array for group headers, which are labels rather than measurements.
+   */
+  descriptionMeasurements?: DescriptionMeasurement[];
 }
+
+/**
+ * A quantity paired with a known unit of measure, found at a known position within some
+ * scanned text.
+ */
+export interface Measurement {
+  /**
+   * The primary quantity (the lower quantity in a range, if applicable).
+   *
+   * Always a finite, non-negative number — subject to the same constraints as
+   * {@link Ingredient.quantity}.
+   */
+  quantity: number;
+  /**
+   * The secondary quantity (the upper quantity in a range), or `null` if the measurement
+   * is not a range.
+   */
+  quantity2: number | null;
+  /**
+   * The unit of measure identifier. Never `null`: a measurement is only reported when its
+   * unit is recognized.
+   */
+  unitOfMeasureID: string;
+  /**
+   * The unit of measure as written, or the canonical ID when `normalizeUOM` is enabled.
+   */
+  unitOfMeasure: string;
+  /**
+   * The unit's {@link UnitOfMeasure.type}, so the measurement can be filtered without a
+   * second lookup. `null` when the definition declares no type.
+   */
+  unitType: UnitType | null;
+  /**
+   * The exact matched text. Always equal to
+   * `text.slice(startIndex, endIndex)` of the scanned text.
+   */
+  text: string;
+  /**
+   * Zero-based index of the measurement's first character in the scanned text.
+   */
+  startIndex: number;
+  /**
+   * End-exclusive index of the measurement in the scanned text.
+   */
+  endIndex: number;
+}
+
+/**
+ * A {@link Measurement} found within an {@link Ingredient.description}, additionally
+ * carrying its position in the original (trimmed) source line.
+ */
+export interface DescriptionMeasurement extends Measurement {
+  /**
+   * Index of the measurement's first character in the trimmed source line (the string
+   * carried by `meta.sourceText`), or `null` if the description could not be aligned
+   * back onto the line.
+   *
+   * `null` only when parsing removed text from the *middle* of the line in a way that
+   * cannot be recovered — a two-word trailing unit, a `partialUnitMatching` splice, or a
+   * measurement straddling a splice. `startIndex`/`endIndex` remain valid regardless.
+   */
+  sourceStartIndex: number | null;
+  /**
+   * End-exclusive index of the measurement in the trimmed source line, or `null`. Always
+   * `null` exactly when {@link DescriptionMeasurement.sourceStartIndex} is `null`.
+   */
+  sourceEndIndex: number | null;
+}
+
+/**
+ * Which units count as a measurement when scanning text.
+ *
+ * - `'all'` — every known unit of measure, including count/other units like `piece`,
+ *   `pinch`, and `large`.
+ * - `'convertible'` — only units that declare a `conversionFactor`, i.e. only those
+ *   {@link convertUnit} can act on.
+ */
+export type MeasurementUnitFilter = 'all' | 'convertible';
+
+/**
+ * Options available to {@link extractMeasurements}.
+ */
+export type ExtractMeasurementsOptions = Pick<
+  ParseIngredientOptions,
+  | 'additionalUOMs'
+  | 'decimalSeparator'
+  | 'ignoreUOMs'
+  | 'measurementUnits'
+  | 'normalizeUOM'
+  | 'rangeSeparators'
+  | 'round'
+>;
 
 /**
  * The type of measurement.
@@ -245,4 +345,26 @@ export interface ParseIngredientOptions {
    * @default false
    */
   partialUnitMatching?: boolean;
+  /**
+   * When `true`, each ingredient gets a `descriptionMeasurements` array holding the
+   * quantity/unit pairs found within its `description` — e.g. the `1 1/2-inch` in
+   * `"1 pound beef, cut into 1 1/2-inch cubes"`.
+   *
+   * The description is scanned, not the source line, so the ingredient's own quantity and
+   * unit are never re-reported.
+   *
+   * @default false
+   */
+  descriptionMeasurements?: boolean;
+  /**
+   * Which units count as a description measurement. Has no effect unless
+   * `descriptionMeasurements` is `true`.
+   *
+   * Note that `piece`, `pinch`, `large`, etc. are real units, so with the default of
+   * `'all'`, `"cut into 4 pieces"` is a measurement. Use `'convertible'` to see only
+   * units {@link convertUnit} can act on.
+   *
+   * @default 'all'
+   */
+  measurementUnits?: MeasurementUnitFilter;
 }

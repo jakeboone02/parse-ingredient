@@ -1,5 +1,5 @@
-import { unitsOfMeasure } from './constants';
-import { UnitOfMeasureDefinitions } from './types';
+import { escapeRegex, unitsOfMeasure } from './constants';
+import { MeasurementUnitFilter, UnitOfMeasure, UnitOfMeasureDefinitions } from './types';
 
 /**
  * Result of building unit lookup maps.
@@ -114,4 +114,92 @@ export const collectUOMStrings = (maps: UnitLookupMaps): string[] => {
   const keys = [...maps.caseSensitive.keys()];
   keys.sort((a, b) => b.length - a.length);
   return keys;
+};
+
+/**
+ * Everything needed to scan arbitrary text for measurements: one alternation regex over
+ * the eligible UOM strings, plus the merged definitions the matched IDs resolve against.
+ *
+ * @internal
+ */
+export interface UOMScanner {
+  /** Global, case-insensitive alternation over eligible UOM strings, longest-first. */
+  regex: RegExp;
+  /** `unitsOfMeasure` with `additionalUOMs` merged over it, for `type` lookups. */
+  definitions: UnitOfMeasureDefinitions;
+}
+
+/**
+ * Whether a unit definition declares a conversion factor, i.e. whether `convertUnit` can
+ * act on it.
+ */
+const isConvertible = (def: UnitOfMeasure | undefined): boolean =>
+  def !== undefined && def.conversionFactor !== undefined;
+
+const buildUOMScanner = (
+  additionalUOMs: UnitOfMeasureDefinitions,
+  measurementUnits: MeasurementUnitFilter
+): UOMScanner => {
+  const maps = getUnitLookupMaps(additionalUOMs);
+  const definitions = { ...unitsOfMeasure, ...additionalUOMs };
+
+  // Longest-first, so the alternation prefers "inches" over "in" and "fluid oz" over
+  // "oz" at any given position.
+  const strings =
+    measurementUnits === 'all'
+      ? collectUOMStrings(maps)
+      : collectUOMStrings(maps).filter(str =>
+          isConvertible(definitions[maps.caseSensitive.get(str)!])
+        );
+
+  return {
+    regex: new RegExp(strings.map(escapeRegex).join('|'), 'giu'),
+    definitions,
+  };
+};
+
+/**
+ * Scanners keyed by `additionalUOMs` object identity, then by the unit filter. Building
+ * the alternation means escaping and sorting ~170 strings, which is not something a
+ * per-line — or even per-call — path should pay for.
+ *
+ * `ignoreUOMs` is deliberately not part of the key: ignored units are rejected by
+ * `identifyUnitFromMaps` after they match, so that the parser and the scanner cannot
+ * disagree about what "ignored" means.
+ */
+const scannerCache = new WeakMap<
+  UnitOfMeasureDefinitions,
+  Map<MeasurementUnitFilter, UOMScanner>
+>();
+
+/**
+ * Scanners for the no-`additionalUOMs` case, keyed by unit filter. The default parameter
+ * is a fresh `{}` on every call, so identity-keyed caching cannot catch it.
+ */
+const defaultScanners = new Map<MeasurementUnitFilter, UOMScanner>();
+
+/**
+ * Gets the {@link UOMScanner} for the given inputs, building it at most once per distinct
+ * combination.
+ *
+ * @internal
+ */
+export const getUOMScanner = (
+  additionalUOMs: UnitOfMeasureDefinitions = {},
+  measurementUnits: MeasurementUnitFilter = 'all'
+): UOMScanner => {
+  let byFilter: Map<MeasurementUnitFilter, UOMScanner>;
+  if (Object.keys(additionalUOMs).length === 0) {
+    byFilter = defaultScanners;
+  } else {
+    byFilter = scannerCache.get(additionalUOMs) ?? new Map();
+    scannerCache.set(additionalUOMs, byFilter);
+  }
+
+  const cached = byFilter.get(measurementUnits);
+  if (cached) return cached;
+
+  const scanner = buildUOMScanner(additionalUOMs, measurementUnits);
+  byFilter.set(measurementUnits, scanner);
+  return scanner;
 };

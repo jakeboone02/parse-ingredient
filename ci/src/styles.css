@@ -10,6 +10,21 @@ code {
   padding: 0 0.2rem;
 }
 
+#column-toggles {
+  border: 1px solid #dddddd;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem 1rem;
+  margin-bottom: 1rem;
+}
+
+#column-toggles label {
+  align-items: center;
+  display: flex;
+  gap: 0.2rem;
+  white-space: nowrap;
+}
+
 #grid {
   display: grid;
   grid-template-columns: repeat(var(--column-count), minmax(0, 1fr));
@@ -21,6 +36,11 @@ code {
   border-bottom: 1px solid #dddddd;
   overflow-wrap: anywhere;
   white-space: pre-wrap;
+}
+
+/* Option columns are hidden by default; the generated `:has(:checked)` rules reveal them. */
+#grid > [class*='col-'] {
+  display: none;
 }
 
 #grid > .heading {
