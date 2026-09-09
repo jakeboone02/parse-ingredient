@@ -5,7 +5,7 @@
     "": {
       "name": "parse-ingredient",
       "dependencies": {
-        "numeric-quantity": "^3.3.1",
+        "numeric-quantity": "^3.3.2",
       },
       "devDependencies": {
         "@arethetypeswrong/cli": "^0.18.5",
@@ -648,7 +648,7 @@
 
     "number-is-nan": ["number-is-nan@1.0.1", "", {}, "sha512-4jbtZXNAsfZbAHiiqjLPBiCl16dES1zI4Hpzzxw61Tk+loF+sBDBKx1ICKKKwIqQ7M0mFn1TmkN7euSncWgHiQ=="],
 
-    "numeric-quantity": ["numeric-quantity@3.3.1", "", {}, "sha512-rVWQd+eDc3LDDq7L/T//BL1eZ/LLBAnp0CY5qampKWlHdkz/SXyzQqq+cC8763w1UqZgNxRQycKB+7gd5sNumw=="],
+    "numeric-quantity": ["numeric-quantity@3.3.2", "", {}, "sha512-Gg/0rVyiaTePGl4AwVLtCvU/XNhYHAhcxrbyHpQKsUidlnEims/0g6WFrWynr8bL/0WFvNq0JTRmTzkDYZ/wwQ=="],
 
     "object-assign": ["object-assign@4.1.1", "", {}, "sha512-rJgTQnkUnH1sFw8yT6VSU3zD3sWmu6sZhIseY8VX+GRu3P6F7Fu+JNDoXfklElbLJSnc3FUQHVe4cU5hj+BcUg=="],
 

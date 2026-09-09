@@ -21,7 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **BREAKING:** `defaultOptions`, `unitsOfMeasure`, and the `default*` arrays are deeply frozen. Option array types and `UnitOfMeasure` members are now `readonly`; passing mutable arrays still works, writing to a shipped definition does not.
 - **BREAKING:** Minimum supported Node.js version is now 20 (`engines.node` bumped from `>=10`).
 - `UnitOfMeasure.alternates` is now optional.
-- `numeric-quantity` updated to v3.3.1.
+- `numeric-quantity` updated to v3.3.2.
 - The CJS build is now a single unminified `dist/cjs/index.js` instead of a `process.env.NODE_ENV` switch between separate development and production bundles. The library reads no environment, so the two bundles only ever differed by minification. Resolution through the `exports` map is unchanged.
 - `types` now points at `./dist/cjs/index.d.ts`. The declarations are identical to the previous `legacy-esm` ones; only the path changed.
 
@@ -49,6 +49,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- The trailing-quantity regex no longer backtracks exponentially on long digit runs. `numericRegex` is inlined twice, unanchored, and its integer part was an ambiguous nested quantifier, so a line like `'Beef, cut into 1234…567 inch cubes'` that ultimately failed to match cost ~640 ms at 25 digits and grew from there — a denial-of-service risk for anyone parsing untrusted recipe text. Fixed upstream in `numeric-quantity` v3.3.2; the language the pattern matches is unchanged.
 - Quantities are no longer truncated to the first six characters of the line. The parser previously fell back to the longest _prefix_ of that window that happened to parse, so `'1 11/16 cups sugar'` yielded `quantity: 12` with `description: '6 cups sugar'`, and `'1000000 g flour'` yielded `quantity: 100000` with `description: '0 g flour'`. The search window is now derived from the input, so quantities of any length are extracted whole. The same fix applies to the second quantity of a range.
 - `rangeSeparators` patterns containing capture groups (e.g. `/(bis)/iu`) no longer cause `quantity2` to be dropped from trailing ranges. The trailing-quantity regex uses named capture groups, and named groups in user patterns are neutralized.
 - UMD build is emitted as `dist/parse-ingredient.umd.min.js`, matching the `unpkg` field in `package.json`. The path advertised to CDNs previously 404'd.

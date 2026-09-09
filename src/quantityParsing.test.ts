@@ -4,7 +4,11 @@ import {
   superSubDigitToAsciiMap,
   vulgarFractionToAsciiMap,
 } from 'numeric-quantity';
-import { buildLeadingQuantityPrefixRegex } from './constants';
+import {
+  buildLeadingQuantityPrefixRegex,
+  buildTrailingQuantityRegex,
+  defaultRangeSeparators,
+} from './constants';
 import { parseIngredient } from './parseIngredient';
 import { stripLeadingQuantityPrefixes } from './parsePhases';
 import { isAcceptableQuantity } from './quantityScan';
@@ -152,5 +156,35 @@ describe('stripLeadingQuantityPrefixes', () => {
     expect(
       stripLeadingQuantityPrefixes('ca. 200 g', buildLeadingQuantityPrefixRegex(['ca.', 'ca']))
     ).toBe('200 g');
+  });
+});
+
+/**
+ * `buildTrailingQuantityRegex` inlines `numericRegex` twice, unanchored. Upstream's
+ * integer part was an ambiguous nested quantifier, which made a failing match exponential
+ * in the length of a digit run (~25 digits took over half a second here, and 30 digits
+ * took ~15s on V8 against the bare pattern). Fixed in `numeric-quantity` v3.3.2, which
+ * `package.json` requires as a minimum for that reason — there is no local mitigation, so
+ * this is what would catch a bad downgrade or an upstream regression.
+ *
+ * The budget is deliberately loose — the point is exponential vs. not, and the
+ * pre-fix cost for 32 digits was measured in tens of seconds.
+ */
+describe('trailing quantity regex backtracking', () => {
+  const regex = buildTrailingQuantityRegex(defaultRangeSeparators);
+
+  test('fails fast on a long digit run', () => {
+    const line = `Beef, cut into ${'1'.repeat(32)} inch cubes`;
+    const start = performance.now();
+    expect(regex.exec(line)).toBeNull();
+    expect(performance.now() - start).toBeLessThan(500);
+  });
+
+  test('still matches the quantities it is meant to', () => {
+    expect(regex.exec('2 to 3 cups')?.groups).toMatchObject({ qty1: '2', qty2: '3', uom: 'cups' });
+    expect(regex.exec('1,234.5 g')?.groups).toMatchObject({ qty2: '1,234.5', uom: 'g' });
+    expect(regex.exec('1 1/2 tsp')?.groups).toMatchObject({ qty2: '1 1/2', uom: 'tsp' });
+    expect(regex.exec('1_000 ml')?.groups).toMatchObject({ qty2: '1_000', uom: 'ml' });
+    expect(regex.exec('1.5e3 g')?.groups).toMatchObject({ qty2: '1.5e3', uom: 'g' });
   });
 });

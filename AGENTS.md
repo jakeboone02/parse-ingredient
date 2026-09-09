@@ -43,6 +43,7 @@ These are load-bearing and mostly unenforceable by the type system. Do not "clea
 - **Phase order matters.** `descriptionStripPrefixes` (`stripDescriptionPrefix`) runs _last_, after UOM extraction, on whatever text survives. Moving it earlier changes results for lines where the prefix word is adjacent to a unit.
 - **`quantity` / `quantity2` are finite and non-negative when non-`null`**, and `quantity2` is never set without `quantity`. Lines that would violate this fall back to keeping the whole line as `description`. `src/invariants.test.ts` asserts this across all fixtures.
 - **Quantity search bounds are derived from the input**, not a fixed character window. Do not reintroduce a length cap.
+- **The `numeric-quantity` floor of v3.3.2 is load-bearing.** Earlier versions have an ambiguous nested quantifier in `numericRegex` that backtracks exponentially on long digit runs; because the pattern is inlined twice and unanchored in `buildTrailingQuantityRegex`, a downgrade is a ReDoS. `src/quantityParsing.test.ts` asserts it with a timing test.
 - **`defaultOptions`, `unitsOfMeasure`, and the `default*` arrays are deeply frozen** and their types are `readonly`. `src/frozenConstants.test.ts` asserts this.
 - **Unit lookup maps are cached** — default maps in a module-level singleton, `additionalUOMs` maps in a `WeakMap` keyed by the definitions object. Building them per call is an order-of-magnitude regression for the i18n use case.
 - **`collectUOMStrings` returns longest-first.** `partialUnitMatching` depends on that ordering to prefer `大さじ` over `大`.
