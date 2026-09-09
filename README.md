@@ -336,6 +336,8 @@ parseIngredient('1 cup flour', { descriptionMeasurements: true });
 
 Group headers are labels rather than measurements, so they always carry an empty array.
 
+> **Note:** `C` is a recognized abbreviation for `cup`, so text containing an oven temperature like `'bake at 175 C'` reports a 175-cup measurement. Pass `ignoreUOMs: ['C', 'F']` when scanning text that may contain temperatures.
+
 ### `measurementUnits`
 
 Controls which units count as a description measurement. Has no effect unless `descriptionMeasurements` is `true`. Defaults to `'all'`.
