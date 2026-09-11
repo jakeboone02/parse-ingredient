@@ -9,7 +9,7 @@ Parses a string, which can include mixed numbers or vulgar fractions (thanks to 
 
 **[Full documentation](https://jakeboone02.github.io/parse-ingredient/)**
 
-**[Demo](https://jakeboone02.github.io/parse-ingredient-demo/)**
+**[Demo](https://jakeboone02.github.io/parse-ingredient/demo/)**
 
 Ingredient objects have the following signature:
 

@@ -16,6 +16,7 @@ parse-ingredient is a TypeScript library that parses recipe ingredient lines int
 - **Format:** `bun run fmt` (oxfmt); check-only: `bun run fmt --check`
 - **Type-check:** `bunx tsc` (library) and `bunx tsc -p ci` (demo app)
 - **Docs:** `bun run docs` (TypeDoc → `docs/`)
+- **Demo server:** `bun start` (`demo/server.mts`, port 3000)
 - **Regenerate CI demo examples:** `bun run generate:ci-examples`
 
 CI (`.github/workflows/main.yml`) runs `bunx tsc`, `bunx tsc -p ci`, `bun run build`, `bun run test`, `bun run fmt --check`, and `bun run lint`, plus `attw`, `publint`, and a pkg.pr.new publish. Keep those green. The watch, single-file test, docs, and `generate:ci-examples` commands are local-only, but a stale `ci/src/examples.ts` fails `bun run test` via `src/ciExamples.test.ts`.
@@ -35,7 +36,7 @@ All library source lives in `src/`. The public entry point is `src/index.ts`, wh
 - `src/extractMeasurements.ts`, `src/convertUnit.ts`, `src/types.ts` — public.
 - `src/dev.ts`, `src/parseIngredientTests.ts` — dev scratch file and shared test fixtures.
 
-`ci/` is a separate Vite app used as the pkg.pr.new preview template; its `src/examples.ts` is generated from `parseIngredientTests` and guarded against staleness by `src/ciExamples.test.ts`. Root `index.html` is the standalone `bun --hot` demo. Do not conflate the two.
+`ci/` is a separate Vite app used as the pkg.pr.new preview template; its `src/examples.ts` is generated from `parseIngredientTests` and guarded against staleness by `src/ciExamples.test.ts`. `demo/` is the standalone local demo, served by `bun start` via `demo/server.mts` (rebuilds `src/index.ts` per request). Do not conflate the two.
 
 ## Invariants
 

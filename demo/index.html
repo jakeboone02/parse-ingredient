@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Parse Ingredients</title>
+    <link
+      id="hljs-theme"
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.12.0/styles/github-dark-dimmed.css"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-TMFVDH6J7S"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-TMFVDH6J7S");
+    </script>
+  </head>
+  <body>
+    <button id="theme-toggle" class="theme-toggle" title="Toggle theme">◐</button>
+    <span id="forkongithub">
+      <a href="https://github.com/jakeboone02/parse-ingredient">
+        Fork&nbsp;me&nbsp;on&nbsp;GitHub
+      </a>
+    </span>
+    <header class="page-header">
+      <h1>parse-ingredient</h1>
+      <nav>
+        <a href="https://npmjs.com/package/parse-ingredient">npm</a>
+        <a href="../">Documentation</a>
+        <a href="https://github.com/jakeboone02/parse-ingredient">GitHub</a>
+      </nav>
+    </header>
+
+    <p>
+      Enter an ingredient list in the text box below. Results update as you type or choose options.
+    </p>
+    <p>
+      Numbers can be integers, decimals, mixed numbers (e.g. <code>1 1/2</code>), or vulgar
+      fractions (e.g. <code>1½</code>).
+    </p>
+
+    <section>
+      <h4><code>parseIngredient</code></h4>
+
+      <div class="checkbox-row">
+        <label>
+          <input type="checkbox" id="allow-leading-of" />
+          <code>allowLeadingOf</code>
+        </label>
+        <label>
+          <input type="checkbox" id="decimal-comma" />
+          <code>decimalSeparator: ","</code>
+        </label>
+        <label>
+          <input type="checkbox" id="normalize-uom" />
+          <code>normalizeUOM</code>
+        </label>
+        <label>
+          <input type="checkbox" id="partial-unit-matching" />
+          <code>partialUnitMatching</code>
+        </label>
+        <label>
+          <input type="checkbox" id="description-measurements" />
+          <code>descriptionMeasurements</code>
+        </label>
+        <label>
+          <input type="checkbox" id="include-meta" />
+          <code>includeMeta</code>
+        </label>
+      </div>
+
+      <details class="advanced-options">
+        <summary>Advanced options</summary>
+        <div class="advanced-options-grid">
+          <label for="decimal-separator"><code>decimalSeparator</code></label>
+          <select id="decimal-separator" value="">
+            <option value="">undefined (".")</option>
+            <option value=".">.</option>
+            <option value=",">,</option>
+          </select>
+          <label for="ignore-uoms"><code>ignoreUOMs</code></label>
+          <input type="text" id="ignore-uoms" placeholder="" />
+          <label for="round"><code>round</code></label>
+          <input type="text" id="round" placeholder="3" />
+          <label for="group-header-patterns"><code>groupHeaderPatterns</code></label>
+          <input type="text" id="group-header-patterns" placeholder="For" />
+          <label for="range-separators"><code>rangeSeparators</code></label>
+          <input type="text" id="range-separators" placeholder="or, to" />
+          <label for="description-strip-prefixes"><code>descriptionStripPrefixes</code></label>
+          <input type="text" id="description-strip-prefixes" placeholder="of" />
+          <label for="trailing-quantity-context"><code>trailingQuantityContext</code></label>
+          <input type="text" id="trailing-quantity-context" placeholder="from, of" />
+          <label for="leading-quantity-prefixes"><code>leadingQuantityPrefixes</code></label>
+          <input type="text" id="leading-quantity-prefixes" placeholder="" />
+          <label for="measurement-units"><code>measurementUnits</code></label>
+          <select id="measurement-units" value="">
+            <option value="">undefined ("All")</option>
+            <option value="all">All</option>
+            <option value="convertible">Convertible</option>
+          </select>
+        </div>
+      </details>
+
+      <h5>Call</h5>
+      <pre id="parse-preview" class="call-preview language-javascript"></pre>
+
+      <div class="two-col">
+        <div class="two-col-input">
+          <h5>Input</h5>
+          <textarea id="ingredient-list" cols="80" rows="10">
+For The Buttercream (or make a cream cheese frosting)
+4 large egg whites
+1 cup packed light-brown sugar
+1/4 teaspoon salt
+1 ½ cups (3 sticks) unsalted butter, room temperature, cut into pieces
+
+For The Cake
+1/2 cup (1 stick) unsalted butter, melted, plus more for pans
+2 cups all-purpose flour (spooned and leveled), plus more for pans
+2 teaspoons baking soda
+1/2 teaspoon baking powder
+2 teaspoons of ground cinnamon
+1/2 teaspoon ground ginger
+3⁄4 teaspoon salt
+2 cups packed light-brown sugar
+Large egg x 2
+4 Granny Smith apples, peeled, two coarsely grated and two diced</textarea
+          >
+        </div>
+        <div class="two-col-output">
+          <h5>Results</h5>
+          <pre id="results" class="language-json">Loading...</pre>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h4><code>convertUnit</code></h4>
+
+      <div class="convert-controls">
+        <label for="convert-value">Value</label>
+        <input type="number" id="convert-value" value="1" step="0.01" />
+
+        <label for="convert-from-unit">From</label>
+        <select id="convert-from-unit"></select>
+
+        <label for="convert-to-unit">To</label>
+        <select id="convert-to-unit"></select>
+      </div>
+
+      <h5>Call</h5>
+      <pre id="convert-preview" class="call-preview language-javascript"></pre>
+
+      <div>
+        <strong>Result:</strong>
+        <span id="convert-result">-</span>
+      </div>
+    </section>
+
+    <section>
+      <h4><code>extractMeasurements</code></h4>
+
+      <div class="extract-controls">
+        <label for="extract-source">Source</label>
+        <input type="text" id="extract-source" value="cut into 1 1/2-inch cubes" />
+      </div>
+
+      <h5>Call</h5>
+      <pre id="extract-preview" class="call-preview language-javascript"></pre>
+
+      <div>
+        <strong>Result:</strong>
+        <pre id="extract-result" class="call-preview language-json">-</pre>
+      </div>
+    </section>
+
+    <footer>
+      Copyright &copy; <span id="year">2026</span>
+      <a href="https://github.com/jakeboone02">Jake Boone</a>
+    </footer>
+    <script>
+      document.getElementById("year").innerText = new Date().getFullYear();
+    </script>
+    <script>
+      (function () {
+        const root = document.documentElement;
+        const btn = document.getElementById("theme-toggle");
+        const themes = ["light", "system", "dark"];
+        const icons = { light: "☼", system: "◐", dark: "☾" };
+        const titles = { light: "Light mode", system: "System preference", dark: "Dark mode" };
+        const hljsLink = document.getElementById("hljs-theme");
+        const darkMql = window.matchMedia("(prefers-color-scheme: dark)");
+        const hljsHref = (name) =>
+          `https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.12.0/styles/${name}.css`;
+
+        function setHljsTheme(theme) {
+          const dark = theme === "dark" || (theme === "system" && darkMql.matches);
+          hljsLink.href = hljsHref(dark ? "github-dark-dimmed" : "github");
+        }
+
+        function setTheme(theme) {
+          btn.textContent = icons[theme];
+          btn.title = titles[theme];
+          setHljsTheme(theme);
+
+          if (theme === "system") {
+            root.removeAttribute("data-theme");
+            localStorage.removeItem("theme");
+          } else {
+            root.setAttribute("data-theme", theme);
+            localStorage.setItem("theme", theme);
+          }
+        }
+
+        function cycleTheme() {
+          const current = localStorage.getItem("theme") || "system";
+          const nextIndex = (themes.indexOf(current) + 1) % themes.length;
+          setTheme(themes[nextIndex]);
+        }
+
+        setTheme(localStorage.getItem("theme") || "system");
+        btn.addEventListener("click", cycleTheme);
+        darkMql.addEventListener("change", () =>
+          setHljsTheme(localStorage.getItem("theme") || "system"),
+        );
+      })();
+    </script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const COPY_CHAR = "\u29C9";
+        const COPIED_CHAR = "\u2713";
+
+        document.querySelectorAll("pre").forEach((pre) => {
+          const btn = document.createElement("button");
+          btn.className = "copy-btn";
+          btn.textContent = COPY_CHAR;
+          btn.title = "Copy";
+          btn.addEventListener("click", () => {
+            navigator.clipboard
+              .writeText(pre.textContent.replace(COPY_CHAR, "").replace(COPIED_CHAR, ""))
+              .then(() => {
+                btn.textContent = COPIED_CHAR;
+                btn.classList.add("copied");
+                setTimeout(() => {
+                  btn.textContent = COPY_CHAR;
+                  btn.classList.remove("copied");
+                }, 1500);
+              });
+          });
+          pre.appendChild(btn);
+
+          // Re-append button after content updates that replace innerHTML
+          new MutationObserver(() => {
+            if (!pre.contains(btn)) pre.appendChild(btn);
+          }).observe(pre, { childList: true });
+        });
+      });
+    </script>
+    <script type="importmap">
+      {
+        "imports": {
+          "highlight.js": "https://esm.sh/highlight.js@11.12.0",
+          "numeric-quantity": "https://esm.sh/numeric-quantity@3.3.2",
+          "parse-ingredient": "./parse-ingredient.mjs"
+        }
+      }
+    </script>
+    <script type="module">
+      import {
+        parseIngredient,
+        convertUnit,
+        extractMeasurements,
+        unitsOfMeasure,
+      } from "parse-ingredient";
+      import hljs from "highlight.js";
+
+      // --- Elements ---
+      const normalizeUOMEl = document.getElementById("normalize-uom");
+      const allowLeadingOfEl = document.getElementById("allow-leading-of");
+      const decimalCommaEl = document.getElementById("decimal-comma");
+      const includeMetaEl = document.getElementById("include-meta");
+      const measurementUnitsEl = document.getElementById("measurement-units");
+      const decimalSeparatorEl = document.getElementById("decimal-separator");
+      const descriptionMeasurementsEl = document.getElementById("description-measurements");
+      const partialUnitMatchingEl = document.getElementById("partial-unit-matching");
+      const groupHeaderPatternsEl = document.getElementById("group-header-patterns");
+      const ignoreUOMsEl = document.getElementById("ignore-uoms");
+      const roundEl = document.getElementById("round");
+      const rangeSeparatorsEl = document.getElementById("range-separators");
+      const descriptionStripPrefixesEl = document.getElementById("description-strip-prefixes");
+      const trailingQuantityContextEl = document.getElementById("trailing-quantity-context");
+      const leadingQuantityPrefixesEl = document.getElementById("leading-quantity-prefixes");
+      const ingredientListEl = document.getElementById("ingredient-list");
+      const resultsEl = document.getElementById("results");
+      const parsePreviewEl = document.getElementById("parse-preview");
+
+      // --- Parse preview ---
+      const parseArrayOption = (el) => {
+        const val = el.value.trim();
+        if (!val) return undefined;
+        return val
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean);
+      };
+
+      const parseNumberOption = (el) => {
+        const val = el.value.trim();
+        if (val === "") return undefined;
+        if (val === "false") return false;
+        const num = Number(val);
+        return isNaN(num) ? undefined : num;
+      };
+
+      const buildParseOpts = () => {
+        const opts = {};
+        if (normalizeUOMEl.checked) opts.normalizeUOM = true;
+        if (allowLeadingOfEl.checked) opts.allowLeadingOf = true;
+        if (decimalCommaEl.checked) opts.decimalSeparator = ",";
+        if (includeMetaEl.checked) opts.includeMeta = true;
+        const measurementUnits = measurementUnitsEl.value.trim();
+        if (measurementUnits) opts.measurementUnits = measurementUnits;
+        const decimalSeparator = decimalSeparatorEl.value.trim();
+        if (decimalSeparator) opts.decimalSeparator = decimalSeparator;
+        if (descriptionMeasurementsEl.checked) opts.descriptionMeasurements = true;
+        if (partialUnitMatchingEl.checked) opts.partialUnitMatching = true;
+        const iuoms = parseArrayOption(ignoreUOMsEl);
+        if (iuoms) opts.ignoreUOMs = iuoms;
+        const round = parseNumberOption(roundEl);
+        if (round !== undefined) opts.round = round;
+        const ghp = parseArrayOption(groupHeaderPatternsEl);
+        if (ghp) opts.groupHeaderPatterns = ghp;
+        const rs = parseArrayOption(rangeSeparatorsEl);
+        if (rs) opts.rangeSeparators = rs;
+        const dsp = parseArrayOption(descriptionStripPrefixesEl);
+        if (dsp) opts.descriptionStripPrefixes = dsp;
+        const tqc = parseArrayOption(trailingQuantityContextEl);
+        if (tqc) opts.trailingQuantityContext = tqc;
+        const lqp = parseArrayOption(leadingQuantityPrefixesEl);
+        if (lqp) opts.leadingQuantityPrefixes = lqp;
+        return opts;
+      };
+
+      const highlightEl = (el) => {
+        delete el.dataset.highlighted;
+        hljs.highlightElement(el);
+      };
+
+      const updateParsePreview = () => {
+        const opts = buildParseOpts();
+        const hasOpts = Object.keys(opts).length > 0;
+        parsePreviewEl.textContent = hasOpts
+          ? `parseIngredient(ingredientText, ${JSON.stringify(opts, null, 2).replaceAll(/  "(\w+)":/g, "  $1:")})`
+          : `parseIngredient(ingredientText)`;
+        highlightEl(parsePreviewEl);
+      };
+
+      const updateResults = () => {
+        const opts = buildParseOpts();
+        resultsEl.textContent = JSON.stringify(
+          parseIngredient(ingredientListEl.value, opts),
+          null,
+          2,
+        );
+        highlightEl(resultsEl);
+        updateParsePreview();
+      };
+
+      // Bind parse option controls
+      [
+        measurementUnitsEl,
+        decimalSeparatorEl,
+        normalizeUOMEl,
+        allowLeadingOfEl,
+        decimalCommaEl,
+        includeMetaEl,
+        descriptionMeasurementsEl,
+        partialUnitMatchingEl,
+      ].forEach((el) => el.addEventListener("change", updateResults));
+
+      [
+        ingredientListEl,
+        ignoreUOMsEl,
+        roundEl,
+        groupHeaderPatternsEl,
+        rangeSeparatorsEl,
+        descriptionStripPrefixesEl,
+        trailingQuantityContextEl,
+        leadingQuantityPrefixesEl,
+      ].forEach((el) => el.addEventListener("input", updateResults));
+
+      updateResults();
+
+      // --- Unit conversion ---
+      const fromUnitSelect = document.getElementById("convert-from-unit");
+      const toUnitSelect = document.getElementById("convert-to-unit");
+      const convertPreviewEl = document.getElementById("convert-preview");
+      const systems = ["us", "imperial", "metric"];
+      const systemLabel = { us: "US", imperial: "Imperial", metric: "Metric" };
+
+      const hasMultipleSystems = (unitId) =>
+        typeof unitsOfMeasure[unitId]?.conversionFactor === "object";
+
+      const convertibleUnits = Object.entries(unitsOfMeasure)
+        .filter(([, unit]) => unit.conversionFactor)
+        .sort((a, b) => a[0].localeCompare(b[0]));
+
+      // Populate selects: for multi-system units, add one option per system
+      convertibleUnits.forEach(([id]) => {
+        if (hasMultipleSystems(id)) {
+          systems.forEach((sys) => {
+            [fromUnitSelect, toUnitSelect].forEach((sel) => {
+              const opt = document.createElement("option");
+              opt.value = `${id}::${sys}`;
+              opt.textContent = `${id} (${systemLabel[sys]})`;
+              sel.appendChild(opt);
+            });
+          });
+        } else {
+          [fromUnitSelect, toUnitSelect].forEach((sel) => {
+            const opt = document.createElement("option");
+            opt.value = id;
+            opt.textContent = id;
+            sel.appendChild(opt);
+          });
+        }
+      });
+
+      fromUnitSelect.value = "cup::us";
+      toUnitSelect.value = "milliliter";
+
+      // Parse a select value into { unit, system }
+      const parseUnitValue = (val) => {
+        const parts = val.split("::");
+        return { unit: parts[0], system: parts[1] || null };
+      };
+
+      // Show both systems whenever either side is not "us".
+      // Omit entirely when both resolve to "us" (explicit "us" or null).
+      const buildConvertOpts = (from, to) => {
+        const fs = from.system ?? "us";
+        const ts = to.system ?? "us";
+        if (fs === "us" && ts === "us") return {};
+        const opts = {};
+        if (from.system) opts.fromSystem = from.system;
+        if (to.system) opts.toSystem = to.system;
+        return opts;
+      };
+
+      const buildConvertPreview = () => {
+        const value = document.getElementById("convert-value").value;
+        const from = parseUnitValue(fromUnitSelect.value);
+        const to = parseUnitValue(toUnitSelect.value);
+        const opts = buildConvertOpts(from, to);
+
+        let text = `convertUnit(${value}, "${from.unit}", "${to.unit}"`;
+        if (Object.keys(opts).length > 0) {
+          const parts = Object.entries(opts).map(([k, v]) => `${k}: "${v}"`);
+          text += `, { ${parts.join(", ")} }`;
+        }
+        text += ")";
+        convertPreviewEl.textContent = text;
+        highlightEl(convertPreviewEl);
+      };
+
+      const updateConversion = () => {
+        const value = parseFloat(document.getElementById("convert-value").value);
+        const from = parseUnitValue(fromUnitSelect.value);
+        const to = parseUnitValue(toUnitSelect.value);
+        const opts = buildConvertOpts(from, to);
+
+        const result = convertUnit(value, from.unit, to.unit, opts);
+        document.getElementById("convert-result").textContent =
+          result !== null ? result.toFixed(3) : "null (incompatible types)";
+
+        buildConvertPreview();
+      };
+
+      document.getElementById("convert-value").addEventListener("input", updateConversion);
+      fromUnitSelect.addEventListener("change", updateConversion);
+      toUnitSelect.addEventListener("change", updateConversion);
+      updateConversion();
+
+      const updateExtractResults = () => {
+        const source = document.getElementById("extract-source").value;
+        const extractPreviewEl = document.getElementById("extract-preview");
+        extractPreviewEl.textContent = `extractMeasurements("${source}")`;
+        highlightEl(extractPreviewEl);
+
+        const result = extractMeasurements(source);
+        const extractResultEl = document.getElementById("extract-result");
+        extractResultEl.textContent = JSON.stringify(result, null, 2);
+        highlightEl(extractResultEl);
+      };
+
+      document.getElementById("extract-source").addEventListener("input", updateExtractResults);
+
+      updateExtractResults();
+    </script>
+  </body>
+</html>
