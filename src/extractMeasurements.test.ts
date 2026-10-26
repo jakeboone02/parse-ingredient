@@ -20,6 +20,9 @@ describe('finds a quantity paired with a unit', () => {
     ['½ inch thick', 0.5, 'inch', '½ inch'],
     ['reduce by 250 ml', 250, 'milliliter', '250 ml'],
     ['cut into 4 pieces', 4, 'piece', '4 pieces'],
+    // A slash before the quantity, as in an alternate amount ("2 cups/10 ounces").
+    ['/10 ounces frozen peas', 10, 'ounce', '10 ounces'],
+    ['cups/10 ounces frozen peas', 10, 'ounce', '10 ounces'],
   ])('%p', (text, quantity, unitOfMeasureID, matched) => {
     expect(summarize(extractMeasurements(text))).toEqual([
       { quantity, quantity2: null, unitOfMeasureID, text: matched },
@@ -60,6 +63,9 @@ describe('rejects text that is not a measurement', () => {
     'chill 2 hours then cut in cubes',
     // No numeric character at all — the scan is skipped entirely.
     'salt and pepper to taste',
+    // A digit before the slash makes it a fraction bar: "1/0" is not a quantity, and its
+    // denominator is not one either.
+    '1/0 cups',
   ])('%p', text => {
     expect(extractMeasurements(text)).toEqual([]);
   });

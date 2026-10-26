@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- A unit followed by a slashed alternate amount, as in `'2 cups/10 ounces frozen peas'`, is now recognized. The unit word joins `/` runs (for plural markers like `Scheibe/n`), so `cups/10` was looked up as one unknown unit and the line got no unit at all. It now yields `unitOfMeasureID: 'cup'` and `description: '/10 ounces frozen peas'`, the same as the spaced `'2 cups / 10 ounces'` apart from the space. A slash followed by something other than a quantity (`'cups/sticks'`) and slashed units registered via `additionalUOMs` are unaffected.
+- `descriptionMeasurements` and `extractMeasurements` find a quantity right after a slash, so the `10 ounces` above is reported. A slash preceded by a digit is still a fraction bar, so `'1/0 cups'` does not yield `0 cups`.
+
 ## [v3.0.0] - 2026-09-08
 
 ### Added

@@ -94,6 +94,14 @@ const whitespaceRegExp = /\s/u;
 const quantityStartBoundaryRegExp = /[\s([{"'\u2018\u201c\u201d\u2019,;:~\-\u2010-\u2015]/u;
 
 /**
+ * A slash also starts a quantity, as in the alternate amount of `'cups/10 ounces'`, unless a
+ * digit precedes it: then it is a fraction bar, and `'1/0'` must not yield `0`.
+ */
+const isQuantityStartBoundary = (text: string, start: number): boolean =>
+  quantityStartBoundaryRegExp.test(text[start - 1]) ||
+  (text[start - 1] === '/' && (start === 1 || !/\p{Nd}/u.test(text[start - 2])));
+
+/**
  * Finds the longest *suffix* of `text` that parses as a single acceptable quantity, and
  * whose start sits at a word boundary.
  *
@@ -125,7 +133,7 @@ export const matchTrailingQuantity = (
   for (let start = min; start < text.length; start++) {
     // A quantity never starts on whitespace, and never mid-word ("x12" is not 12).
     if (whitespaceRegExp.test(text[start])) continue;
-    if (start > 0 && !quantityStartBoundaryRegExp.test(text[start - 1])) continue;
+    if (start > 0 && !isQuantityStartBoundary(text, start)) continue;
 
     const value = numericQuantity(text.substring(start), nqOpts);
     // Leftmost acceptable start wins, so the longest quantity is returned.

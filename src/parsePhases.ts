@@ -283,6 +283,30 @@ export const parseRangeQuantity2 = (ingredient: Ingredient, ctx: ParseContext): 
 };
 
 /**
+ * Handles a unit followed by an alternate measurement after a slash, as in
+ * `'2 cups/10 ounces frozen peas'`. `uomWordSource` joins words on `/` (for plural markers
+ * like `Scheibe/n`), so the `cups/10` run fails lookup as one word. Tried only after that
+ * lookup fails and only when a quantity follows the slash, so slashed units still win.
+ */
+const identifySlashedLeadingUnit = (
+  ingredient: Ingredient,
+  firstWord: string,
+  remainingDesc: string,
+  ctx: ParseContext
+): void => {
+  const slashIndex = firstWord.indexOf('/');
+  if (slashIndex < 1 || !startsWithQuantity(firstWord.slice(slashIndex + 1), ctx)) return;
+
+  const unitWord = firstWord.slice(0, slashIndex);
+  const uomID = identifyUnitFromMaps(unitWord, ctx.lookupMaps, ctx.ignoredUOMsLC);
+  if (!uomID) return;
+
+  ingredient.unitOfMeasureID = uomID;
+  ingredient.unitOfMeasure = ctx.opts.normalizeUOM ? uomID : unitWord;
+  ingredient.description = `${firstWord.slice(slashIndex)} ${remainingDesc}`.trim();
+};
+
+/**
  * Checks the beginning of the description for a known unit of measure.
  *
  * @internal
@@ -293,7 +317,10 @@ export const identifyLeadingUnit = (ingredient: Ingredient, ctx: ParseContext): 
 
   const firstWord = firstWordMatches[1].replace(/\s+/g, ' ');
   const remainingDesc = (firstWordMatches[2] ?? '').trim();
-  if (!remainingDesc) return;
+  if (!remainingDesc) {
+    identifySlashedLeadingUnit(ingredient, firstWord, remainingDesc, ctx);
+    return;
+  }
 
   // The multi-word candidate extends forwards into the description.
   const nextWords = nextWordRegExp.exec(remainingDesc);
@@ -309,7 +336,10 @@ export const identifyLeadingUnit = (ingredient: Ingredient, ctx: ParseContext): 
     twoWordEligible ? `${firstWord} ${nextWords[1]}` : null,
     ctx
   );
-  if (!unit) return;
+  if (!unit) {
+    identifySlashedLeadingUnit(ingredient, firstWord, remainingDesc, ctx);
+    return;
+  }
 
   ingredient.unitOfMeasureID = unit.id;
   ingredient.unitOfMeasure = ctx.opts.normalizeUOM ? unit.id : unit.matchedText;
