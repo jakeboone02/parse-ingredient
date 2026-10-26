@@ -286,7 +286,8 @@ export const parseRangeQuantity2 = (ingredient: Ingredient, ctx: ParseContext): 
  * Handles a unit followed by an alternate measurement after a slash, as in
  * `'2 cups/10 ounces frozen peas'`. `uomWordSource` joins words on `/` (for plural markers
  * like `Scheibe/n`), so the `cups/10` run fails lookup as one word. Tried only after that
- * lookup fails and only when a quantity follows the slash, so slashed units still win.
+ * lookup fails, and only at a slash followed by a quantity. Slashes are tried right to
+ * left, so the longest registered unit wins (`Scheibe/n/2 g` keeps `Scheibe/n`).
  */
 const identifySlashedLeadingUnit = (
   ingredient: Ingredient,
@@ -294,16 +295,22 @@ const identifySlashedLeadingUnit = (
   remainingDesc: string,
   ctx: ParseContext
 ): void => {
-  const slashIndex = firstWord.indexOf('/');
-  if (slashIndex < 1 || !startsWithQuantity(firstWord.slice(slashIndex + 1), ctx)) return;
+  for (
+    let slashIndex = firstWord.lastIndexOf('/');
+    slashIndex > 0;
+    slashIndex = firstWord.lastIndexOf('/', slashIndex - 1)
+  ) {
+    if (!startsWithQuantity(firstWord.slice(slashIndex + 1), ctx)) continue;
 
-  const unitWord = firstWord.slice(0, slashIndex);
-  const uomID = identifyUnitFromMaps(unitWord, ctx.lookupMaps, ctx.ignoredUOMsLC);
-  if (!uomID) return;
+    const unitWord = firstWord.slice(0, slashIndex);
+    const uomID = identifyUnitFromMaps(unitWord, ctx.lookupMaps, ctx.ignoredUOMsLC);
+    if (!uomID) continue;
 
-  ingredient.unitOfMeasureID = uomID;
-  ingredient.unitOfMeasure = ctx.opts.normalizeUOM ? uomID : unitWord;
-  ingredient.description = `${firstWord.slice(slashIndex)} ${remainingDesc}`.trim();
+    ingredient.unitOfMeasureID = uomID;
+    ingredient.unitOfMeasure = ctx.opts.normalizeUOM ? uomID : unitWord;
+    ingredient.description = `${firstWord.slice(slashIndex)} ${remainingDesc}`.trim();
+    return;
+  }
 };
 
 /**

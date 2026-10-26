@@ -2472,6 +2472,42 @@ export const parseIngredientTests: Record<
     ],
     { normalizeUOM: true },
   ],
+  'slashed alternate amount after a registered slashed unit': [
+    '1 Scheibe/n/20 g Toast',
+    [
+      {
+        quantity: 1,
+        quantity2: null,
+        unitOfMeasureID: 'slice',
+        unitOfMeasure: 'Scheibe/n',
+        description: '/20 g Toast',
+        isGroupHeader: false,
+      },
+    ],
+    {
+      additionalUOMs: {
+        slice: {
+          short: 'Scheibe',
+          plural: 'Scheiben',
+          alternates: ['scheibe/n'],
+          type: 'count',
+        },
+      },
+    },
+  ],
+  'slashed alternate amount that is itself a fraction': [
+    '1 cup/2/3 cup milk',
+    [
+      {
+        quantity: 1,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cup',
+        description: '/2/3 cup milk',
+        isGroupHeader: false,
+      },
+    ],
+  ],
   'slash not followed by a quantity is not split': [
     '2 cups/sticks butter',
     [
