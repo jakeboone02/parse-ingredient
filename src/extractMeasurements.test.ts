@@ -66,6 +66,8 @@ describe('rejects text that is not a measurement', () => {
     // A digit before the slash makes it a fraction bar: "1/0" is not a quantity, and its
     // denominator is not one either.
     '1/0 cups',
+    // The same for a digit outside the BMP, which is two UTF-16 code units.
+    '𝟚/0 cups',
   ])('%p', text => {
     expect(extractMeasurements(text)).toEqual([]);
   });

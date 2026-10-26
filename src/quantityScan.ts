@@ -93,13 +93,18 @@ const whitespaceRegExp = /\s/u;
  */
 const quantityStartBoundaryRegExp = /[\s([{"'\u2018\u201c\u201d\u2019,;:~\-\u2010-\u2015]/u;
 
+/** A decimal digit right before a trailing slash. Matched on code points, not code units. */
+const digitBeforeSlashRegExp = /\p{Nd}\/$/u;
+
 /**
  * A slash also starts a quantity, as in the alternate amount of `'cups/10 ounces'`, unless a
- * digit precedes it: then it is a fraction bar, and `'1/0'` must not yield `0`.
+ * digit precedes it: then it is a fraction bar, and `'1/0'` must not yield `0`. The window
+ * spans a surrogate pair, so astral digits like `'𝟚'` count too.
  */
 const isQuantityStartBoundary = (text: string, start: number): boolean =>
   quantityStartBoundaryRegExp.test(text[start - 1]) ||
-  (text[start - 1] === '/' && (start === 1 || !/\p{Nd}/u.test(text[start - 2])));
+  (text[start - 1] === '/' &&
+    !digitBeforeSlashRegExp.test(text.slice(Math.max(0, start - 3), start)));
 
 /**
  * Finds the longest *suffix* of `text` that parses as a single acceptable quantity, and
