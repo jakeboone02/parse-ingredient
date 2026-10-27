@@ -2534,6 +2534,32 @@ export const parseIngredientTests: Record<
       },
     ],
   ],
+  'astral digit as range upper bound': [
+    '1-𝟚 cups flour',
+    [
+      {
+        quantity: 1,
+        quantity2: 2,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cups',
+        description: 'flour',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'astral digit after a leading decimal separator': [
+    '.𝟝 cup flour',
+    [
+      {
+        quantity: 0.5,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cup',
+        description: 'flour',
+        isGroupHeader: false,
+      },
+    ],
+  ],
   'slash not followed by a quantity is not split': [
     '2 cups/sticks butter',
     [

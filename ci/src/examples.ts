@@ -166,6 +166,8 @@ export const examples: Example[] = [
   { name: 'slashed alternate amount that is itself a fraction', input: '1 cup/2/3 cup milk' },
   { name: 'slashed alternate amount with an astral digit', input: '1 cup/\ud835 ounces sugar' },
   { name: 'leading astral digit quantity', input: '\ud835 cups sugar' },
+  { name: 'astral digit as range upper bound', input: '1-\ud835 cups flour' },
+  { name: 'astral digit after a leading decimal separator', input: '.\ud835 cup flour' },
   { name: 'slash not followed by a quantity is not split', input: '2 cups/sticks butter' },
   { name: 'unknown word before a slashed amount is not a unit', input: '3 jars/10 ounces jam' },
   { name: 'descriptionMeasurements: slashed alternate amount', input: '2 cups/10 ounces frozen peas' },
