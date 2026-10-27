@@ -325,7 +325,7 @@ export const identifyLeadingUnit = (ingredient: Ingredient, ctx: ParseContext): 
   const firstWord = firstWordMatches[1].replace(/\s+/g, ' ');
   const remainingDesc = (firstWordMatches[2] ?? '').trim();
   if (!remainingDesc) {
-    identifySlashedLeadingUnit(ingredient, firstWord, remainingDesc, ctx);
+    identifySlashedLeadingUnit(ingredient, firstWord, '', ctx);
     return;
   }
 

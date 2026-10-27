@@ -167,6 +167,7 @@ export const examples: Example[] = [
   { name: 'slash not followed by a quantity is not split', input: '2 cups/sticks butter' },
   { name: 'unknown word before a slashed amount is not a unit', input: '3 jars/10 ounces jam' },
   { name: 'descriptionMeasurements: slashed alternate amount', input: '2 cups/10 ounces frozen peas' },
+  { name: 'descriptionMeasurements: slashed alternate range', input: '1-2 cups/250-500 ml stock' },
   { name: 'descriptionMeasurements: hyphenated', input: '1 pound beef, cut into 1 1/2-inch cubes' },
   { name: 'descriptionMeasurements: the ingredient\'s own quantity and unit are not re-reported', input: '1 cup flour' },
   { name: 'descriptionMeasurements: parenthetical', input: '2 pounds beef (about 1 kilogram)' },

@@ -23,6 +23,8 @@ describe('finds a quantity paired with a unit', () => {
     // A slash before the quantity, as in an alternate amount ("2 cups/10 ounces").
     ['/10 ounces frozen peas', 10, 'ounce', '10 ounces'],
     ['cups/10 ounces frozen peas', 10, 'ounce', '10 ounces'],
+    // "w/" = "with"
+    ['w/2 cups milk', 2, 'cup', '2 cups'],
   ])('%p', (text, quantity, unitOfMeasureID, matched) => {
     expect(summarize(extractMeasurements(text))).toEqual([
       { quantity, quantity2: null, unitOfMeasureID, text: matched },
@@ -68,6 +70,8 @@ describe('rejects text that is not a measurement', () => {
     '1/0 cups',
     // The same for a digit outside the BMP, which is two UTF-16 code units.
     '𝟚/0 cups',
+    // Any char numeric-quantity treats as numeric, e.g. a vulgar fraction.
+    '½/1 cups',
   ])('%p', text => {
     expect(extractMeasurements(text)).toEqual([]);
   });

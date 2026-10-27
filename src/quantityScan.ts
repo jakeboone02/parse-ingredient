@@ -93,18 +93,18 @@ const whitespaceRegExp = /\s/u;
  */
 const quantityStartBoundaryRegExp = /[\s([{"'\u2018\u201c\u201d\u2019,;:~\-\u2010-\u2015]/u;
 
-/** A decimal digit right before a trailing slash. Matched on code points, not code units. */
-const digitBeforeSlashRegExp = /\p{Nd}\/$/u;
-
 /**
- * A slash also starts a quantity, as in the alternate amount of `'cups/10 ounces'`, unless a
- * digit precedes it: then it is a fraction bar, and `'1/0'` must not yield `0`. The window
- * spans a surrogate pair, so astral digits like `'𝟚'` count too.
+ * A slash also starts a quantity, as in the alternate amount of `'cups/10 ounces'`, unless
+ * a numeric char (per `numericQuantity`: digits, vulgar fractions, etc.) precedes it: then
+ * it is a fraction bar, and `'1/0'` / `'½/1'` must not yield a quantity. The char is read
+ * by code point, so astral digits like `'𝟚'` count too.
  */
-const isQuantityStartBoundary = (text: string, start: number): boolean =>
-  quantityStartBoundaryRegExp.test(text[start - 1]) ||
-  (text[start - 1] === '/' &&
-    !digitBeforeSlashRegExp.test(text.slice(Math.max(0, start - 3), start)));
+const isQuantityStartBoundary = (text: string, start: number, nqOpts: NQOptions): boolean => {
+  if (quantityStartBoundaryRegExp.test(text[start - 1])) return true;
+  if (text[start - 1] !== '/') return false;
+  const before = Array.from(text.slice(Math.max(0, start - 3), start - 1)).at(-1);
+  return !before || isNaN(numericQuantity(before, nqOpts));
+};
 
 /**
  * Finds the longest *suffix* of `text` that parses as a single acceptable quantity, and
@@ -138,7 +138,7 @@ export const matchTrailingQuantity = (
   for (let start = min; start < text.length; start++) {
     // A quantity never starts on whitespace, and never mid-word ("x12" is not 12).
     if (whitespaceRegExp.test(text[start])) continue;
-    if (start > 0 && !isQuantityStartBoundary(text, start)) continue;
+    if (start > 0 && !isQuantityStartBoundary(text, start, nqOpts)) continue;
 
     const value = numericQuantity(text.substring(start), nqOpts);
     // Leftmost acceptable start wins, so the longest quantity is returned.

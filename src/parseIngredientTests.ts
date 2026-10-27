@@ -2562,6 +2562,34 @@ export const parseIngredientTests: Record<
     ],
     { descriptionMeasurements: true },
   ],
+  'descriptionMeasurements: slashed alternate range': [
+    '1-2 cups/250-500 ml stock',
+    [
+      {
+        quantity: 1,
+        quantity2: 2,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cups',
+        description: '/250-500 ml stock',
+        isGroupHeader: false,
+        descriptionMeasurements: [
+          {
+            quantity: 250,
+            quantity2: 500,
+            unitOfMeasureID: 'milliliter',
+            unitOfMeasure: 'ml',
+            unitType: 'volume',
+            text: '250-500 ml',
+            startIndex: 1,
+            endIndex: 11,
+            sourceStartIndex: 9,
+            sourceEndIndex: 19,
+          },
+        ],
+      },
+    ],
+    { descriptionMeasurements: true },
+  ],
   'descriptionMeasurements: hyphenated': [
     '1 pound beef, cut into 1 1/2-inch cubes',
     [
