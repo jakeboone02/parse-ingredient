@@ -129,11 +129,17 @@ export const identifyGreedyUnit = (
  *
  * @internal
  */
-export const startsWithQuantity = (text: string, ctx: ParseContext): boolean =>
-  Boolean(text) &&
-  (!isNaN(numericQuantity(text[0], ctx.nqOpts)) ||
-    (text[0] === ctx.opts.decimalSeparator &&
-      !isNaN(numericQuantity(text.slice(0, 2), ctx.nqOpts))));
+export const startsWithQuantity = (text: string, ctx: ParseContext): boolean => {
+  // Code points, not code units, so astral digits (`'𝟚'`) are seen whole.
+  const [first, second] = Array.from(text.slice(0, 4));
+  return (
+    first !== undefined &&
+    (!isNaN(numericQuantity(first, ctx.nqOpts)) ||
+      (first === ctx.opts.decimalSeparator &&
+        second !== undefined &&
+        !isNaN(numericQuantity(first + second, ctx.nqOpts))))
+  );
+};
 
 /**
  * Takes the longest leading run of characters that parses as a single value as

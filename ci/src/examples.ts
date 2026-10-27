@@ -164,6 +164,8 @@ export const examples: Example[] = [
   { name: 'slashed alternate amount with normalizeUOM', input: '2 cups/10 ounces frozen peas' },
   { name: 'slashed alternate amount after a registered slashed unit', input: '1 Scheibe/n/20 g Toast' },
   { name: 'slashed alternate amount that is itself a fraction', input: '1 cup/2/3 cup milk' },
+  { name: 'slashed alternate amount with an astral digit', input: '1 cup/\ud835 ounces sugar' },
+  { name: 'leading astral digit quantity', input: '\ud835 cups sugar' },
   { name: 'slash not followed by a quantity is not split', input: '2 cups/sticks butter' },
   { name: 'unknown word before a slashed amount is not a unit', input: '3 jars/10 ounces jam' },
   { name: 'descriptionMeasurements: slashed alternate amount', input: '2 cups/10 ounces frozen peas' },

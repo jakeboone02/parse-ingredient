@@ -2508,6 +2508,32 @@ export const parseIngredientTests: Record<
       },
     ],
   ],
+  'slashed alternate amount with an astral digit': [
+    '1 cup/𝟚 ounces sugar',
+    [
+      {
+        quantity: 1,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cup',
+        description: '/𝟚 ounces sugar',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'leading astral digit quantity': [
+    '𝟚 cups sugar',
+    [
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cups',
+        description: 'sugar',
+        isGroupHeader: false,
+      },
+    ],
+  ],
   'slash not followed by a quantity is not split': [
     '2 cups/sticks butter',
     [
