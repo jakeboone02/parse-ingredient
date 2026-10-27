@@ -15,9 +15,12 @@ const quote = (str: string): string =>
     .replaceAll("'", "\\'")
     .replaceAll('\n', '\\n')
     .replaceAll('\r', '\\r')
-    .replaceAll(
-      /[^\u0020-\u007e]/gu,
-      c => `\\u${c.charCodeAt(0).toString(16).padStart(4, '0')}`
+    .replaceAll(/[^\u0020-\u007e]/gu, c =>
+      // Every UTF-16 unit, so astral chars become a full surrogate pair
+      Array.from(
+        { length: c.length },
+        (_, i) => `\\u${c.charCodeAt(i).toString(16).padStart(4, '0')}`
+      ).join('')
     )}'`;
 
 const serializeInput = (input: string | string[]): string =>
