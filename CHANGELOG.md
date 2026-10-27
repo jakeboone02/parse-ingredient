@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- A unit after a parenthetical, as in the package size of `'1 (15 oz) can chickpeas, drained'`, is now recognized: `unitOfMeasureID: 'can'`, `description: '(15 oz) chickpeas, drained'`. The parenthetical stays at the start of the description, so the size is kept and `descriptionMeasurements` reports it with source indices. One parenthetical is looked past, only after a quantity, and only when a known unit and more description follow it; otherwise the line parses as before. A `descriptionStripPrefixes` word after it is stripped too, so `'1 (15 oz) can of chickpeas'` yields `'(15 oz) chickpeas'`. Source indices map through both splices (the quantity at the head, the unit in the middle): description alignment now also accepts a head run that starts past the beginning of the line, provided it occurs there exactly once.
+
 ## [v3.0.1] - 2026-10-27
 
 ### Fixed
