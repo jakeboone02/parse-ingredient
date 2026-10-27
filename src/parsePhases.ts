@@ -129,11 +129,17 @@ export const identifyGreedyUnit = (
  *
  * @internal
  */
-export const startsWithQuantity = (text: string, ctx: ParseContext): boolean =>
-  Boolean(text) &&
-  (!isNaN(numericQuantity(text[0], ctx.nqOpts)) ||
-    (text[0] === ctx.opts.decimalSeparator &&
-      !isNaN(numericQuantity(text.slice(0, 2), ctx.nqOpts))));
+export const startsWithQuantity = (text: string, ctx: ParseContext): boolean => {
+  // Code points, not code units, so astral digits (`'𝟚'`) are seen whole.
+  const [first, second] = Array.from(text.slice(0, 4));
+  return (
+    first !== undefined &&
+    (!isNaN(numericQuantity(first, ctx.nqOpts)) ||
+      (first === ctx.opts.decimalSeparator &&
+        second !== undefined &&
+        !isNaN(numericQuantity(first + second, ctx.nqOpts))))
+  );
+};
 
 /**
  * Takes the longest leading run of characters that parses as a single value as
@@ -283,6 +289,37 @@ export const parseRangeQuantity2 = (ingredient: Ingredient, ctx: ParseContext): 
 };
 
 /**
+ * Handles a unit followed by an alternate measurement after a slash, as in
+ * `'2 cups/10 ounces frozen peas'`. `uomWordSource` joins words on `/` (for plural markers
+ * like `Scheibe/n`), so the `cups/10` run fails lookup as one word. Tried only after that
+ * lookup fails, and only at a slash followed by a quantity. Slashes are tried right to
+ * left, so the longest registered unit wins (`Scheibe/n/2 g` keeps `Scheibe/n`).
+ */
+const identifySlashedLeadingUnit = (
+  ingredient: Ingredient,
+  firstWord: string,
+  remainingDesc: string,
+  ctx: ParseContext
+): void => {
+  for (
+    let slashIndex = firstWord.lastIndexOf('/');
+    slashIndex > 0;
+    slashIndex = firstWord.lastIndexOf('/', slashIndex - 1)
+  ) {
+    if (!startsWithQuantity(firstWord.slice(slashIndex + 1), ctx)) continue;
+
+    const unitWord = firstWord.slice(0, slashIndex);
+    const uomID = identifyUnitFromMaps(unitWord, ctx.lookupMaps, ctx.ignoredUOMsLC);
+    if (!uomID) continue;
+
+    ingredient.unitOfMeasureID = uomID;
+    ingredient.unitOfMeasure = ctx.opts.normalizeUOM ? uomID : unitWord;
+    ingredient.description = `${firstWord.slice(slashIndex)} ${remainingDesc}`.trim();
+    return;
+  }
+};
+
+/**
  * Checks the beginning of the description for a known unit of measure.
  *
  * @internal
@@ -293,7 +330,10 @@ export const identifyLeadingUnit = (ingredient: Ingredient, ctx: ParseContext): 
 
   const firstWord = firstWordMatches[1].replace(/\s+/g, ' ');
   const remainingDesc = (firstWordMatches[2] ?? '').trim();
-  if (!remainingDesc) return;
+  if (!remainingDesc) {
+    identifySlashedLeadingUnit(ingredient, firstWord, '', ctx);
+    return;
+  }
 
   // The multi-word candidate extends forwards into the description.
   const nextWords = nextWordRegExp.exec(remainingDesc);
@@ -309,7 +349,10 @@ export const identifyLeadingUnit = (ingredient: Ingredient, ctx: ParseContext): 
     twoWordEligible ? `${firstWord} ${nextWords[1]}` : null,
     ctx
   );
-  if (!unit) return;
+  if (!unit) {
+    identifySlashedLeadingUnit(ingredient, firstWord, remainingDesc, ctx);
+    return;
+  }
 
   ingredient.unitOfMeasureID = unit.id;
   ingredient.unitOfMeasure = ctx.opts.normalizeUOM ? unit.id : unit.matchedText;

@@ -2419,6 +2419,229 @@ export const parseIngredientTests: Record<
     { decimalSeparator: ',' },
   ],
 
+  'unit followed by a slashed alternate amount': [
+    '2 cups/10 ounces frozen peas',
+    [
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cups',
+        description: '/10 ounces frozen peas',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'unit followed by a slashed alternate amount, nothing after': [
+    '1 cup/240 ml',
+    [
+      {
+        quantity: 1,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cup',
+        description: '/240 ml',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'two-word unit followed by a slashed alternate amount': [
+    '1 fl oz/30 ml gin',
+    [
+      {
+        quantity: 1,
+        quantity2: null,
+        unitOfMeasureID: 'fluid ounce',
+        unitOfMeasure: 'fl oz',
+        description: '/30 ml gin',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'slashed alternate amount with normalizeUOM': [
+    '2 cups/10 ounces frozen peas',
+    [
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cup',
+        description: '/10 ounces frozen peas',
+        isGroupHeader: false,
+      },
+    ],
+    { normalizeUOM: true },
+  ],
+  'slashed alternate amount after a registered slashed unit': [
+    '1 Scheibe/n/20 g Toast',
+    [
+      {
+        quantity: 1,
+        quantity2: null,
+        unitOfMeasureID: 'slice',
+        unitOfMeasure: 'Scheibe/n',
+        description: '/20 g Toast',
+        isGroupHeader: false,
+      },
+    ],
+    {
+      additionalUOMs: {
+        slice: {
+          short: 'Scheibe',
+          plural: 'Scheiben',
+          alternates: ['scheibe/n'],
+          type: 'count',
+        },
+      },
+    },
+  ],
+  'slashed alternate amount that is itself a fraction': [
+    '1 cup/2/3 cup milk',
+    [
+      {
+        quantity: 1,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cup',
+        description: '/2/3 cup milk',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'slashed alternate amount with an astral digit': [
+    '1 cup/𝟚 ounces sugar',
+    [
+      {
+        quantity: 1,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cup',
+        description: '/𝟚 ounces sugar',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'leading astral digit quantity': [
+    '𝟚 cups sugar',
+    [
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cups',
+        description: 'sugar',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'astral digit as range upper bound': [
+    '1-𝟚 cups flour',
+    [
+      {
+        quantity: 1,
+        quantity2: 2,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cups',
+        description: 'flour',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'astral digit after a leading decimal separator': [
+    '.𝟝 cup flour',
+    [
+      {
+        quantity: 0.5,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cup',
+        description: 'flour',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'slash not followed by a quantity is not split': [
+    '2 cups/sticks butter',
+    [
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: 'cups/sticks butter',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'unknown word before a slashed amount is not a unit': [
+    '3 jars/10 ounces jam',
+    [
+      {
+        quantity: 3,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: 'jars/10 ounces jam',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'descriptionMeasurements: slashed alternate amount': [
+    '2 cups/10 ounces frozen peas',
+    [
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cups',
+        description: '/10 ounces frozen peas',
+        isGroupHeader: false,
+        descriptionMeasurements: [
+          {
+            quantity: 10,
+            quantity2: null,
+            unitOfMeasureID: 'ounce',
+            unitOfMeasure: 'ounces',
+            unitType: 'mass',
+            text: '10 ounces',
+            startIndex: 1,
+            endIndex: 10,
+            sourceStartIndex: 7,
+            sourceEndIndex: 16,
+          },
+        ],
+      },
+    ],
+    { descriptionMeasurements: true },
+  ],
+  'descriptionMeasurements: slashed alternate range': [
+    '1-2 cups/250-500 ml stock',
+    [
+      {
+        quantity: 1,
+        quantity2: 2,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cups',
+        description: '/250-500 ml stock',
+        isGroupHeader: false,
+        descriptionMeasurements: [
+          {
+            quantity: 250,
+            quantity2: 500,
+            unitOfMeasureID: 'milliliter',
+            unitOfMeasure: 'ml',
+            unitType: 'volume',
+            text: '250-500 ml',
+            startIndex: 1,
+            endIndex: 11,
+            sourceStartIndex: 9,
+            sourceEndIndex: 19,
+          },
+        ],
+      },
+    ],
+    { descriptionMeasurements: true },
+  ],
   'descriptionMeasurements: hyphenated': [
     '1 pound beef, cut into 1 1/2-inch cubes',
     [
