@@ -7,11 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v3.0.1] - 2026-09-08
+
 ### Fixed
 
-- A unit followed by a slashed alternate amount is now recognized: `'2 cups/10 ounces frozen peas'` yields `unitOfMeasureID: 'cup'` and `description: '/10 ounces frozen peas'` (previously no unit). Registered slashed units like `Scheibe/n` keep precedence, and a slash not followed by a quantity (`'cups/sticks'`) is not split.
-- `descriptionMeasurements` and `extractMeasurements` find a quantity right after a slash (`'cups/10 ounces'`, `'w/2 cups'`), unless a numeric character precedes the slash (`'1/0'`, `'½/1'`), which is treated as a fraction bar.
-- `'1-2 cups/250-500 ml'` now reports the `250-500 ml` range as a description measurement, not just `500 ml`.
+- [#58] A unit followed by a slashed alternate amount is now recognized: `'2 cups/10 ounces frozen peas'` yields `unitOfMeasureID: 'cup'` and `description: '/10 ounces frozen peas'` (previously no unit). Registered slashed units like `Scheibe/n` keep precedence, and a slash not followed by a quantity (`'cups/sticks'`) is not split.
+- [#58] `descriptionMeasurements` and `extractMeasurements` find a quantity right after a slash (`'cups/10 ounces'`, `'w/2 cups'`), unless a numeric character precedes the slash (`'1/0'`, `'½/1'`), which is treated as a fraction bar.
+- [#58] `'1-2 cups/250-500 ml'` now reports the `250-500 ml` range as a description measurement, not just `500 ml`.
 
 ## [v3.0.0] - 2026-09-08
 
@@ -296,10 +298,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#48]: https://github.com/jakeboone02/parse-ingredient/pull/48
 [#49]: https://github.com/jakeboone02/parse-ingredient/pull/49
 [#55]: https://github.com/jakeboone02/parse-ingredient/pull/55
+[#58]: https://github.com/jakeboone02/parse-ingredient/pull/58
 
 <!-- Release comparison links -->
 
-[unreleased]: https://github.com/jakeboone02/parse-ingredient/compare/v3.0.0...HEAD
+[unreleased]: https://github.com/jakeboone02/parse-ingredient/compare/v3.0.1...HEAD
+[v3.0.1]: https://github.com/jakeboone02/parse-ingredient/compare/v3.0.0...v3.0.1
 [v3.0.0]: https://github.com/jakeboone02/parse-ingredient/compare/v2.2.0...v3.0.0
 [v2.2.0]: https://github.com/jakeboone02/parse-ingredient/compare/v2.1.0...v2.2.0
 [v2.1.0]: https://github.com/jakeboone02/parse-ingredient/compare/v2.0.1...v2.1.0
