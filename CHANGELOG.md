@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- A unit after a parenthetical, as in the package size of `'1 (15 oz) can chickpeas, drained'`, is now recognized: `unitOfMeasureID: 'can'`, `description: '(15 oz) chickpeas, drained'`. The parenthetical stays at the start of the description, so the size is kept and `descriptionMeasurements` reports it with source indices. One parenthetical is looked past, only after a quantity, and only when a known unit and more description follow it; otherwise the line parses as before. A `descriptionStripPrefixes` word after it is stripped too, so `'1 (15 oz) can of chickpeas'` yields `'(15 oz) chickpeas'`. Source indices map through both splices (the quantity at the head, the unit in the middle): description alignment now also accepts a head run that starts past the beginning of the line, provided it occurs there exactly once.
+- [#59] A unit after a parenthetical following the quantity is now recognized: `'1 (15 oz) can of chickpeas'` yields `unitOfMeasureID: 'can'` and `description: '(15 oz) chickpeas'` (previously no unit). The parenthetical stays in the description, so `descriptionMeasurements` reports it.
 
 ## [v3.0.1] - 2026-10-27
 
@@ -303,6 +303,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#49]: https://github.com/jakeboone02/parse-ingredient/pull/49
 [#55]: https://github.com/jakeboone02/parse-ingredient/pull/55
 [#58]: https://github.com/jakeboone02/parse-ingredient/pull/58
+[#59]: https://github.com/jakeboone02/parse-ingredient/pull/59
 
 <!-- Release comparison links -->
 
