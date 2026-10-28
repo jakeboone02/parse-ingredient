@@ -2721,6 +2721,72 @@ export const parseIngredientTests: Record<
       },
     ],
   ],
+  'parenthetical size, unit, then only "of"': [
+    '1 (15 oz) can of',
+    [
+      {
+        quantity: 1,
+        quantity2: null,
+        unitOfMeasureID: 'can',
+        unitOfMeasure: 'can',
+        description: '(15 oz) of',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'parenthetical after a unit keeps a following "of"': [
+    '1 cup (packed) of brown sugar',
+    [
+      {
+        quantity: 1,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cup',
+        description: '(packed) of brown sugar',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'descriptionMeasurements: parenthetical size repeated after the unit': [
+    '1 (15 oz) can beans (15 oz)',
+    [
+      {
+        quantity: 1,
+        quantity2: null,
+        unitOfMeasureID: 'can',
+        unitOfMeasure: 'can',
+        description: '(15 oz) beans (15 oz)',
+        isGroupHeader: false,
+        descriptionMeasurements: [
+          {
+            quantity: 15,
+            quantity2: null,
+            unitOfMeasureID: 'ounce',
+            unitOfMeasure: 'oz',
+            unitType: 'mass',
+            text: '15 oz',
+            startIndex: 1,
+            endIndex: 6,
+            sourceStartIndex: 3,
+            sourceEndIndex: 8,
+          },
+          {
+            quantity: 15,
+            quantity2: null,
+            unitOfMeasureID: 'ounce',
+            unitOfMeasure: 'oz',
+            unitType: 'mass',
+            text: '15 oz',
+            startIndex: 15,
+            endIndex: 20,
+            sourceStartIndex: 21,
+            sourceEndIndex: 26,
+          },
+        ],
+      },
+    ],
+    { descriptionMeasurements: true },
+  ],
   'parenthetical not followed by a unit': [
     '2 (about 1 pound) chicken breasts',
     [

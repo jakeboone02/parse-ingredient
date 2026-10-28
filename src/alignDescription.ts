@@ -2,8 +2,8 @@
  * Maps a parsed `description` back onto the line it came from, so spans located in the
  * description can be reported against the original text.
  *
- * The parser removes text from the head, the tail, and — for two idioms — the *middle* of
- * a line, without recording what it took. Rather than thread consumed-span accounting
+ * The parser removes text from the head, the tail, and — for two idioms (`'Juice of 1 lemon'`,
+ * `'1 (15 oz) can beans'`) — the *middle* of a line, without recording what it took. Rather than thread consumed-span accounting
  * through every parsing phase, the mapping is recovered after the fact: the description
  * is always the line minus its head and tail and at most one interior splice, so at most
  * two contiguous segments are needed to describe it.
@@ -52,7 +52,8 @@ const commonSuffixLength = (a: string, b: string, max: number): number => {
  * Aligns a description whose head run starts past the beginning of the line, as when the
  * parser takes the quantity off the front *and* a unit out of the middle: `'1 (15 oz) can
  * chickpeas'` → `'(15 oz) chickpeas'`. The longest common suffix is one run; whatever
- * precedes it must occur exactly once in the line, before that run.
+ * precedes it must occur exactly once in the line before that run (copies inside it don't
+ * count).
  */
 const alignSplicedHead = (line: string, description: string): Alignment => {
   const suffixLen = commonSuffixLength(line, description, description.length);
@@ -64,7 +65,8 @@ const alignSplicedHead = (line: string, description: string): Alignment => {
     suffixLen === 0 ||
     headStart === -1 ||
     headStart + head.length > suffixStart ||
-    line.indexOf(head, headStart + 1) !== -1
+    // Only occurrences before the suffix run compete; ones inside it are already claimed.
+    line.lastIndexOf(head, suffixStart - head.length) !== headStart
   ) {
     return null;
   }

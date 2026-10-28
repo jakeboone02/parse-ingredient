@@ -64,6 +64,17 @@ describe('alignDescription', () => {
     expect(reconstruct(line, alignment)).toBe('(15 oz) chickpeas');
   });
 
+  test('a spliced head repeated inside the suffix run still aligns', () => {
+    const line = '1 (15 oz) can beans (15 oz)';
+    const alignment = alignDescription(line, '(15 oz) beans (15 oz)');
+
+    expect(alignment).toEqual([
+      { descStart: 0, descEnd: 7, lineStart: 2 },
+      { descStart: 7, descEnd: 21, lineStart: 13 },
+    ]);
+    expect(reconstruct(line, alignment)).toBe('(15 oz) beans (15 oz)');
+  });
+
   /**
    * The head run can be placed only if it occurs once, before the suffix run. Otherwise the
    * same line characters could be claimed twice, or the wrong occurrence chosen.

@@ -369,23 +369,27 @@ const leadingParentheticalRegExp = /^(\([^()]*\))\s+(\S.*)$/u;
  * the start of the description, so the size is kept and `descriptionMeasurements` can
  * report it.
  *
+ * @returns The parenthetical plus separating space when the unit was found past it, else `''`.
+ *
  * @internal
  */
-export const identifyLeadingUnit = (ingredient: Ingredient, ctx: ParseContext): void => {
+export const identifyLeadingUnit = (ingredient: Ingredient, ctx: ParseContext): string => {
   const parenthetical =
     ingredient.quantity === null ? null : leadingParentheticalRegExp.exec(ingredient.description);
   if (!parenthetical) {
     identifyUnitAtStart(ingredient, ctx);
-    return;
+    return '';
   }
 
   const rest: Ingredient = { ...ingredient, description: parenthetical[2] };
   identifyUnitAtStart(rest, ctx);
-  if (!rest.unitOfMeasureID) return;
+  if (!rest.unitOfMeasureID) return '';
 
+  const head = `${parenthetical[1]} `;
   ingredient.unitOfMeasureID = rest.unitOfMeasureID;
   ingredient.unitOfMeasure = rest.unitOfMeasure;
-  ingredient.description = `${parenthetical[1]} ${rest.description}`;
+  ingredient.description = head + rest.description;
+  return head;
 };
 
 /**
@@ -424,22 +428,21 @@ export const identifyPartialUnit = (ingredient: Ingredient, ctx: ParseContext): 
 
 /**
  * Strips configured prefixes ("of" equivalents) from the start of the description. Runs
- * last, on whatever survives UOM extraction. After a unit, a leading parenthetical is
- * skipped, so `'1 (15 oz) can of chickpeas'` loses its "of" as `'1 can of chickpeas'` does.
+ * last, on whatever survives UOM extraction. `head` (from {@link identifyLeadingUnit}) is a
+ * parenthetical the unit was found past; it's skipped, so `'1 (15 oz) can of chickpeas'`
+ * loses its "of" as `'1 can of chickpeas'` does. Other leading parentheticals are not.
  *
  * @internal
  */
-export const stripDescriptionPrefix = (ingredient: Ingredient, ctx: ParseContext): void => {
+export const stripDescriptionPrefix = (
+  ingredient: Ingredient,
+  ctx: ParseContext,
+  head = ''
+): void => {
   const { stripPrefixRegex } = ctx;
   if (ctx.opts.allowLeadingOf || !stripPrefixRegex) return;
 
-  const parenthetical = ingredient.unitOfMeasureID
-    ? leadingParentheticalRegExp.exec(ingredient.description)
-    : null;
-  const [head, text] = parenthetical
-    ? [`${parenthetical[1]} `, parenthetical[2]]
-    : ['', ingredient.description];
-
+  const text = ingredient.description.slice(head.length);
   if (stripPrefixRegex.test(text)) {
     ingredient.description = head + text.replace(stripPrefixRegex, '');
   }
@@ -515,9 +518,9 @@ export const parseIngredientLine = (
   }
 
   parseRangeQuantity2(ingredient, ctx);
-  identifyLeadingUnit(ingredient, ctx);
+  const unitHead = identifyLeadingUnit(ingredient, ctx);
   identifyPartialUnit(ingredient, ctx);
-  stripDescriptionPrefix(ingredient, ctx);
+  stripDescriptionPrefix(ingredient, ctx, unitHead);
   collectDescriptionMeasurements(ingredient, line, ctx);
 
   return ingredient;
