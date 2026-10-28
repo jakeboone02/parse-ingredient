@@ -179,6 +179,7 @@ export const examples: Example[] = [
   { name: 'parenthetical that is not a size before a unit', input: '1 (optional) cup sugar' },
   { name: 'parenthetical size then "of" is stripped', input: '1 (15 oz) can of chickpeas' },
   { name: 'parenthetical size, unit, then only "of"', input: '1 (15 oz) can of' },
+  { name: 'parenthetical then "of" with a trailing unit keeps "of"', input: '(15 oz) of chickpeas 2 cups' },
   { name: 'parenthetical after a unit keeps a following "of"', input: '1 cup (packed) of brown sugar' },
   { name: 'descriptionMeasurements: parenthetical size repeated after the unit', input: '1 (15 oz) can beans (15 oz)' },
   { name: 'parenthetical not followed by a unit', input: '2 (about 1 pound) chicken breasts' },

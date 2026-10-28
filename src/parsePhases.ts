@@ -381,7 +381,13 @@ export const identifyLeadingUnit = (ingredient: Ingredient, ctx: ParseContext): 
     return '';
   }
 
-  const rest: Ingredient = { ...ingredient, description: parenthetical[2] };
+  // Unit cleared so one already set by trailing-quantity parsing can't pass for a match.
+  const rest: Ingredient = {
+    ...ingredient,
+    unitOfMeasureID: null,
+    unitOfMeasure: null,
+    description: parenthetical[2],
+  };
   identifyUnitAtStart(rest, ctx);
   if (!rest.unitOfMeasureID) return '';
 

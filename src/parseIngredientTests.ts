@@ -2734,6 +2734,19 @@ export const parseIngredientTests: Record<
       },
     ],
   ],
+  'parenthetical then "of" with a trailing unit keeps "of"': [
+    '(15 oz) of chickpeas 2 cups',
+    [
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cups',
+        description: '(15 oz) of chickpeas',
+        isGroupHeader: false,
+      },
+    ],
+  ],
   'parenthetical after a unit keeps a following "of"': [
     '1 cup (packed) of brown sugar',
     [
