@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- [#59] A unit after a parenthetical following the quantity is now recognized: `'1 (15 oz) can of chickpeas'` yields `unitOfMeasureID: 'can'` and `description: '(15 oz) chickpeas'` (previously no unit). The parenthetical stays in the description, so `descriptionMeasurements` reports it.
+
 ## [v3.0.1] - 2026-10-27
 
 ### Fixed
@@ -299,6 +303,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#49]: https://github.com/jakeboone02/parse-ingredient/pull/49
 [#55]: https://github.com/jakeboone02/parse-ingredient/pull/55
 [#58]: https://github.com/jakeboone02/parse-ingredient/pull/58
+[#59]: https://github.com/jakeboone02/parse-ingredient/pull/59
 
 <!-- Release comparison links -->
 

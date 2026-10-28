@@ -321,10 +321,8 @@ const identifySlashedLeadingUnit = (
 
 /**
  * Checks the beginning of the description for a known unit of measure.
- *
- * @internal
  */
-export const identifyLeadingUnit = (ingredient: Ingredient, ctx: ParseContext): void => {
+const identifyUnitAtStart = (ingredient: Ingredient, ctx: ParseContext): void => {
   const firstWordMatches = firstWordRegEx.exec(ingredient.description);
   if (!firstWordMatches) return;
 
@@ -357,6 +355,47 @@ export const identifyLeadingUnit = (ingredient: Ingredient, ctx: ParseContext): 
   ingredient.unitOfMeasureID = unit.id;
   ingredient.unitOfMeasure = ctx.opts.normalizeUOM ? unit.id : unit.matchedText;
   ingredient.description = unit.isTwoWord ? multiWordFinalDesc : remainingDesc;
+};
+
+/**
+ * A parenthetical directly after the quantity, as in the package size of
+ * `'1 (15 oz) can chickpeas'`. No nested parens, and something must follow it.
+ */
+const leadingParentheticalRegExp = /^(\([^()]*\))\s+(\S.*)$/u;
+
+/**
+ * Checks the beginning of the description for a known unit of measure, looking past one
+ * parenthetical after the quantity (`'1 (15 oz) can chickpeas'`). The parenthetical stays at
+ * the start of the description, so the size is kept and `descriptionMeasurements` can
+ * report it.
+ *
+ * @returns The parenthetical plus separating space when the unit was found past it, else `''`.
+ *
+ * @internal
+ */
+export const identifyLeadingUnit = (ingredient: Ingredient, ctx: ParseContext): string => {
+  const parenthetical =
+    ingredient.quantity === null ? null : leadingParentheticalRegExp.exec(ingredient.description);
+  if (!parenthetical) {
+    identifyUnitAtStart(ingredient, ctx);
+    return '';
+  }
+
+  // Unit cleared so one already set by trailing-quantity parsing can't pass for a match.
+  const rest: Ingredient = {
+    ...ingredient,
+    unitOfMeasureID: null,
+    unitOfMeasure: null,
+    description: parenthetical[2],
+  };
+  identifyUnitAtStart(rest, ctx);
+  if (!rest.unitOfMeasureID) return '';
+
+  const head = `${parenthetical[1]} `;
+  ingredient.unitOfMeasureID = rest.unitOfMeasureID;
+  ingredient.unitOfMeasure = rest.unitOfMeasure;
+  ingredient.description = head + rest.description;
+  return head;
 };
 
 /**
@@ -395,17 +434,23 @@ export const identifyPartialUnit = (ingredient: Ingredient, ctx: ParseContext): 
 
 /**
  * Strips configured prefixes ("of" equivalents) from the start of the description. Runs
- * last, on whatever survives UOM extraction.
+ * last, on whatever survives UOM extraction. `head` (from {@link identifyLeadingUnit}) is a
+ * parenthetical the unit was found past; it's skipped, so `'1 (15 oz) can of chickpeas'`
+ * loses its "of" as `'1 can of chickpeas'` does. Other leading parentheticals are not.
  *
  * @internal
  */
-export const stripDescriptionPrefix = (ingredient: Ingredient, ctx: ParseContext): void => {
-  if (
-    !ctx.opts.allowLeadingOf &&
-    ctx.stripPrefixRegex &&
-    ingredient.description.match(ctx.stripPrefixRegex)
-  ) {
-    ingredient.description = ingredient.description.replace(ctx.stripPrefixRegex, '');
+export const stripDescriptionPrefix = (
+  ingredient: Ingredient,
+  ctx: ParseContext,
+  head = ''
+): void => {
+  const { stripPrefixRegex } = ctx;
+  if (ctx.opts.allowLeadingOf || !stripPrefixRegex) return;
+
+  const text = ingredient.description.slice(head.length);
+  if (stripPrefixRegex.test(text)) {
+    ingredient.description = head + text.replace(stripPrefixRegex, '');
   }
 };
 
@@ -479,9 +524,9 @@ export const parseIngredientLine = (
   }
 
   parseRangeQuantity2(ingredient, ctx);
-  identifyLeadingUnit(ingredient, ctx);
+  const unitHead = identifyLeadingUnit(ingredient, ctx);
   identifyPartialUnit(ingredient, ctx);
-  stripDescriptionPrefix(ingredient, ctx);
+  stripDescriptionPrefix(ingredient, ctx, unitHead);
   collectDescriptionMeasurements(ingredient, line, ctx);
 
   return ingredient;

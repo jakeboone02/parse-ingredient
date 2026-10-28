@@ -53,6 +53,40 @@ describe('alignDescription', () => {
     expect(reconstruct(line, alignment)).toBe(description);
   });
 
+  test('a spliced head and interior is two segments', () => {
+    const line = '1 (15 oz) can chickpeas';
+    const alignment = alignDescription(line, '(15 oz) chickpeas');
+
+    expect(alignment).toEqual([
+      { descStart: 0, descEnd: 7, lineStart: 2 },
+      { descStart: 7, descEnd: 17, lineStart: 13 },
+    ]);
+    expect(reconstruct(line, alignment)).toBe('(15 oz) chickpeas');
+  });
+
+  test('a spliced head repeated inside the suffix run still aligns', () => {
+    const line = '1 (15 oz) can beans (15 oz)';
+    const alignment = alignDescription(line, '(15 oz) beans (15 oz)');
+
+    expect(alignment).toEqual([
+      { descStart: 0, descEnd: 7, lineStart: 2 },
+      { descStart: 7, descEnd: 21, lineStart: 13 },
+    ]);
+    expect(reconstruct(line, alignment)).toBe('(15 oz) beans (15 oz)');
+  });
+
+  /**
+   * The head run can be placed only if it occurs once, before the suffix run. Otherwise the
+   * same line characters could be claimed twice, or the wrong occurrence chosen.
+   */
+  test.each([
+    ['2 (a) (a) can x', '(a) x'],
+    ['1 b a', 'a a'],
+    ['1 x flour', 'zz flour'],
+  ])('a spliced head in %p that cannot be placed does not align %p', (line, description) => {
+    expect(alignDescription(line, description)).toBeNull();
+  });
+
   test('a description with no relationship to the line does not align', () => {
     expect(alignDescription('1 cup flour', 'sugar')).toBeNull();
   });

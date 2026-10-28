@@ -2,11 +2,11 @@
  * Maps a parsed `description` back onto the line it came from, so spans located in the
  * description can be reported against the original text.
  *
- * The parser removes text from the head, the tail, and — for one idiom — the *middle* of
- * a line, without recording what it took. Rather than thread consumed-span accounting
+ * The parser removes text from the head, the tail, and — for two idioms (`'Juice of 1 lemon'`,
+ * `'1 (15 oz) can beans'`) — the *middle* of a line, without recording what it took. Rather than thread consumed-span accounting
  * through every parsing phase, the mapping is recovered after the fact: the description
- * is always the line minus at most one interior splice, so at most two contiguous
- * segments are needed to describe it.
+ * is always the line minus its head and tail and at most one interior splice, so at most
+ * two contiguous segments are needed to describe it.
  *
  * @internal
  */
@@ -49,13 +49,43 @@ const commonSuffixLength = (a: string, b: string, max: number): number => {
 };
 
 /**
+ * Aligns a description whose head run starts past the beginning of the line, as when the
+ * parser takes the quantity off the front *and* a unit out of the middle: `'1 (15 oz) can
+ * chickpeas'` → `'(15 oz) chickpeas'`. The longest common suffix is one run; whatever
+ * precedes it must occur exactly once in the line before that run (copies inside it don't
+ * count).
+ */
+const alignSplicedHead = (line: string, description: string): Alignment => {
+  const suffixLen = commonSuffixLength(line, description, description.length);
+  const head = description.slice(0, description.length - suffixLen);
+  const headStart = line.indexOf(head);
+  const suffixStart = line.length - suffixLen;
+
+  if (
+    suffixLen === 0 ||
+    headStart === -1 ||
+    headStart + head.length > suffixStart ||
+    // Only occurrences before the suffix run compete; ones inside it are already claimed.
+    line.lastIndexOf(head, suffixStart - head.length) !== headStart
+  ) {
+    return null;
+  }
+
+  return [
+    { descStart: 0, descEnd: head.length, lineStart: headStart },
+    { descStart: head.length, descEnd: description.length, lineStart: suffixStart },
+  ];
+};
+
+/**
  * Aligns `description` to `line`.
  *
  * A unique `indexOf` hit is the common case and gives a single segment. Otherwise — the
  * description is either absent from the line (an interior splice) or ambiguous (it occurs
  * more than once) — the longest common prefix and suffix are taken; if together they
  * account for the whole description without overlapping in the line, the description is
- * the line minus one interior run.
+ * the line minus one interior run. Failing that, the head run may start past the beginning
+ * of the line ({@link alignSplicedHead}).
  *
  * @returns The segments, or `null` if the description cannot be accounted for.
  *
@@ -75,7 +105,7 @@ export const alignDescription = (line: string, description: string): Alignment =
   // The prefix and suffix must tile the description exactly, and must not overlap in the
   // line — otherwise the same line characters would be claimed twice.
   if (prefixLen + suffixLen !== description.length || line.length - suffixLen < prefixLen) {
-    return null;
+    return alignSplicedHead(line, description);
   }
 
   const segments: AlignmentSegment[] = [];
