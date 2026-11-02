@@ -3,3 +3,19 @@ coverage = true
 coverageThreshold = 1
 coverageReporter = ["lcov", "text"]
 coveragePathIgnorePatterns = ["scripts/**"]
+
+[fmt]
+flavor = "oxfmt"
+ignorePatterns = ["ci/src/examples.ts"]
+printWidth = 100
+tabWidth = 2
+useTabs = false
+semi = true
+singleQuote = true
+trailingComma = "es5"
+bracketSpacing = true
+bracketSameLine = true
+arrowParens = "avoid"
+embeddedLanguageFormatting = "auto"
+sortPackageJson = false
+sortImports = { newlinesBetween = false }
