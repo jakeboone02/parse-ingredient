@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- The word after a leading unit no longer backtracks exponentially when it is long and followed by punctuation: `'1 cup ' + 'a'.repeat(30) + '/b'` took ~36s in Node, and Hermes throws "Maximum regex stack depth reached".
+
 ## [v3.1.0] - 2026-10-28
 
 ### Added

@@ -82,7 +82,9 @@ export const createParseContext = (
   };
 };
 
-const nextWordRegExp = /^([\p{L}\p{N}_]+(?:[.-]?[\p{L}\p{N}_]+)*[-.]?)(?:\s+|$)/iu;
+// The separator is required: an optional one lets `(?:…)*` split a long word in exponentially
+// many ways before failing on trailing punctuation (`'1 cup aaaa…a/b'`).
+const nextWordRegExp = /^([\p{L}\p{N}_]+(?:[.-][\p{L}\p{N}_]+)*[-.]?)(?:\s+|$)/iu;
 
 /**
  * Repeatedly strips configured quantity prefixes from the start of a string.
