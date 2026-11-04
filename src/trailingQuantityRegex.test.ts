@@ -29,6 +29,7 @@ test('numericRegex contains no named capture groups', () => {
  */
 test.each([
   ['Ripe tomato x2', 2, null, null, 'Ripe tomato'],
+  ['box 2', 2, null, null, 'box'],
   ['Stuff 300mg', 300, null, 'milligram', 'Stuff'],
   ['Stuff 1-2 cups', 1, 2, 'cup', 'Stuff'],
   ['Stuff 1–2 cups', 1, 2, 'cup', 'Stuff'],

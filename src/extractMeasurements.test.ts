@@ -77,6 +77,15 @@ describe('rejects text that is not a measurement', () => {
   });
 });
 
+test('finds a trailing astral digit before a unit', () => {
+  expect(summarize(extractMeasurements('cut into 𝟚 cups'))).toEqual([
+    { quantity: 2, quantity2: null, unitOfMeasureID: 'cup', text: '𝟚 cups' },
+  ]);
+  expect(summarize(extractMeasurements('cut into 𝟙 𝟙/𝟚 cups'))).toEqual([
+    { quantity: 1.5, quantity2: null, unitOfMeasureID: 'cup', text: '𝟙 𝟙/𝟚 cups' },
+  ]);
+});
+
 test('finds multiple, non-overlapping measurements', () => {
   expect(summarize(extractMeasurements('a 1 inch by 2 inch by 3 cm block'))).toEqual([
     { quantity: 1, quantity2: null, unitOfMeasureID: 'inch', text: '1 inch' },

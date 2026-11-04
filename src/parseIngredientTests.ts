@@ -476,6 +476,19 @@ export const parseIngredientTests: Record<
       },
     ],
   ],
+  'trailing digits attached to letter': [
+    'Sugar B12',
+    [
+      {
+        quantity: null,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: 'Sugar B12',
+        isGroupHeader: false,
+      },
+    ],
+  ],
   'trailing range (hyphen)': [
     'stuff 1-2 cups',
     [

@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Performance hardening against pathological input: the leading-unit word regex, the trailing-quantity regex, the leading/trailing quantity scans, and slashed-unit lookups no longer exhibit exponential or quadratic slowdowns on long lines.
+- The trailing-quantity regex no longer matches an empty quantity or splits a number between the quantity and the unit (e.g. `'Item 12-pack'` is now left as the description).
+
+### Changed
+
+- `numeric-quantity` updated to v3.3.4 (whitespace-run backtracking fix).
+
 ## [v3.1.0] - 2026-10-28
 
 ### Added
