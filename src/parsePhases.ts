@@ -6,14 +6,21 @@ import {
   buildRangeSeparatorRegex,
   buildStripPrefixRegex,
   buildTrailingContextRegex,
-  buildTrailingQuantityRegex,
+  buildTrailingRangeSeparatorRegex,
   defaultOptions,
   firstWordRegEx,
+  uomWordSource,
 } from './constants';
 import type { MeasurementContext } from './measurementScan';
 import { createMeasurementContext, scanMeasurements } from './measurementScan';
 import type { NQOptions } from './quantityScan';
-import { isAcceptableQuantity, matchLeadingQuantity } from './quantityScan';
+import {
+  isAcceptableQuantity,
+  isTrailingQuantityStart,
+  matchLeadingQuantity,
+  matchTrailingQuantity,
+  quantityEndCharRegExp,
+} from './quantityScan';
 import type { Ingredient, ParseIngredientOptions } from './types';
 import type { UnitLookupMaps } from './unitLookup';
 import { collectUOMStrings, getUnitLookupMaps, identifyUnitFromMaps } from './unitLookup';
@@ -38,7 +45,7 @@ export interface ParseContext {
   rangeSeparatorRegex: RegExp;
   stripPrefixRegex: RegExp | null;
   trailingContextRegex: RegExp;
-  trailingQuantityRegex: RegExp;
+  trailingRangeSeparatorRegex: RegExp;
   leadingQuantityPrefixRegex: RegExp | null;
   /** Known UOM strings, longest-first. Empty unless `partialUnitMatching` is on. */
   uomStrings: string[];
@@ -75,7 +82,7 @@ export const createParseContext = (
     rangeSeparatorRegex: buildRangeSeparatorRegex(opts.rangeSeparators),
     stripPrefixRegex: buildStripPrefixRegex(opts.descriptionStripPrefixes),
     trailingContextRegex: buildTrailingContextRegex(opts.trailingQuantityContext),
-    trailingQuantityRegex: buildTrailingQuantityRegex(opts.rangeSeparators),
+    trailingRangeSeparatorRegex: buildTrailingRangeSeparatorRegex(opts.rangeSeparators),
     leadingQuantityPrefixRegex: buildLeadingQuantityPrefixRegex(opts.leadingQuantityPrefixes),
     uomStrings: opts.partialUnitMatching ? collectUOMStrings(lookupMaps) : [],
     measurementCtx: opts.descriptionMeasurements ? createMeasurementContext(opts) : null,
@@ -167,6 +174,138 @@ export const parseLeadingQuantity = (
   return true;
 };
 
+/** A unit word ending the line, after whitespace. Leftmost, so `'fl oz'` beats `'oz'`. */
+const spacedTrailingUOMRegExp = new RegExp(`(?<=\\s)(?:${uomWordSource})$`, 'iu');
+
+const uomWordRegExp = new RegExp(`^(?:${uomWordSource})$`, 'iu');
+
+const quantityEndClass = quantityEndCharRegExp.source.slice(1, -1);
+
+/** Whatever follows the line's last quantity char, if a word starts right there (`'2cups'`). */
+const gluedTrailingUOMRegExp = new RegExp(
+  `[${quantityEndClass}](?<uom>(?![${quantityEndClass}])[\\p{L}\\p{N}_][^${quantityEndClass}]*)$`,
+  'u'
+);
+
+const endsWithQuantityCharRegExp = new RegExp(`[${quantityEndClass}]$`, 'u');
+
+const signRegExp = /^[-+]/u;
+
+/** A sign followed by whitespace is a dash, never a quantity's sign (`'1 - 3'`). */
+const isQuantity1Start = (text: string, start: number): boolean =>
+  !(signRegExp.test(text[start]) && /\s/u.test(text[start + 1] ?? '')) &&
+  isTrailingQuantityStart(text, start);
+
+/**
+ * A hyphen before `quantity2` is a separator or prefix ({@link matchTrailingRange} sorts out
+ * the rest), and so is a comma, even as the decimal separator.
+ */
+const isQuantity2Start = (text: string, start: number): boolean =>
+  text[start] !== '-' && text[start] !== ',' && isTrailingQuantityStart(text, start);
+
+/**
+ * A trailing quantity expression: `start` is where the description ends, i.e. where the
+ * prefix (`x`, `:`, …) or, failing one, the quantity begins. `rejected` when it parsed but
+ * the quantity is negative or infinite.
+ */
+interface TrailingMatch {
+  start: number;
+  rejected: boolean;
+  quantity: number;
+  quantity2: number | null;
+  uom: string;
+}
+
+/**
+ * Finds `quantity1 sep` ending `head`. `quantity1` may be rejected; `null` when there's no
+ * separator.
+ */
+const matchTrailingRange = (
+  head: string,
+  ctx: ParseContext
+): { sepIndex: number; quantity1: { value: number; startIndex: number } | null } | null => {
+  const sep = ctx.trailingRangeSeparatorRegex.exec(head);
+  if (!sep) return null;
+  const before = head.slice(0, sep.index).trimEnd();
+  return {
+    sepIndex: sep.index,
+    quantity1: endsWithQuantityCharRegExp.test(before)
+      ? matchTrailingQuantity(before, ctx.nqOpts, {
+          isStart: isQuantity1Start,
+          stopAtRejected: true,
+        })
+      : null,
+  };
+};
+
+/**
+ * Where the description ends, given the quantity starts at `start`: before one prefix char,
+ * which a hyphen may follow ("x-2", a range missing its lower bound).
+ */
+const trailingPrefixStart = (text: string, start: number): number => {
+  let before = text.slice(0, start).trimEnd();
+  if (before.endsWith('-')) before = before.slice(0, -1).trimEnd();
+  const prefix = before.at(-1) ?? '';
+  const isPrefix =
+    prefix === 'x' || prefix === 'X'
+      ? !/\p{L}$/u.test(before.slice(-3, -1))
+      : prefix !== '' && ',:-–—⨯'.includes(prefix);
+  return isPrefix ? before.length - 1 : before.length;
+};
+
+/**
+ * Matches `[prefix] [quantity1 sep] quantity2` ending `body`, the line minus a trailing
+ * `uom`. Quantities are scanned by {@link matchTrailingQuantity}, so whatever
+ * `numericQuantity` accepts (vulgar fractions, any-script digits) works here too.
+ */
+const matchTrailingQuantityExpression = (
+  body: string,
+  uom: string,
+  ctx: ParseContext
+): TrailingMatch | null => {
+  const end = body.trimEnd();
+  if (!endsWithQuantityCharRegExp.test(end)) return null;
+
+  const last = matchTrailingQuantity(end, ctx.nqOpts, { isStart: isQuantity2Start });
+  if (!last) return null;
+
+  const head = end.slice(0, last.startIndex);
+
+  // A sign glued to `quantity2` after `quantity1 sep` is its own ("x2 - -3"), not a dash
+  const signed = head.endsWith('-') ? matchTrailingRange(head.slice(0, -1), ctx) : null;
+  if (signed?.quantity1) {
+    return {
+      start: signed.quantity1.startIndex,
+      rejected: true,
+      quantity: NaN,
+      quantity2: null,
+      uom,
+    };
+  }
+
+  const range = matchTrailingRange(head, ctx);
+  if (range?.quantity1) {
+    const { value, startIndex } = range.quantity1;
+    const rejected = !isAcceptableQuantity(value);
+    return {
+      start: rejected ? startIndex : trailingPrefixStart(end, startIndex),
+      rejected,
+      quantity: value,
+      quantity2: last.value,
+      uom,
+    };
+  }
+
+  // A separator with nothing before it is just a dash prefix ("x-2")
+  return {
+    start: trailingPrefixStart(end, last.startIndex),
+    rejected: false,
+    quantity: last.value,
+    quantity2: null,
+    uom,
+  };
+};
+
 /**
  * Handles lines that end with a quantity/range and an optional unit of measure, e.g.
  * "Ripe tomato x2".
@@ -182,22 +321,26 @@ export const parseTrailingQuantity = (
   text: string,
   ctx: ParseContext
 ): boolean => {
-  const trailingQtyResult = ctx.trailingQuantityRegex.exec(text);
+  // Each place the unit could start, or none. Like a `$`-anchored regex, the match starting
+  // leftmost wins; on a tie, the one with a unit (tried first).
+  const candidates: [body: string, uom: string][] = [];
+  const spaced = spacedTrailingUOMRegExp.exec(text);
+  if (spaced) candidates.push([text.slice(0, spaced.index), spaced[0]]);
+  const glued = gluedTrailingUOMRegExp.exec(text)?.groups!.uom;
+  if (glued && uomWordRegExp.test(glued)) candidates.push([text.slice(0, -glued.length), glued]);
+  candidates.push([text, '']);
 
-  if (!trailingQtyResult) return false;
-
-  // Named groups, never indices: the regex inlines `numericRegex` twice and splices in
-  // user-supplied range separators, so its group numbering is not stable.
-  const { qty1, qty2, uom: uomRaw } = trailingQtyResult.groups!;
+  let best: TrailingMatch | null = null;
+  for (const [body, uom] of candidates) {
+    const match = matchTrailingQuantityExpression(body, uom, ctx);
+    if (match && (!best || match.start < best.start)) best = match;
+  }
 
   // Same acceptance test as the leading path. A negative trailing quantity ("Tomato x-2 -
   // 3") is not a quantity, so the whole line falls through to the description.
-  const quantity = numericQuantity(qty1 || qty2, ctx.nqOpts);
-  const quantity2 = qty1 ? numericQuantity(qty2, ctx.nqOpts) : null;
+  if (!best || best.rejected) return false;
 
-  if (!isAcceptableQuantity(quantity) || (quantity2 !== null && !isAcceptableQuantity(quantity2))) {
-    return false;
-  }
+  const { quantity, quantity2, uom: uomRaw } = best;
 
   if (uomRaw && ctx.ignoredUOMsLC.includes(uomRaw.toLowerCase())) {
     // Trailing quantity detected, but bailing out since the UOM should be ignored.
@@ -207,7 +350,7 @@ export const parseTrailingQuantity = (
 
   // Trailing quantity detected with missing or non-ignored UOM.
   // Remove the quantity and unit of measure from the description.
-  ingredient.description = text.replace(ctx.trailingQuantityRegex, '').trim();
+  ingredient.description = text.slice(0, best.start).trim();
 
   // Trailing quantity/range.
   ingredient.quantity = quantity;

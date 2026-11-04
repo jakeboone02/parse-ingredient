@@ -9,12 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Performance hardening against pathological input: the leading-unit word regex, the trailing-quantity regex, the leading/trailing quantity scans, and slashed-unit lookups no longer exhibit exponential or quadratic slowdowns on long lines.
-- The trailing-quantity regex no longer matches an empty quantity or splits a number between the quantity and the unit (e.g. `'Item 12-pack'` is now left as the description).
+- [#60] Performance hardening against pathological input: the leading-unit word regex, the trailing-quantity regex, the leading/trailing quantity scans, and slashed-unit lookups no longer exhibit exponential or quadratic slowdowns on long lines.
+- [#60] The trailing-quantity regex no longer matches an empty quantity or splits a number between the quantity and the unit (e.g. `'Item 12-pack'` is now left as the description).
+- [#62] Trailing quantities now accept vulgar fractions and non-ASCII digits like leading ones do (`'Ripe tomato x½'`, `'flour x1½'`, `'stuff ٢ to ٣ cups'`). Previously `'x1½'` silently dropped the `½`. Numbers glued to a word are no longer split at a fraction bar or decimal point (`'tomato1/2'` was quantity `2`).
 
 ### Changed
 
-- `numeric-quantity` updated to v3.3.4 (whitespace-run backtracking fix).
+- [#60] `numeric-quantity` updated to v3.3.4 (whitespace-run backtracking fix).
+- [#62] The parser no longer uses `buildTrailingQuantityRegex`, which has been deprecated and will be removed in the next major version.
 
 ## [v3.1.0] - 2026-10-28
 
@@ -315,6 +317,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#55]: https://github.com/jakeboone02/parse-ingredient/pull/55
 [#58]: https://github.com/jakeboone02/parse-ingredient/pull/58
 [#59]: https://github.com/jakeboone02/parse-ingredient/pull/59
+[#60]: https://github.com/jakeboone02/parse-ingredient/pull/60
+[#62]: https://github.com/jakeboone02/parse-ingredient/pull/62
 
 <!-- Release comparison links -->
 
