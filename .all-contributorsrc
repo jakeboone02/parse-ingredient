@@ -47,6 +47,13 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/535021?v=4",
       "profile": "https://nerdstep.com/",
       "contributions": ["code"]
+    },
+    {
+      "login": "checkerschaf",
+      "name": "Jan Poth",
+      "avatar_url": "https://avatars.githubusercontent.com/u/7757317?v=4",
+      "profile": "https://www.janpoth.de/",
+      "contributions": ["code", "test"]
     }
   ],
   "contributorsPerLine": 7,
