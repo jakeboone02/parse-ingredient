@@ -195,6 +195,8 @@ describe('trailing quantity regex backtracking', () => {
    */
   test.each([
     ['whitespace run', `salt${' '.repeat(10_000)}y`],
+    // Needs `numeric-quantity` >= v3.3.4
+    ['whitespace after sign', `oz-${' '.repeat(20_000)}1+`],
     ['digit run', `x ${'1'.repeat(20_000)} !`],
     ['slash chain', `x ${'1/'.repeat(10_000)}!`],
     ['comma chain', `x ${'1,'.repeat(10_000)}!`],
