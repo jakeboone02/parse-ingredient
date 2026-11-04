@@ -187,4 +187,52 @@ describe('trailing quantity regex backtracking', () => {
     expect(regex.exec('1_000 ml')?.groups).toMatchObject({ qty2: '1_000', uom: 'ml' });
     expect(regex.exec('1.5e3 g')?.groups).toMatchObject({ qty2: '1.5e3', uom: 'g' });
   });
+
+  /**
+   * Unanchored and `$`-terminated, so each start position is tried; these once cost
+   * quadratic-to-quartic time (or hit JSC's backtrack cap and silently returned `null`).
+   * Lines are ~20k chars, so the budget separates linear from not.
+   */
+  test.each([
+    ['whitespace run', `salt${' '.repeat(10_000)}y`],
+    ['digit run', `x ${'1'.repeat(20_000)} !`],
+    ['slash chain', `x ${'1/'.repeat(10_000)}!`],
+    ['comma chain', `x ${'1,'.repeat(10_000)}!`],
+    ['underscore chain', `x ${'_1'.repeat(10_000)} !`],
+    ['dot chain', `x ${'1.'.repeat(10_000)}!`],
+    ['letter/digit chain', `x ${'a1'.repeat(10_000)} !`],
+    ['exponent chain', `x ${'1e'.repeat(10_000)}!`],
+    ['x-prefix chain', `${'x1'.repeat(10_000)} !`],
+    ['hyphenated unit chain', `${'0oz-'.repeat(5_000)}\tg`],
+  ])('fails fast on a %s', (_, line) => {
+    const start = performance.now();
+    regex.exec(line);
+    expect(performance.now() - start).toBeLessThan(250);
+  });
+
+  test('never yields an empty qty2', () => {
+    // `numericRegex` matches empty when unanchored; the unit then swallowed the number
+    expect(regex.exec('x 1/1/1/1')?.groups?.qty2).toBe('1/1');
+  });
+
+  test('does not split a number between qty2 and the unit', () => {
+    expect(regex.exec('Item 12-pack')).toBeNull();
+  });
+});
+
+/** Same lines as above, but through the leading/trailing quantity scans and unit lookups. */
+describe('parse pipeline superlinear inputs', () => {
+  test.each([
+    ['vulgar run', '½'.repeat(10_000)],
+    ['unmatched sign', `1+${'٣'.repeat(10_000)}cupe`],
+    ['unslashed gap', `٣\t${'٣'.repeat(10_000)}fl_`],
+    ['digit gap', `0 ${'0'.repeat(10_000)}+⨯`],
+    ['spaced digits', `${'1 '.repeat(10_000)}x`],
+    ['separator run', `${'1__'.repeat(5_000)}x`],
+    ['slashed unit', `2 cups${'/1'.repeat(10_000)}`],
+  ])('parses a %s fast', (_, line) => {
+    const start = performance.now();
+    parseIngredient(line, { descriptionMeasurements: true });
+    expect(performance.now() - start).toBeLessThan(250);
+  });
 });

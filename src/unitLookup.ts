@@ -9,6 +9,8 @@ export interface UnitLookupMaps {
   caseSensitive: Map<string, string>;
   /** Case-insensitive map (lowercase keys) */
   caseInsensitive: Map<string, string>;
+  /** Longest key in either map; longer strings skip the lookup (and its hashing) entirely */
+  maxKeyLength: number;
 }
 
 /**
@@ -21,6 +23,7 @@ export const buildUnitLookupMaps = (
 ): UnitLookupMaps => {
   const caseSensitive = new Map<string, string>();
   const caseInsensitive = new Map<string, string>();
+  let maxKeyLength = 0;
 
   // Helper to add versions to maps (first one wins for case-insensitive)
   const addToMaps = (id: string, def: UnitOfMeasureDefinitions[string]) => {
@@ -31,6 +34,7 @@ export const buildUnitLookupMaps = (
       caseSensitive.set(version, id);
       // For case-insensitive, later entries also override
       caseInsensitive.set(version.toLowerCase(), id);
+      maxKeyLength = Math.max(maxKeyLength, version.length, version.toLowerCase().length);
     }
   };
 
@@ -44,14 +48,17 @@ export const buildUnitLookupMaps = (
     addToMaps(id, def);
   }
 
-  return { caseSensitive, caseInsensitive };
+  return { caseSensitive, caseInsensitive, maxKeyLength };
 };
 
 /**
  * Looks up a unit ID from the maps, trying case-sensitive first.
  */
 export const lookupUnit = (unit: string, maps: UnitLookupMaps): string | null =>
-  maps.caseSensitive.get(unit) ?? maps.caseInsensitive.get(unit.toLowerCase()) ?? null;
+  // Lowercasing never shortens a string, so anything longer than every key can't match
+  unit.length > maps.maxKeyLength
+    ? null
+    : (maps.caseSensitive.get(unit) ?? maps.caseInsensitive.get(unit.toLowerCase()) ?? null);
 
 /**
  * Cached lookup maps for the default unitsOfMeasure (no additionalUOMs).

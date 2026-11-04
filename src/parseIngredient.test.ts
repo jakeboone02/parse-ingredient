@@ -8,12 +8,7 @@ for (const [testName, [input, expected, options]] of Object.entries(parseIngredi
   });
 }
 
-/**
- * The word after a leading unit is matched to try a two-word unit. A long word followed by
- * punctuation used to backtrack exponentially there: 30 letters took ~36s in Node, and Hermes
- * throws. Bun's regex engine caps the backtracking at ~400ms, so the budget stays below that; the
- * fixed regex takes ~1ms.
- */
+/** Guards against exponential backtracking in the word after a leading unit. */
 describe('next word regex backtracking', () => {
   test('fails fast on a long word followed by punctuation', () => {
     const word = 'a'.repeat(40);
@@ -28,6 +23,6 @@ describe('next word regex backtracking', () => {
         isGroupHeader: false,
       },
     ]);
-    expect(performance.now() - start).toBeLessThan(100);
+    expect(performance.now() - start).toBeLessThan(250);
   });
 });

@@ -34,6 +34,89 @@ export const nonQuantityCharRegExp: RegExp = new RegExp(
   'u'
 );
 
+const whitespaceRegExp = /\s/u;
+
+const signLeftRegExp = /[\seE]/u;
+
+const vulgarFractionChars = new Set(Object.keys(vulgarFractionToAsciiMap));
+
+const quantityDigitRegExp = new RegExp(
+  `[\\p{Nd}${Object.keys(superSubDigitToAsciiMap).join('')}]`,
+  'u'
+);
+
+const isSlashLike = (ch: string): boolean =>
+  ch === '/' || ch === '\u2044' || vulgarFractionChars.has(ch);
+
+/** Whether `text[i]` is a digit preceded by whitespace preceded by a digit. */
+const digitAfterGap = (text: string, i: number): boolean => {
+  if (!quantityDigitRegExp.test(text[i]) || !whitespaceRegExp.test(text[i - 1] ?? '')) {
+    return false;
+  }
+  let j = i - 1;
+  while (j >= 0 && whitespaceRegExp.test(text[j])) j--;
+  return j >= 0 && quantityDigitRegExp.test(text[j]);
+};
+
+/** Whether `text[i]` is a digit followed by whitespace followed by a digit. */
+const digitBeforeGap = (text: string, i: number): boolean => {
+  if (!quantityDigitRegExp.test(text[i]) || !whitespaceRegExp.test(text[i + 1] ?? '')) {
+    return false;
+  }
+  let j = i + 1;
+  while (j < text.length && whitespaceRegExp.test(text[j])) j++;
+  return j < text.length && quantityDigitRegExp.test(text[j]);
+};
+
+/**
+ * Returns a per-char tally that only grows; once it returns `false`, no span containing every
+ * char fed so far can parse. Upper bounds from `numericRegex`, kept loose on purpose: too
+ * loose only costs iterations, too tight would drop quantities. Bounds what would otherwise
+ * be one `numericQuantity` call per char of a long all-quantity-char run (quadratic).
+ * Fed one char at a time, in `backwards` order for suffix scans.
+ */
+const createQuantityTally = (
+  decimalSeparator: NQOptions['decimalSeparator'],
+  backwards = false
+) => {
+  let slashes = 0;
+  let exponents = 0;
+  let signs = 0;
+  let dots = 0;
+  let commas = 0;
+  let wsRuns = 0;
+  let prev = '';
+
+  return (ch: string): boolean => {
+    const before = prev;
+    prev = ch;
+    const [left, right] = backwards ? [ch, before] : [before, ch];
+    // A sign only leads the number or follows an exponent marker
+    if ((right === '-' || right === '+') && left && !signLeftRegExp.test(left)) return false;
+    if (vulgarFractionChars.has(ch)) {
+      // Expands to ` n/d`: a whitespace run plus a slash
+      wsRuns++;
+      return ++slashes <= 1;
+    }
+    if (whitespaceRegExp.test(ch)) {
+      // Sign, mixed number, both sides of the slash, vulgar expansion, plus trim slack
+      if (!whitespaceRegExp.test(before)) wsRuns++;
+      return wsRuns <= 8;
+    }
+    if (ch === '/' || ch === '\u2044') return ++slashes <= 1;
+    if (ch === 'e' || ch === 'E') return ++exponents <= 1;
+    // Leading sign plus exponent sign
+    if (ch === '-' || ch === '+') return ++signs <= 2;
+    if (ch === '.' || ch === ',' || ch === '_') {
+      // Every separator must be followed by a digit
+      if (before === '.' || before === ',' || before === '_') return false;
+      if (ch === '.' && decimalSeparator !== ',') return ++dots <= 1;
+      if (ch === ',' && decimalSeparator === ',') return ++commas <= 1;
+    }
+    return true;
+  };
+};
+
 /**
  * Finds the longest prefix of `text` that parses as a single numeric value.
  *
@@ -57,9 +140,22 @@ export const matchLeadingQuantity = (
   nqOpts: NQOptions,
   accept: (value: number) => boolean
 ): { value: number; rest: string } | null => {
-  const stop = nonQuantityCharRegExp.exec(text);
+  const tally = createQuantityTally(nqOpts.decimalSeparator);
+  // Without a slash, digits never straddle whitespace (`'1 2'` is NaN), so prefixes ending
+  // past the first such gap but before the first slash are skipped
+  let slash = -1;
+  let gap = -1;
+  let end = 0;
+  // By code point, so astral digits like `'𝟚'` aren't split into lone surrogates
+  for (let ch = ''; end < text.length; end += ch.length) {
+    ch = String.fromCodePoint(text.codePointAt(end)!);
+    if (nonQuantityCharRegExp.test(ch) || !tally(ch)) break;
+    if (slash < 0 && isSlashLike(ch)) slash = end;
+    else if (slash < 0 && gap < 0 && digitAfterGap(text, end)) gap = end;
+  }
 
-  for (let len = stop ? stop.index : text.length; len > 0; len--) {
+  for (let len = end; len > 0; len--) {
+    if (len > gap && gap >= 0 && (slash < 0 || len <= slash)) continue;
     const value = numericQuantity(text.substring(0, len).trim(), nqOpts);
 
     if (accept(value)) {
@@ -84,8 +180,6 @@ export const matchLeadingQuantity = (
  */
 export const isAcceptableQuantity = (value: number): boolean =>
   Number.isFinite(value) && value >= 0;
-
-const whitespaceRegExp = /\s/u;
 
 /**
  * Characters a quantity is allowed to start immediately after. Anything else means the
@@ -128,14 +222,21 @@ export const matchTrailingQuantity = (
   // Lower bound on the start index: one past the last character `numericQuantity` could
   // not have consumed. Derived from the text, never a fixed window.
   let min = minStart;
+  const tally = createQuantityTally(nqOpts.decimalSeparator, true);
+  // Mirror of the gap/slash pruning in `matchLeadingQuantity`
+  let slash = -1;
+  let gap = -1;
   for (let i = text.length - 1; i >= min; i--) {
-    if (nonQuantityCharRegExp.test(text[i])) {
+    if (nonQuantityCharRegExp.test(text[i]) || !tally(text[i])) {
       min = i + 1;
       break;
     }
+    if (slash < 0 && isSlashLike(text[i])) slash = i;
+    else if (slash < 0 && gap < 0 && digitBeforeGap(text, i)) gap = i;
   }
 
   for (let start = min; start < text.length; start++) {
+    if (start <= gap && start > slash) continue;
     // A quantity never starts on whitespace, and never mid-word ("x12" is not 12).
     if (whitespaceRegExp.test(text[start])) continue;
     if (start > 0 && !isQuantityStartBoundary(text, start, nqOpts)) continue;

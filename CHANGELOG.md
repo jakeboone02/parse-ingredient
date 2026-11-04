@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- The word after a leading unit no longer backtracks exponentially when it is long and followed by punctuation: `'1 cup ' + 'a'.repeat(30) + '/b'` took ~36s in Node, and Hermes throws "Maximum regex stack depth reached".
+- Performance hardening against pathological input: the leading-unit word regex, the trailing-quantity regex, the leading/trailing quantity scans, and slashed-unit lookups no longer exhibit exponential or quadratic slowdowns on long lines.
+- The trailing-quantity regex no longer matches an empty quantity or splits a number between the quantity and the unit (e.g. `'Item 12-pack'` is now left as the description).
 
 ## [v3.1.0] - 2026-10-28
 
