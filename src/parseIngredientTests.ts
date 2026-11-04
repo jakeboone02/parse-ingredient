@@ -489,6 +489,137 @@ export const parseIngredientTests: Record<
       },
     ],
   ],
+  'trailing vulgar fraction': [
+    'Ripe tomato x½',
+    [
+      {
+        quantity: 0.5,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: 'Ripe tomato',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'trailing mixed number with vulgar fraction': [
+    'Ripe tomato x1½',
+    [
+      {
+        quantity: 1.5,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: 'Ripe tomato',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'trailing vulgar fraction with unit': [
+    'flour ½ cup',
+    [
+      {
+        quantity: 0.5,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cup',
+        description: 'flour',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'trailing Unicode digit': [
+    'Ripe tomato x٢',
+    [
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: 'Ripe tomato',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'trailing Unicode digit attached to unit': [
+    'Stuff ٣٠٠mg',
+    [
+      {
+        quantity: 300,
+        quantity2: null,
+        unitOfMeasureID: 'milligram',
+        unitOfMeasure: 'mg',
+        description: 'Stuff',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'trailing range (vulgar fraction)': [
+    'stuff ½-1 cup',
+    [
+      {
+        quantity: 0.5,
+        quantity2: 1,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cup',
+        description: 'stuff',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'trailing range (Unicode digits)': [
+    'stuff ٢ to ٣ cups',
+    [
+      {
+        quantity: 2,
+        quantity2: 3,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cups',
+        description: 'stuff',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'trailing vulgar fraction attached to letter': [
+    'Vitamin B½',
+    [
+      {
+        quantity: null,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: 'Vitamin B½',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'trailing number attached to letter is not split at its fraction bar': [
+    'Ripe tomato1/2',
+    [
+      {
+        quantity: null,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: 'Ripe tomato1/2',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'trailing quantity after a comma prefix': [
+    'Stuff,2',
+    [
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: 'Stuff',
+        isGroupHeader: false,
+      },
+    ],
+    { decimalSeparator: ',' },
+  ],
   'trailing range (hyphen)': [
     'stuff 1-2 cups',
     [

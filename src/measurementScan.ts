@@ -137,7 +137,7 @@ export const scanMeasurements = (text: string, mctx: MeasurementContext): Measur
 
     // The backwards scan never reaches past the previous measurement, which is what makes
     // the emitted spans non-overlapping.
-    const upper = matchTrailingQuantity(before, mctx.nqOpts, previousEnd);
+    const upper = matchTrailingQuantity(before, mctx.nqOpts, { minStart: previousEnd });
     if (!upper) {
       reject();
       continue;
@@ -151,11 +151,9 @@ export const scanMeasurements = (text: string, mctx: MeasurementContext): Measur
     const beforeQuantity = before.slice(0, startIndex);
     const separator = mctx.trailingRangeSeparatorRegex.exec(beforeQuantity);
     if (separator) {
-      const lower = matchTrailingQuantity(
-        beforeQuantity.slice(0, separator.index),
-        mctx.nqOpts,
-        previousEnd
-      );
+      const lower = matchTrailingQuantity(beforeQuantity.slice(0, separator.index), mctx.nqOpts, {
+        minStart: previousEnd,
+      });
       if (lower) {
         quantity2 = quantity;
         quantity = lower.value;

@@ -45,6 +45,19 @@ const quantityDigitRegExp = new RegExp(
   'u'
 );
 
+/**
+ * A char a quantity can end on: a digit (any script), super/subscript digit, or vulgar
+ * fraction. `'1.'` and `'1/'` are not quantities.
+ *
+ * @internal
+ */
+export const quantityEndCharRegExp: RegExp = new RegExp(
+  `[\\p{Nd}${Object.keys(superSubDigitToAsciiMap).join('')}${Object.keys(
+    vulgarFractionToAsciiMap
+  ).join('')}]`,
+  'u'
+);
+
 const isSlashLike = (ch: string): boolean =>
   ch === '/' || ch === '\u2044' || vulgarFractionChars.has(ch);
 
@@ -217,6 +230,56 @@ const isQuantityStartBoundary = (text: string, start: number, nqOpts: NQOptions)
   return !before || isNaN(numericQuantity(before, nqOpts));
 };
 
+const trailingPrefixChars = new Set([':', '-', '–', '—', '⨯']);
+
+const casedLetterRegExp = /\p{LC}/u;
+
+const letterRegExp = /\p{L}/u;
+
+/**
+ * Whether a quantity, or the range/prefix leading it, may start at `start` when parsing a
+ * line's trailing quantity. Allowed after whitespace, a prefix char (`,` `:` dashes `x`
+ * `⨯`), or any other char except a cased letter (`'A4'` is not a quantity; CJK `'大さじ2'`
+ * is) or part of a number. An `x` must not end a word (`'box 2'` is not `'bo'` × 2).
+ *
+ * @internal
+ */
+export const isTrailingQuantityStart = (text: string, start: number): boolean => {
+  if (start === 0) return true;
+  const prev = codePointEndingAt(text, start - 1);
+  if (whitespaceRegExp.test(prev) || trailingPrefixChars.has(prev)) return true;
+  const beforePrev = start > prev.length ? codePointEndingAt(text, start - prev.length - 1) : '';
+  if (prev === 'x' || prev === 'X') return !letterRegExp.test(beforePrev);
+  if (prev === ',') {
+    return !(
+      quantityEndCharRegExp.test(beforePrev) && quantityDigitRegExp.test(codePointAt(text, start))
+    );
+  }
+  if (prev === '/' || prev === '\u2044') return !quantityEndCharRegExp.test(beforePrev);
+  return (
+    !casedLetterRegExp.test(prev) &&
+    !quantityEndCharRegExp.test(prev) &&
+    !decimalSeparatorChars.has(prev)
+  );
+};
+
+/**
+ * Options for {@link matchTrailingQuantity}.
+ *
+ * @internal
+ */
+export interface TrailingQuantityScanOptions {
+  /** Lower bound on the start index. */
+  minStart?: number;
+  /** Replaces the default start-boundary test. */
+  isStart?: (text: string, start: number) => boolean;
+  /**
+   * Return the first boundary-valid start that parses to a *rejected* value (negative,
+   * `Infinity`) instead of skipping it, so callers can reject the whole match.
+   */
+  stopAtRejected?: boolean;
+}
+
 /**
  * Finds the longest *suffix* of `text` that parses as a single acceptable quantity, and
  * whose start sits at a word boundary.
@@ -227,14 +290,15 @@ const isQuantityStartBoundary = (text: string, start: number, nqOpts: NQOptions)
  * never by a fixed-width window — so a quantity of any length is found whole. `minStart`
  * bounds it further, for callers that must not look back past a known point.
  *
- * @returns The parsed value and its start index in `text`, or `null`.
+ * @returns The parsed value and its start index in `text`, or `null`. With `stopAtRejected`,
+ * the value may be unacceptable.
  *
  * @internal
  */
 export const matchTrailingQuantity = (
   text: string,
   nqOpts: NQOptions,
-  minStart = 0
+  { minStart = 0, isStart, stopAtRejected = false }: TrailingQuantityScanOptions = {}
 ): { value: number; startIndex: number } | null => {
   // Lower bound on the start index: one past the last character `numericQuantity` could
   // not have consumed. Derived from the text, never a fixed window.
@@ -259,11 +323,18 @@ export const matchTrailingQuantity = (
     if (start <= gap && start > slash) continue;
     // A quantity never starts on whitespace, and never mid-word ("x12" is not 12).
     if (whitespaceRegExp.test(text[start])) continue;
-    if (start > 0 && !isQuantityStartBoundary(text, start, nqOpts)) continue;
+    if (
+      start > 0 &&
+      !(isStart ? isStart(text, start) : isQuantityStartBoundary(text, start, nqOpts))
+    ) {
+      continue;
+    }
 
     const value = numericQuantity(text.substring(start), nqOpts);
     // Leftmost acceptable start wins, so the longest quantity is returned.
-    if (isAcceptableQuantity(value)) return { value, startIndex: start };
+    if (isAcceptableQuantity(value) || (stopAtRejected && !Number.isNaN(value))) {
+      return { value, startIndex: start };
+    }
   }
 
   return null;

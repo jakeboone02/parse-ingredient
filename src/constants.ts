@@ -174,8 +174,8 @@ export const defaultOptions: Readonly<Required<ParseIngredientOptions>> = deepFr
 });
 
 /**
- * Source of the unit-of-measure word pattern, shared by `firstWordRegEx` and
- * `buildTrailingQuantityRegex` so the two cannot drift.
+ * Source of the unit-of-measure word pattern, shared by `firstWordRegEx`, the trailing-unit
+ * regexes in `parsePhases`, and `buildTrailingQuantityRegex` so they cannot drift.
  *
  * Contains no capture groups (only `(?:…)` and the escaped literal parens in
  * `\(…\)`), so inlining it any number of times cannot perturb group indices.
@@ -194,6 +194,12 @@ const numericRegexAnywhere = numericRegex.source.replace(/^\^/, '').replace(/\$$
 /**
  * Builds a regex to capture trailing quantity and unit of measure,
  * using the provided range separator words.
+ *
+ * No longer used by the parser, which scans trailing quantities with `numericQuantity` so
+ * that vulgar fractions and non-ASCII digits are recognized. Kept as public API; matches
+ * ASCII quantities only.
+ *
+ * @deprecated Unused by the parser; will be removed in the next major version.
  *
  * Matches are read through the named groups `qty1`, `sep`, `qty2`, and `uom` — never by
  * index. `numericRegexAnywhere` is inlined twice and user range separators may contain
