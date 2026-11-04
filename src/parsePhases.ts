@@ -272,7 +272,7 @@ const matchTrailingQuantityExpression = (
   const head = end.slice(0, last.startIndex);
 
   // A sign glued to `quantity2` after `quantity1 sep` is its own ("x2 - -3"), not a dash
-  const signed = head.endsWith('-') ? matchTrailingRange(head.slice(0, -1).trimEnd(), ctx) : null;
+  const signed = head.endsWith('-') ? matchTrailingRange(head.slice(0, -1), ctx) : null;
   if (signed?.quantity1) {
     return {
       start: signed.quantity1.startIndex,

@@ -2470,6 +2470,19 @@ export const parseIngredientTests: Record<
       },
     ],
   ],
+  'negative quantity: negative trailing quantity2 after word separator is rejected': [
+    'stuff 1 to -2 cups',
+    [
+      {
+        quantity: null,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: 'stuff 1 to -2 cups',
+        isGroupHeader: false,
+      },
+    ],
+  ],
   'negative quantity: negative quantity2 leaves quantity intact': [
     '1 - -2 cups sugar',
     [

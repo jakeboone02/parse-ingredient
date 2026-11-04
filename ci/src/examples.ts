@@ -162,6 +162,7 @@ export const examples: Example[] = [
   { name: 'negative quantity: detached leading sign', input: '- 2 cups sugar' },
   { name: 'negative quantity: negative trailing quantity is rejected', input: 'Ripe tomato x-2 - 3 cups' },
   { name: 'negative quantity: negative trailing quantity2 is rejected', input: 'Ripe tomato x2 - -3' },
+  { name: 'negative quantity: negative trailing quantity2 after word separator is rejected', input: 'stuff 1 to -2 cups' },
   { name: 'negative quantity: negative quantity2 leaves quantity intact', input: '1 - -2 cups sugar' },
   { name: 'division by zero is not a quantity', input: '1/0 cups sugar' },
   { name: 'division by zero in a range is not a quantity', input: '1/0 to 2 cups sugar' },
