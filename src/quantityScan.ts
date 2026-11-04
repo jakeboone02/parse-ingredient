@@ -48,24 +48,39 @@ const quantityDigitRegExp = new RegExp(
 const isSlashLike = (ch: string): boolean =>
   ch === '/' || ch === '\u2044' || vulgarFractionChars.has(ch);
 
-/** Whether `text[i]` is a digit preceded by whitespace preceded by a digit. */
+/** Code point starting at `i`. */
+const codePointAt = (text: string, i: number): string => String.fromCodePoint(text.codePointAt(i)!);
+
+/** Code point ending at `i` (a surrogate pair if `text[i]` is its low half). */
+const codePointEndingAt = (text: string, i: number): string =>
+  i > 0 && /[\uDC00-\uDFFF]/.test(text[i]) && /[\uD800-\uDBFF]/.test(text[i - 1])
+    ? text.slice(i - 1, i + 1)
+    : text[i];
+
+const decimalSeparatorChars = new Set(['.', ',', '_']);
+
+/** Whether the code point at `i` is a digit preceded by whitespace preceded by a digit. */
 const digitAfterGap = (text: string, i: number): boolean => {
-  if (!quantityDigitRegExp.test(text[i]) || !whitespaceRegExp.test(text[i - 1] ?? '')) {
+  if (
+    !quantityDigitRegExp.test(codePointAt(text, i)) ||
+    !whitespaceRegExp.test(text[i - 1] ?? '')
+  ) {
     return false;
   }
   let j = i - 1;
   while (j >= 0 && whitespaceRegExp.test(text[j])) j--;
-  return j >= 0 && quantityDigitRegExp.test(text[j]);
+  return j >= 0 && quantityDigitRegExp.test(codePointEndingAt(text, j));
 };
 
-/** Whether `text[i]` is a digit followed by whitespace followed by a digit. */
+/** Whether the code point at `i` is a digit followed by whitespace followed by a digit. */
 const digitBeforeGap = (text: string, i: number): boolean => {
-  if (!quantityDigitRegExp.test(text[i]) || !whitespaceRegExp.test(text[i + 1] ?? '')) {
+  const ch = codePointAt(text, i);
+  if (!quantityDigitRegExp.test(ch) || !whitespaceRegExp.test(text[i + ch.length] ?? '')) {
     return false;
   }
-  let j = i + 1;
+  let j = i + ch.length;
   while (j < text.length && whitespaceRegExp.test(text[j])) j++;
-  return j < text.length && quantityDigitRegExp.test(text[j]);
+  return j < text.length && quantityDigitRegExp.test(codePointAt(text, j));
 };
 
 /**
@@ -93,6 +108,8 @@ const createQuantityTally = (
     const [left, right] = backwards ? [ch, before] : [before, ch];
     // A sign only leads the number or follows an exponent marker
     if ((right === '-' || right === '+') && left && !signLeftRegExp.test(left)) return false;
+    // Separators need a digit next (`'1. 5'` is NaN), so a following gap ends every span
+    if (decimalSeparatorChars.has(left) && whitespaceRegExp.test(right)) return false;
     if (vulgarFractionChars.has(ch)) {
       // Expands to ` n/d`: a whitespace run plus a slash
       wsRuns++;
@@ -226,13 +243,16 @@ export const matchTrailingQuantity = (
   // Mirror of the gap/slash pruning in `matchLeadingQuantity`
   let slash = -1;
   let gap = -1;
-  for (let i = text.length - 1; i >= min; i--) {
-    if (nonQuantityCharRegExp.test(text[i]) || !tally(text[i])) {
+  // By code point, so trailing astral digits like `'𝟚'` aren't split into lone surrogates
+  for (let i = text.length - 1, ch = ''; i >= min; i -= ch.length) {
+    ch = codePointEndingAt(text, i);
+    const s = i - ch.length + 1;
+    if (s < min || nonQuantityCharRegExp.test(ch) || !tally(ch)) {
       min = i + 1;
       break;
     }
-    if (slash < 0 && isSlashLike(text[i])) slash = i;
-    else if (slash < 0 && gap < 0 && digitBeforeGap(text, i)) gap = i;
+    if (slash < 0 && isSlashLike(ch)) slash = s;
+    else if (slash < 0 && gap < 0 && digitBeforeGap(text, s)) gap = s;
   }
 
   for (let start = min; start < text.length; start++) {

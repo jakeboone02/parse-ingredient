@@ -231,10 +231,13 @@ describe('parse pipeline superlinear inputs', () => {
     ['digit gap', `0 ${'0'.repeat(10_000)}+⨯`],
     ['spaced digits', `${'1 '.repeat(10_000)}x`],
     ['separator run', `${'1__'.repeat(5_000)}x`],
+    ['decimal gap', `1. ${'1'.repeat(10_000)}x`],
+    ['astral gap', `𝟙 ${'𝟙'.repeat(10_000)} cups`],
     ['slashed unit', `2 cups${'/1'.repeat(10_000)}`],
   ])('parses a %s fast', (_, line) => {
     const start = performance.now();
-    parseIngredient(line, { descriptionMeasurements: true });
+    const result = parseIngredient(line, { descriptionMeasurements: true });
     expect(performance.now() - start).toBeLessThan(250);
+    expect(result.length).toBeGreaterThan(0);
   });
 });

@@ -207,6 +207,7 @@ const numericRegexAnywhere = numericRegex.source.replace(/^\^/, '').replace(/\$$
  * - Starts without a prefix char must not follow whitespace (the start before it always wins)
  *   or a letter (`'A4'` is not a quantity), nor split a digit run (an earlier start wins).
  * - `\s*(?!\s)` consumes whitespace atomically; adjacent `\s*`s otherwise split it every way.
+ * - An `x` prefix must not end a word (`'box 2'` is not `'bo'` × 2).
  * - `qty2` must be non-empty (`numericRegex` can match empty when unanchored) and must not
  *   end mid-digit-run, so `uom` can't re-scan its digits.
  */
@@ -215,7 +216,7 @@ export const buildTrailingQuantityRegex = (
 ): RegExp => {
   const rangeSeparatorSource = buildRangeSeparatorSource(rangeSeparators);
   return new RegExp(
-    `(?:,(?!(?<=\\d,)\\d)|:|-|–|—|x|⨯|(?<!\\s)(?!(?<=\\d[,_]?)\\d))\\s*(?!\\s)(?:(?<qty1>${numericRegexAnywhere})\\s*(?<sep>${rangeSeparatorSource}))?\\s*(?!\\s)(?<qty2>${numericRegexAnywhere})(?<=\\d)(?![,_]?\\d)(?!(?=[\\p{L}\\p{N}_])[^\\s\\d]*\\d)\\s*(?<uom>${uomWordSource})?$`,
+    `(?:,(?!(?<=\\d,)\\d)|:|-|–|—|(?<!\\p{L})x|⨯|(?<!\\s)(?!(?<=\\d[,_]?)\\d))\\s*(?!\\s)(?:(?<qty1>${numericRegexAnywhere})\\s*(?<sep>${rangeSeparatorSource}))?\\s*(?!\\s)(?<qty2>${numericRegexAnywhere})(?<=\\d)(?![,_]?\\d)(?!(?=[\\p{L}\\p{N}_])[^\\s\\d]*\\d)\\s*(?<uom>${uomWordSource})?$`,
     'iu'
   );
 };
