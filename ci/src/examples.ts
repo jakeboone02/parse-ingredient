@@ -47,6 +47,7 @@ export const examples: Example[] = [
   { name: 'trailing quantity (x)', input: 'Stuff x 300mg' },
   { name: 'trailing quantity (\u2a2f)', input: 'Stuff \u2a2f 300mg' },
   { name: 'trailing zero-less decimal', input: 'stuff .5 cup' },
+  { name: 'trailing digits attached to letter', input: 'Sugar B12' },
   { name: 'trailing range (hyphen)', input: 'stuff 1-2 cups' },
   { name: 'trailing range (endash)', input: 'stuff 1\u20132 cups' },
   { name: 'trailing range (emdash)', input: 'stuff 1\u20142 cups' },
