@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v3.2.0] - 2026-11-04
+
 ### Fixed
 
 - [#60] Performance hardening against pathological input: the leading-unit word regex, the trailing-quantity regex, the leading/trailing quantity scans, and slashed-unit lookups no longer exhibit exponential or quadratic slowdowns on long lines.
@@ -322,7 +324,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- Release comparison links -->
 
-[unreleased]: https://github.com/jakeboone02/parse-ingredient/compare/v3.1.0...HEAD
+[unreleased]: https://github.com/jakeboone02/parse-ingredient/compare/v3.2.0...HEAD
+[v3.2.0]: https://github.com/jakeboone02/parse-ingredient/compare/v3.1.0...v3.2.0
 [v3.1.0]: https://github.com/jakeboone02/parse-ingredient/compare/v3.0.1...v3.1.0
 [v3.0.1]: https://github.com/jakeboone02/parse-ingredient/compare/v3.0.0...v3.0.1
 [v3.0.0]: https://github.com/jakeboone02/parse-ingredient/compare/v2.2.0...v3.0.0
