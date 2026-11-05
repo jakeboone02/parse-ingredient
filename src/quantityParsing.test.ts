@@ -10,8 +10,17 @@ import {
   defaultRangeSeparators,
 } from './constants';
 import { parseIngredient } from './parseIngredient';
-import { stripLeadingQuantityPrefixes } from './parsePhases';
-import { isAcceptableQuantity } from './quantityScan';
+import {
+  createParseContext,
+  startsWithQuantity,
+  stripLeadingQuantityPrefixes,
+} from './parsePhases';
+import {
+  isAcceptableQuantity,
+  isTrailingQuantityStart,
+  matchLeadingQuantity,
+  matchTrailingQuantity,
+} from './quantityScan';
 
 /**
  * The leading-quantity search bounds itself with a character class that must cover every
@@ -138,6 +147,10 @@ describe('stripLeadingQuantityPrefixes', () => {
     expect(stripLeadingQuantityPrefixes('about ca. 200 g', regex)).toBe('200 g');
   });
 
+  test('strips text consisting only of prefixes down to nothing', () => {
+    expect(stripLeadingQuantityPrefixes('about ca.', regex)).toBe('');
+  });
+
   test('leaves text that does not start with a prefix', () => {
     expect(stripLeadingQuantityPrefixes('2 cups about', regex)).toBe('2 cups about');
   });
@@ -156,6 +169,60 @@ describe('stripLeadingQuantityPrefixes', () => {
     expect(
       stripLeadingQuantityPrefixes('ca. 200 g', buildLeadingQuantityPrefixRegex(['ca.', 'ca']))
     ).toBe('200 g');
+  });
+});
+
+/**
+ * Edge cases of the internal scanners that the parse pipeline never feeds them (it trims
+ * input and only probes starts past index 0), but that their contracts still cover.
+ */
+describe('quantity scanner edge cases', () => {
+  const ctx = createParseContext({});
+  const { nqOpts } = ctx;
+
+  test('startsWithQuantity is false for empty text', () => {
+    expect(startsWithQuantity('', ctx)).toBe(false);
+  });
+
+  test('matchLeadingQuantity skips leading whitespace', () => {
+    expect(matchLeadingQuantity(' 2', nqOpts, isAcceptableQuantity)).toEqual({
+      value: 2,
+      rest: '',
+    });
+  });
+
+  test.each(['1..5', '1,.5', '1_.5'])(
+    'matchLeadingQuantity stops at adjacent separators in %p',
+    text => {
+      expect(matchLeadingQuantity(text, nqOpts, isAcceptableQuantity)).toEqual({
+        value: 1,
+        rest: text.slice(1),
+      });
+    }
+  );
+
+  test('matchLeadingQuantity returns null when no prefix parses', () => {
+    expect(matchLeadingQuantity('.', nqOpts, isAcceptableQuantity)).toBeNull();
+  });
+
+  test('isTrailingQuantityStart accepts the start of the text', () => {
+    expect(isTrailingQuantityStart('2', 0)).toBe(true);
+  });
+
+  test('isTrailingQuantityStart rejects a digit after a comma in a number', () => {
+    expect(isTrailingQuantityStart('1,2', 2)).toBe(false);
+  });
+
+  test('matchTrailingQuantity works without options', () => {
+    expect(matchTrailingQuantity('2', nqOpts)).toEqual({ value: 2, startIndex: 0 });
+  });
+
+  test('matchTrailingQuantity does not split a surrogate pair at minStart', () => {
+    expect(matchTrailingQuantity('𝟚', nqOpts, { minStart: 1 })).toBeNull();
+  });
+
+  test('matchTrailingQuantity does not span a gap between digits', () => {
+    expect(matchTrailingQuantity('1 2', nqOpts)).toEqual({ value: 2, startIndex: 2 });
   });
 });
 

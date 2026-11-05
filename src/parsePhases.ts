@@ -62,9 +62,7 @@ export interface ParseContext {
  *
  * @internal
  */
-export const createParseContext = (
-  options: ParseIngredientOptions = defaultOptions
-): ParseContext => {
+export const createParseContext = (options: ParseIngredientOptions): ParseContext => {
   const opts = { ...defaultOptions, ...options };
   const lookupMaps = getUnitLookupMaps(opts.additionalUOMs);
 
@@ -193,7 +191,7 @@ const signRegExp = /^[-+]/u;
 
 /** A sign followed by whitespace is a dash, never a quantity's sign (`'1 - 3'`). */
 const isQuantity1Start = (text: string, start: number): boolean =>
-  !(signRegExp.test(text[start]) && /\s/u.test(text[start + 1] ?? '')) &&
+  !(signRegExp.test(text[start]) && /\s/u.test(text.charAt(start + 1))) &&
   isTrailingQuantityStart(text, start);
 
 /**
@@ -589,7 +587,7 @@ export const identifyPartialUnit = (ingredient: Ingredient, ctx: ParseContext): 
 export const stripDescriptionPrefix = (
   ingredient: Ingredient,
   ctx: ParseContext,
-  head = ''
+  head: string
 ): void => {
   const { stripPrefixRegex } = ctx;
   if (ctx.opts.allowLeadingOf || !stripPrefixRegex) return;

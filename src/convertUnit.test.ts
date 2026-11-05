@@ -292,6 +292,27 @@ describe('with additionalUOMs', () => {
     });
     expect(result).toBe(250);
   });
+
+  test('returns null when a multi-system factor lacks the requested system', () => {
+    const additionalUOMs = {
+      jug: {
+        short: 'jg',
+        plural: 'jugs',
+        alternates: [],
+        type: 'volume' as const,
+        conversionFactor: { us: 2000 },
+      },
+    };
+    expect(convertUnit(1, 'jug', 'liter', { additionalUOMs, fromSystem: 'imperial' })).toBeNull();
+  });
+
+  test('returns null when either unit has no type', () => {
+    const additionalUOMs = {
+      blob: { short: 'blb', plural: 'blobs', alternates: [], conversionFactor: 1 },
+    };
+    expect(convertUnit(1, 'blob', 'liter', { additionalUOMs })).toBeNull();
+    expect(convertUnit(1, 'liter', 'blob', { additionalUOMs })).toBeNull();
+  });
 });
 
 describe('unit spelling variations', () => {

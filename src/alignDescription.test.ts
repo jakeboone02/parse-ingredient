@@ -53,6 +53,10 @@ describe('alignDescription', () => {
     expect(reconstruct(line, alignment)).toBe(description);
   });
 
+  test('a repeated description that is a line prefix aligns to the head', () => {
+    expect(alignDescription('ab ab', 'ab')).toEqual([{ descStart: 0, descEnd: 2, lineStart: 0 }]);
+  });
+
   test('a spliced head and interior is two segments', () => {
     const line = '1 (15 oz) can chickpeas';
     const alignment = alignDescription(line, '(15 oz) chickpeas');

@@ -49,7 +49,7 @@ export interface MeasurementContext {
  * @internal
  */
 export const createMeasurementContext = (
-  options: ExtractMeasurementsOptions = {}
+  options: ExtractMeasurementsOptions
 ): MeasurementContext => {
   const opts = { ...defaultOptions, ...options };
 
@@ -166,7 +166,7 @@ export const scanMeasurements = (text: string, mctx: MeasurementContext): Measur
       quantity2,
       unitOfMeasureID,
       unitOfMeasure: mctx.normalizeUOM ? unitOfMeasureID : match[0],
-      unitType: mctx.scanner.definitions[unitOfMeasureID]?.type ?? null,
+      unitType: mctx.scanner.definitions[unitOfMeasureID].type ?? null,
       text: text.slice(startIndex, unitEnd),
       startIndex,
       endIndex: unitEnd,

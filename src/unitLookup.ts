@@ -140,8 +140,7 @@ export interface UOMScanner {
  * Whether a unit definition declares a conversion factor, i.e. whether `convertUnit` can
  * act on it.
  */
-const isConvertible = (def: UnitOfMeasure | undefined): boolean =>
-  def !== undefined && def.conversionFactor !== undefined;
+const isConvertible = (def: UnitOfMeasure): boolean => def.conversionFactor !== undefined;
 
 const buildUOMScanner = (
   additionalUOMs: UnitOfMeasureDefinitions,
@@ -192,8 +191,8 @@ const defaultScanners = new Map<MeasurementUnitFilter, UOMScanner>();
  * @internal
  */
 export const getUOMScanner = (
-  additionalUOMs: UnitOfMeasureDefinitions = {},
-  measurementUnits: MeasurementUnitFilter = 'all'
+  additionalUOMs: UnitOfMeasureDefinitions,
+  measurementUnits: MeasurementUnitFilter
 ): UOMScanner => {
   let byFilter: Map<MeasurementUnitFilter, UOMScanner>;
   if (Object.keys(additionalUOMs).length === 0) {

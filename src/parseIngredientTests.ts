@@ -646,6 +646,59 @@ export const parseIngredientTests: Record<
     ],
     { decimalSeparator: ',' },
   ],
+  'trailing quantity with only an x prefix before it': [
+    'x2 cups',
+    [
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cups',
+        description: '',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'trailing quantity with only a dash prefix before it': [
+    '-2 cups',
+    [
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cups',
+        description: '',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'trailing quantity with normalizeUOM': [
+    'flour x2 cups',
+    [
+      {
+        quantity: 2,
+        quantity2: null,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cup',
+        description: 'flour',
+        isGroupHeader: false,
+      },
+    ],
+    { normalizeUOM: true },
+  ],
+  'trailing range after a spaced dash prefix': [
+    'salt - 1 - 2 cups',
+    [
+      {
+        quantity: 1,
+        quantity2: 2,
+        unitOfMeasureID: 'cup',
+        unitOfMeasure: 'cups',
+        description: 'salt',
+        isGroupHeader: false,
+      },
+    ],
+  ],
   'trailing range (hyphen)': [
     'stuff 1-2 cups',
     [
@@ -1422,6 +1475,20 @@ export const parseIngredientTests: Record<
     ],
     { groupHeaderPatterns: ['For', 'Für', 'Pour'] },
   ],
+  'i18n: group header - empty patterns disable prefix detection': [
+    'For the icing',
+    [
+      {
+        quantity: null,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: 'For the icing',
+        isGroupHeader: false,
+      },
+    ],
+    { groupHeaderPatterns: [] },
+  ],
 
   // --- i18n: rangeSeparators ---
   'i18n: range with German "bis"': [
@@ -2040,6 +2107,26 @@ export const parseIngredientTests: Record<
     ],
     {
       partialUnitMatching: true,
+      additionalUOMs: {
+        大さじ: { short: '大さじ', plural: '大さじ', alternates: [] },
+      },
+    },
+  ],
+  'partialUnitMatching: ignored UOM is not extracted (砂糖大さじ)': [
+    '砂糖大さじ',
+    [
+      {
+        quantity: null,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: '砂糖大さじ',
+        isGroupHeader: false,
+      },
+    ],
+    {
+      partialUnitMatching: true,
+      ignoreUOMs: ['大さじ'],
       additionalUOMs: {
         大さじ: { short: '大さじ', plural: '大さじ', alternates: [] },
       },

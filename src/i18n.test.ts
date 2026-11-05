@@ -33,6 +33,10 @@ describe('escapeRegex', () => {
 });
 
 describe('buildPrefixPatternRegex', () => {
+  test('returns null for no patterns', () => {
+    expect(buildPrefixPatternRegex([])).toBeNull();
+  });
+
   test('matches string prefixes followed by whitespace', () => {
     const regex = buildPrefixPatternRegex(['For'])!;
     expect(regex.test('For the cake')).toBe(true);
@@ -110,6 +114,10 @@ describe('buildRangeSeparatorRegex', () => {
 });
 
 describe('buildStripPrefixRegex', () => {
+  test('returns null for no patterns', () => {
+    expect(buildStripPrefixRegex([])).toBeNull();
+  });
+
   test('matches words at start followed by whitespace', () => {
     const regex = buildStripPrefixRegex(['of'])!;
     expect(regex.test('of sugar')).toBe(true);

@@ -107,12 +107,7 @@ export const buildTrailingContextRegex = (words: readonly string[]): RegExp =>
  * breaks matching for global/sticky patterns.
  */
 const deepFreeze = <T>(value: T): T => {
-  if (
-    value !== null &&
-    typeof value === 'object' &&
-    !(value instanceof RegExp) &&
-    !Object.isFrozen(value)
-  ) {
+  if (value instanceof Object && !(value instanceof RegExp) && !Object.isFrozen(value)) {
     // Freeze before recursing so a self-referential value can't loop forever.
     Object.freeze(value);
     for (const nested of Object.values(value)) {
