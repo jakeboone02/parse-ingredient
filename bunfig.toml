@@ -1,6 +1,6 @@
 [test]
 coverage = true
-coverageThreshold = 1
+coverageThreshold = { functions = 1, lines = 1, branches = 1, statements = 1 }
 coverageReporter = ["lcov", "text"]
 coveragePathIgnorePatterns = ["scripts/**"]
 
