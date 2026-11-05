@@ -515,6 +515,32 @@ export const parseIngredientTests: Record<
       },
     ],
   ],
+  'trailing spaced mixed number': [
+    'salt 1 1/2',
+    [
+      {
+        quantity: 1.5,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: 'salt',
+        isGroupHeader: false,
+      },
+    ],
+  ],
+  'trailing spaced mixed number with vulgar fraction': [
+    'salt 1 ½',
+    [
+      {
+        quantity: 1.5,
+        quantity2: null,
+        unitOfMeasureID: null,
+        unitOfMeasure: null,
+        description: 'salt',
+        isGroupHeader: false,
+      },
+    ],
+  ],
   'trailing vulgar fraction with unit': [
     'flour ½ cup',
     [

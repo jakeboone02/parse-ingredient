@@ -322,7 +322,8 @@ export const parseTrailingQuantity = (
   ctx: ParseContext
 ): boolean => {
   // Each place the unit could start, or none. Like a `$`-anchored regex, the match starting
-  // leftmost wins; on a tie, the one with a unit (tried first).
+  // leftmost wins. On a tie the unitless match (tried last) wins: its quantity spans the
+  // would-be unit, which is then numeric ("1 1/2", "1 ½").
   const candidates: [body: string, uom: string][] = [];
   const spaced = spacedTrailingUOMRegExp.exec(text);
   if (spaced) candidates.push([text.slice(0, spaced.index), spaced[0]]);
@@ -333,7 +334,7 @@ export const parseTrailingQuantity = (
   let best: TrailingMatch | null = null;
   for (const [body, uom] of candidates) {
     const match = matchTrailingQuantityExpression(body, uom, ctx);
-    if (match && (!best || match.start < best.start)) best = match;
+    if (match && (!best || match.start <= best.start)) best = match;
   }
 
   // Same acceptance test as the leading path. A negative trailing quantity ("Tomato x-2 -

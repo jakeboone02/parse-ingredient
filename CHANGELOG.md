@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Spaced trailing mixed numbers no longer drop their fraction (`'salt 1 1/2'` and `'salt 1 ½'` were quantity `1`).
+
 ## [v3.2.0] - 2026-11-04
 
 ### Fixed

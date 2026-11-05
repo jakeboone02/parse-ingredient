@@ -50,6 +50,8 @@ export const examples: Example[] = [
   { name: 'trailing digits attached to letter', input: 'Sugar B12' },
   { name: 'trailing vulgar fraction', input: 'Ripe tomato x\u00bd' },
   { name: 'trailing mixed number with vulgar fraction', input: 'Ripe tomato x1\u00bd' },
+  { name: 'trailing spaced mixed number', input: 'salt 1 1/2' },
+  { name: 'trailing spaced mixed number with vulgar fraction', input: 'salt 1 \u00bd' },
   { name: 'trailing vulgar fraction with unit', input: 'flour \u00bd cup' },
   { name: 'trailing Unicode digit', input: 'Ripe tomato x\u0662' },
   { name: 'trailing Unicode digit attached to unit', input: 'Stuff \u0663\u0660\u0660mg' },
