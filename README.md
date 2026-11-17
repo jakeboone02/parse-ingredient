@@ -1,3 +1,5 @@
+# parse-ingredient
+
 [![npm][badge-npm]](https://www.npmjs.com/package/parse-ingredient)
 ![workflow status](https://github.com/jakeboone02/parse-ingredient/actions/workflows/main.yml/badge.svg)
 [![codecov.io](https://codecov.io/github/jakeboone02/parse-ingredient/coverage.svg?branch=main)](https://codecov.io/github/jakeboone02/parse-ingredient?branch=main)
